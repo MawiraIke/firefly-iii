@@ -1,7 +1,7 @@
 <?php
 /**
  * SecureHeaders.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace FireflyIII\Http\Middleware;
 
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 
 /**
@@ -33,32 +34,31 @@ use Illuminate\Http\Request;
 class SecureHeaders
 {
     /**
-     * Handle an incoming request. May not be a limited user (ie. Sandstorm env. or demo user).
+     * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param Request $request
+     * @param Closure $next
      *
+     * @throws Exception
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $response    = $next($request);
-        $google      = '';
-        $googleImg   = '';
-        $analyticsId = config('firefly.analytics_id');
-        if ('' !== $analyticsId) {
-            $google    = 'www.googletagmanager.com/gtag/js https://www.google-analytics.com/analytics.js'; // @codeCoverageIgnore
-            $googleImg = 'https://www.google-analytics.com/';
-        }
-        $csp = [
+        // generate and share nonce.
+        $nonce = base64_encode(random_bytes(16));
+        app('view')->share('JS_NONCE', $nonce);
+
+        $response          = $next($request);
+        $trackingScriptSrc = $this->getTrackingScriptSource();
+        $csp               = [
             "default-src 'none'",
             "object-src 'self'",
-            sprintf("script-src 'self' 'unsafe-eval' 'unsafe-inline' %s", $google),
+            sprintf("script-src 'unsafe-inline' 'nonce-%1s' %2s", $nonce, $trackingScriptSrc),
             "style-src 'self' 'unsafe-inline'",
             "base-uri 'self'",
             "font-src 'self' data:",
             "connect-src 'self'",
-            sprintf("img-src 'self' data: https://api.tiles.mapbox.com %s", $googleImg),
+            sprintf("img-src 'self' data: https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org https://api.tiles.mapbox.com %s", $trackingScriptSrc),
             "manifest-src 'self'",
         ];
 
@@ -84,12 +84,11 @@ class SecureHeaders
         ];
 
         $disableFrameHeader = config('firefly.disable_frame_header');
-        if (false === $disableFrameHeader || null === $disableFrameHeader) {
+        $disableCSP         = config('firefly.disable_csp_header');
+        if (false === $disableFrameHeader) {
             $response->header('X-Frame-Options', 'deny');
         }
-
-        // content security policy may be set elsewhere.
-        if (!$response->headers->has('Content-Security-Policy')) {
+        if (false === $disableCSP && !$response->headers->has('Content-Security-Policy')) {
             $response->header('Content-Security-Policy', implode('; ', $csp));
         }
         $response->header('X-XSS-Protection', '1; mode=block');
@@ -98,5 +97,19 @@ class SecureHeaders
         $response->header('Feature-Policy', implode('; ', $featurePolicies));
 
         return $response;
+    }
+
+    /**
+     * Return part of a CSP header allowing scripts from Google.
+     *
+     * @return string
+     */
+    private function getTrackingScriptSource(): string
+    {
+        if ('' !== (string) config('firefly.tracker_site_id') && '' !== (string) config('firefly.tracker_url')) {
+            return (string) config('firefly.tracker_url');
+        }
+
+        return '';
     }
 }

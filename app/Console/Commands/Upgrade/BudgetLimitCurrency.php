@@ -1,7 +1,7 @@
 <?php
 /**
  * BudgetLimitCurrency.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -102,7 +102,7 @@ class BudgetLimitCurrency extends Command
     {
         $configVar = app('fireflyconfig')->get(self::CONFIG_NAME, false);
         if (null !== $configVar) {
-            return (bool)$configVar->data;
+            return (bool) $configVar->data;
         }
 
         return false; // @codeCoverageIgnore

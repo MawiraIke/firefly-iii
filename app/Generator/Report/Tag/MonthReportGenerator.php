@@ -1,7 +1,7 @@
 <?php
 /**
  * MonthReportGenerator.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -76,7 +76,8 @@ class MonthReportGenerator implements ReportGeneratorInterface
         // render!
         try {
             $result = view(
-                'reports.tag.month', compact('accountIds', 'reportType', 'tagIds')
+                'reports.tag.month',
+                compact('accountIds', 'reportType', 'tagIds')
             )->with('start', $this->start)->with('end', $this->end)->with('tags', $this->tags)->with('accounts', $this->accounts)->render();
         } catch (Throwable $e) {
             Log::error(sprintf('Cannot render reports.tag.month: %s', $e->getMessage()));
@@ -177,6 +178,4 @@ class MonthReportGenerator implements ReportGeneratorInterface
 
         return $this;
     }
-
-
 }

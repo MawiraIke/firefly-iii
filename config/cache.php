@@ -1,7 +1,7 @@
 <?php
 /**
  * cache.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Cache Store
@@ -58,6 +56,7 @@ return [
 
         'array' => [
             'driver' => 'array',
+            'serialize' => false,
         ],
 
         'database' => [
@@ -84,7 +83,7 @@ return [
             'servers'       => [
                 [
                     'host'   => env('MEMCACHED_HOST', '127.0.0.1'),
-                    'port'   => (int)env('MEMCACHED_PORT', 11211),
+                    'port'   => (int) env('MEMCACHED_PORT', 11211),
                     'weight' => 100,
                 ],
             ],
@@ -95,6 +94,15 @@ return [
             'connection' => 'default',
         ],
 
+
+        'dynamodb' => [
+            'driver' => 'dynamodb',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
+            'endpoint' => env('DYNAMODB_ENDPOINT'),
+        ],
     ],
 
     /*
@@ -109,5 +117,6 @@ return [
     */
 
     'prefix' => env('CACHE_PREFIX', 'firefly'),
+
 
 ];

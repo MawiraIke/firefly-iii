@@ -1,7 +1,7 @@
 <?php
 /**
  * JournalRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace FireflyIII\Repositories\Journal;
 
 use Carbon\Carbon;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\TransactionGroup;
 use FireflyIII\Models\TransactionJournal;
@@ -36,6 +37,17 @@ use Illuminate\Support\Collection;
  */
 interface JournalRepositoryInterface
 {
+    /**
+     * @return TransactionJournal|null
+     */
+    public function getLast(): ?TransactionJournal;
+
+    /**
+     * @param array $types
+     *
+     * @return Collection
+     */
+    public function findByType(array $types): Collection;
 
     /**
      * TODO maybe create JSON repository?
@@ -43,6 +55,7 @@ interface JournalRepositoryInterface
      * Search in journal descriptions.
      *
      * @param string $search
+     *
      * @return Collection
      */
     public function searchJournalDescriptions(string $search): Collection;
@@ -60,18 +73,6 @@ interface JournalRepositoryInterface
      * @param TransactionJournal $journal
      */
     public function destroyJournal(TransactionJournal $journal): void;
-
-
-    /**
-     * TODO move to import repository.
-     *
-     * Find a journal by its hash.
-     *
-     * @param string $hash
-     *
-     * @return TransactionJournalMeta|null
-     */
-    public function findByHash(string $hash): ?TransactionJournalMeta;
 
     /**
      * TODO Refactor to "find".
@@ -114,7 +115,9 @@ interface JournalRepositoryInterface
      * Returns the source account of the journal.
      *
      * @param TransactionJournal $journal
+     *
      * @return Account
+     * @throws FireflyException
      */
     public function getSourceAccount(TransactionJournal $journal): Account;
 
@@ -123,6 +126,7 @@ interface JournalRepositoryInterface
      *
      * @param TransactionJournal $journal
      * @return Account
+     * @throws FireflyException
      */
     public function getDestinationAccount(TransactionJournal $journal): Account;
 

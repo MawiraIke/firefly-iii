@@ -1,7 +1,7 @@
 <?php
 /**
  * AccountRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,6 +25,7 @@ namespace FireflyIII\Repositories\Account;
 use Carbon\Carbon;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
+use FireflyIII\Models\Location;
 use FireflyIII\Models\TransactionCurrency;
 use FireflyIII\Models\TransactionGroup;
 use FireflyIII\Models\TransactionJournal;
@@ -45,6 +46,29 @@ interface AccountRepositoryInterface
      * @return int
      */
     public function count(array $types): int;
+
+    /**
+     * @param Account $account
+     *
+     * @return Collection
+     */
+    public function getUsedCurrencies(Account $account): Collection;
+
+    /**
+     * @param Account $account
+     *
+     * @return Collection
+     */
+    public function getAttachments(Account $account): Collection;
+
+    /**
+     * Get account location, if any.
+     *
+     * @param Account $account
+     *
+     * @return Location|null
+     */
+    public function getLocation(Account $account): ?Location;
 
     /**
      * Moved here from account CRUD.

@@ -1,7 +1,7 @@
 <?php
 /**
  * JournalRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace FireflyIII\Repositories\Journal;
 
 use Carbon\Carbon;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\Note;
 use FireflyIII\Models\Transaction;
@@ -95,32 +96,6 @@ class JournalRepository implements JournalRepositoryInterface
         /** @var JournalDestroyService $service */
         $service = app(JournalDestroyService::class);
         $service->destroy($journal);
-    }
-
-    /**
-     * Find a journal by its hash.
-     *
-     * @param string $hash
-     *
-     * @return TransactionJournalMeta|null
-     */
-    public function findByHash(string $hash): ?TransactionJournalMeta
-    {
-        $jsonEncode = json_encode($hash);
-        $hashOfHash = hash('sha256', $jsonEncode);
-        Log::debug(sprintf('JSON encoded hash is: %s', $jsonEncode));
-        Log::debug(sprintf('Hash of hash is: %s', $hashOfHash));
-
-        $result = TransactionJournalMeta::withTrashed()
-                                        ->leftJoin('transaction_journals', 'transaction_journals.id', '=', 'journal_meta.transaction_journal_id')
-                                        ->where('hash', $hashOfHash)
-                                        ->where('name', 'import_hash_v2')
-                                        ->first(['journal_meta.*']);
-        if (null === $result) {
-            Log::debug('Result is null');
-        }
-
-        return $result;
     }
 
     /**
@@ -386,6 +361,9 @@ class JournalRepository implements JournalRepositoryInterface
     {
         /** @var Transaction $transaction */
         $transaction = $journal->transactions()->with('account')->where('amount', '<', 0)->first();
+        if (null === $transaction) {
+            throw new FireflyException(sprintf('Your administration is broken. Transaction journal #%d has no source transaction.', $journal->id));
+        }
 
         return $transaction->account;
     }
@@ -397,7 +375,37 @@ class JournalRepository implements JournalRepositoryInterface
     {
         /** @var Transaction $transaction */
         $transaction = $journal->transactions()->with('account')->where('amount', '>', 0)->first();
+        if (null === $transaction) {
+            throw new FireflyException(sprintf('Your administration is broken. Transaction journal #%d has no destination transaction.', $journal->id));
+        }
 
         return $transaction->account;
+    }
+
+    /**
+     * @return TransactionJournal|null
+     */
+    public function getLast(): ?TransactionJournal
+    {
+        /** @var TransactionJournal $entry */
+        $entry  = $this->user->transactionJournals()->orderBy('date', 'DESC')->first(['transaction_journals.*']);
+        $result = null;
+        if (null !== $entry) {
+            $result = $entry;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByType(array $types): Collection
+    {
+        return $this->user
+            ->transactionJournals()
+            ->leftJoin('transaction_types', 'transaction_types.id', '=', 'transaction_journals.transaction_type_id')
+            ->whereIn('transaction_types.type', $types)
+            ->get(['transaction_journals.*']);
     }
 }

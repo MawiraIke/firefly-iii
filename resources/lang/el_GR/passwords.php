@@ -2,7 +2,7 @@
 
 /**
  * passwords.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 return [
     'password' => 'Οι κωδικοί πρόσβασης πρέπει να είναι τουλάχιστον έξι χαρακτήρες και να ταιριάζουν με την επιβεβαίωση.',
-    'user'     => 'Δεν βρέθηκε χρήστης με αυτήν τη διεύθυνση e-mail.',
+    'user'     => 'Δεν βρέθηκε χρήστης με αυτή τη διεύθυνση e-mail.',
     'token'    => 'Αυτό το διακριτικό επαναφοράς κωδικού πρόσβασης δεν είναι έγκυρο.',
     'sent'     => 'Σας έχουμε στείλει e-mail με τον σύνδεσμο επαναφοράς του κωδικού πρόσβασης!',
     'reset'    => 'Έχει γίνει επαναφορά του κωδικού σας!',

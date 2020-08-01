@@ -1,7 +1,8 @@
 <?php
+
 /**
  * UpdateRequestInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -19,6 +20,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+declare(strict_types=1);
+
 namespace FireflyIII\Services\FireflyIIIOrg\Update;
 
 use FireflyIII\Exceptions\FireflyException;
@@ -32,8 +35,7 @@ interface UpdateRequestInterface
      * @param string $channel
      *
      * @return array
-     * @throws FireflyException
      */
-    public function getVersion(string $channel): array;
+    public function getUpdateInformation(string $channel): array;
 
 }

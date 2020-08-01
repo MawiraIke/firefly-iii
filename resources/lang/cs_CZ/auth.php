@@ -2,7 +2,7 @@
 
 /**
  * auth.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,5 +24,5 @@ declare(strict_types=1);
 
 return [
     'failed'   => 'Nesprávné přihlašovací údaje.',
-    'throttle' => 'Příliš mnoho pokusů o přihlášení. Zkuste to znovu za :seconds sekund.',
+    'throttle' => 'Příliš mnoho pokusů o přihlášení. Zkuste to prosím znovu za :seconds sekund.',
 ];

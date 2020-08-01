@@ -1,7 +1,8 @@
 <?php
+
 /**
  * MigrateRecurrenceMeta.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -18,6 +19,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+declare(strict_types=1);
 
 namespace FireflyIII\Console\Commands\Upgrade;
 
@@ -81,7 +84,7 @@ class MigrateRecurrenceMeta extends Command
     {
         $configVar = app('fireflyconfig')->get(self::CONFIG_NAME, false);
         if (null !== $configVar) {
-            return (bool)$configVar->data;
+            return (bool) $configVar->data;
         }
 
         return false; // @codeCoverageIgnore
@@ -103,7 +106,7 @@ class MigrateRecurrenceMeta extends Command
      */
     private function migrateEntry(RecurrenceMeta $meta): int
     {
-        $recurrence       = $meta->recurrence;
+        $recurrence = $meta->recurrence;
         if (null === $recurrence) {
             return 0;
         }
@@ -115,7 +118,7 @@ class MigrateRecurrenceMeta extends Command
 
         if ('tags' === $meta->name) {
             $array = explode(',', $meta->value);
-            $value = json_encode($array);
+            $value = json_encode($array, JSON_THROW_ON_ERROR, 512);
         }
 
         RecurrenceTransactionMeta::create(

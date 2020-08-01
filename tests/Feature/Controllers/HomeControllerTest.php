@@ -1,7 +1,7 @@
 <?php
 /**
  * HomeControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -134,6 +134,8 @@ class HomeControllerTest extends TestCase
         $collector->shouldReceive('setAccounts')->atLeast()->once()->andReturnSelf();
         $collector->shouldReceive('setRange')->atLeast()->once()->andReturnSelf();
         $collector->shouldReceive('setLimit')->atLeast()->once()->andReturnSelf();
+        $collector->shouldReceive('withAccountInformation')->atLeast()->once()->andReturnSelf();
+
         $collector->shouldReceive('setPage')->atLeast()->once()->andReturnSelf();
         $collector->shouldReceive('getGroups')->atLeast()->once()->andReturn(new Collection);
 

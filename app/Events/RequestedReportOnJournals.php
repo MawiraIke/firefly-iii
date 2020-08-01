@@ -2,7 +2,7 @@
 
 /**
  * RequestedReportOnJournals.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -55,7 +55,7 @@ class RequestedReportOnJournals
     public function __construct(int $userId, Collection $groups)
     {
         Log::debug('In event RequestedReportOnJournals.');
-        $this->userId   = $userId;
+        $this->userId = $userId;
         $this->groups = $groups;
     }
 

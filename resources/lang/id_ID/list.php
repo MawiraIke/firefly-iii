@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Type',
     'lastActivity'            => 'Aktifitas terakhir',
     'balanceDiff'             => 'Perbedaan saldo',
-    'matchesOn'               => 'Cocok di',
     'other_meta_data'         => 'Other meta data',
     'account_type'            => 'Jenis akun',
     'created_at'              => 'Dibuat di',
     'account'                 => 'Akun',
     'matchingAmount'          => 'Jumlah',
-    'split_number'            => 'Split #',
     'destination'             => 'Tujuan',
     'source'                  => 'Sumber',
     'next_expected_match'     => 'Transaksi yang diharapkan berikutnya',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Berulang',
     'description'             => 'Deskripsi',
     'amount'                  => 'Jumlah',
-    'internal_reference'      => 'Referensi Internal',
     'date'                    => 'Tanggal',
     'interest_date'           => 'Tanggal Bunga',
     'book_date'               => 'Tanggal Buku',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Tenggat waktu',
     'payment_date'            => 'Tanggal pembayaran',
     'invoice_date'            => 'Tanggal Faktur',
-    'interal_reference'       => 'Referensi Internal',
+    'internal_reference'      => 'Internal reference',
     'notes'                   => 'Catatan',
     'from'                    => 'Dari',
     'piggy_bank'              => 'Celengan',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Jumlah lampiran',
     'bills_count'             => 'Jumlah tagihan',
     'categories_count'        => 'Jumlah kategori',
-    'import_jobs_count'       => 'Jumlah pekerjaan impor',
     'budget_count'            => 'Jumlah anggaran',
     'rule_and_groups_count'   => 'Jumlah aturan dan kelompok aturan',
     'tags_count'              => 'Jumlah label',
@@ -107,9 +103,6 @@ return [
     'sum_transfers'           => 'Jumlah transfer',
     'sum_reconciliations'     => 'Sum of reconciliations',
     'reconcile'               => 'Menyesuaikan',
-    'account_on_spectre'      => 'Rekening (Spectre)',
-    'account_on_ynab'         => 'Rekening (YNAB)',
-    'do_import'               => 'Ambil dari rekening ini',
     'sepa_ct_id'              => 'SEPA End to End Identifier',
     'sepa_ct_op'              => 'SEPA Opposing Account Identifier',
     'sepa_db'                 => 'SEPA Mandate Identifier',

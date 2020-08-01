@@ -1,7 +1,7 @@
 <?php
 /**
  * AttachmentUpdateRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -52,8 +52,8 @@ class AttachmentUpdateRequest extends Request
             'filename' => $this->string('filename'),
             'title'    => $this->string('title'),
             'notes'    => $this->nlString('notes'),
-            'model'    => $this->string('model'),
-            'model_id' => $this->integer('model_id'),
+            'model'    => $this->string('attachable_type'),
+            'model_id' => $this->integer('attachable_id'),
         ];
     }
 

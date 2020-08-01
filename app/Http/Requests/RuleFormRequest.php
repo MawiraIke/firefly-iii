@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleFormRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -116,7 +116,7 @@ class RuleFormRequest extends Request
                 $return[]       = [
                     'type'            => $action['type'] ?? 'invalid',
                     'value'           => $action['value'] ?? '',
-                    'stop_processing' => 1 === (int)$stopProcessing,
+                    'stop_processing' => 1 === (int) $stopProcessing,
                 ];
             }
         }
@@ -137,7 +137,7 @@ class RuleFormRequest extends Request
                 $return[]       = [
                     'type'            => $trigger['type'] ?? 'invalid',
                     'value'           => $trigger['value'] ?? '',
-                    'stop_processing' => 1 === (int)$stopProcessing,
+                    'stop_processing' => 1 === (int) $stopProcessing,
                 ];
             }
         }

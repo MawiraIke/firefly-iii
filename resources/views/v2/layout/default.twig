@@ -1,15 +1,13 @@
-<!doctype html>
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+<html lang="{{ trans('config.html_language') }}">
 <head>
     <base href="{{ route('index') }}/">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Language" content="en" />
-
-    {# favicons #}
-    {% include('partials.favicons') %}
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="locale" content="{{ locale|replace({'_':'-'}) }}">
+    <meta name="robots" content="noindex, nofollow, noarchive, noodp, NoImageIndex, noydir">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>
         {% if subTitle %}
             {{ subTitle }} »
@@ -19,127 +17,84 @@
         {% endif %}
 
         Firefly III
+
     </title>
-    <link rel="stylesheet" href="v2/lib/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="v2/assets/css/gf-source.css">
-    <script src="v2/assets/js/require.min.js"></script>
-    <script>
-        requirejs.config({
-                             baseUrl: '.'
-                         });
-    </script>
-    <!-- Dashboard Core -->
-    <link href="v2/assets/css/dashboard.css" rel="stylesheet" />
-    <script src="v2/assets/js/dashboard.js"></script>
-    <!-- c3.js Charts Plugin -->
-    <link href="v2/assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
-    <script src="v2/assets/plugins/charts-c3/plugin.js"></script>
-    <!-- Google Maps Plugin -->
-    <link href="v2/assets/plugins/maps-google/plugin.css" rel="stylesheet" />
-    <script src="v2/assets/plugins/maps-google/plugin.js"></script>
-    <!-- Input Mask Plugin -->
-    <script src="v2/assets/plugins/input-mask/plugin.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="v2/plugins/local-fonts/gf-source.css">
+    <link rel="stylesheet" href="v2/css/app.css">
 </head>
-<body class="">
-<div class="page">
-    <div class="page-main">
-        <div class="header py-4">
-            <div class="container">
-                <div class="d-flex">
-                    {# favicons #}
-                    {% include('partials.top_bar') %}
-                </div>
-            </div>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- Navbar -->
+    {% include('partials.layout.navbar') %}
+
+    <!-- Main Sidebar Container -->
+    {% include('partials.layout.sidebar') %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">{% if mainTitleIcon %}<i class="fa fas {{ mainTitleIcon }}"></i>{% endif %}
+                            {{ title }} <small class="text-muted">
+                                {% if subTitleIcon %}<i class="fa fas {{ subTitleIcon }}"></i>{% endif %}
+                                {{ subTitle }}</small></h1>
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Bread crumbs v1</li>
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
         </div>
-        <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-3 ml-auto">
-                        <form class="input-icon my-3 my-lg-0" action="{{ route('search.index') }}" method="get">
-                            <input type="search" class="form-control header-search" placeholder="Search&hellip;" name="q" tabindex="1">
-                            <div class="input-icon-addon">
-                                <i class="fe fe-search"></i>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-lg order-lg-first">
-                        {# favicons #}
-                        {% include('partials.top_menu') %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="my-3 my-md-5">
-            <div class="container">
-                <div class="page-header">
-                    <h1 class="page-title">
-                        {{ title }}
-                        <small class="text-muted">{{ subTitle }}</small>
-                    </h1>
-                </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
                 {% block content %}{% endblock %}
-            </div>
-        </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
     </div>
-    <div class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-6 col-md-3">
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#">First link</a></li>
-                                <li><a href="#">Second link</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#">Third link</a></li>
-                                <li><a href="#">Fourth link</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#">Fifth link</a></li>
-                                <li><a href="#">Sixth link</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#">Other link</a></li>
-                                <li><a href="#">Last link</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mt-4 mt-lg-0">
-                    Premium and Open Source dashboard template with responsive and high quality UI. For Free!
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center flex-row-reverse">
-                <div class="col-auto ml-lg-auto">
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <ul class="list-inline list-inline-dots mb-0">
-                                <li class="list-inline-item"><a href="./docs/index.html">Documentation</a></li>
-                                <li class="list-inline-item"><a href="./faq.html">FAQ</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-auto">
-                            <a href="https://github.com/tabler/tabler" class="btn btn-outline-primary btn-sm">Source code</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
-                    Copyright © 2018 <a href=".">Tabler</a>. Theme by <a href="https://codecalm.net" target="_blank">codecalm.net</a> All rights reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- /.content-wrapper -->
+    {% include('partials.layout.footer') %}
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+        bla bla bla
+    </aside>
+    <!-- /.control-sidebar -->
 </div>
+<!-- ./wrapper -->
+
+<script src="{{ route('javascript.v2.variables') }}" nonce="{{ JS_NONCE }}"></script>
+<script src="v2/js/manifest.js" nonce="{{ JS_NONCE }}"></script>
+<script src="v2/js/vendor.js" nonce="{{ JS_NONCE }}"></script>
+{% block scripts %}{% endblock %}
+
+<!-- jQuery -->
+<!--<script src="v2/plugins/jquery/jquery.min.js" nonce="{{ JS_NONCE }}"></script>-->
+<!-- jQuery UI 1.11.4 -->
+<!--<script src="v2/plugins/jquery-ui/jquery-ui.min.js" nonce="{{ JS_NONCE }}"></script>-->
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<!--<script nonce="{{ JS_NONCE }}">
+    $.widget.bridge('uibutton', $.ui.button)
+</script>
+-->
+<!-- Bootstrap 4 -->
+<!--<script src="v2/plugins/bootstrap/js/bootstrap.bundle.min.js" nonce="{{ JS_NONCE }}"></script>-->
+<!-- overlayScrollbars -->
+<!--<script src="v2/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" nonce="{{ JS_NONCE }}"></script>-->
+<!-- AdminLTE App -->
+<!--<script src="v2/dist/js/adminlte.js" nonce="{{ JS_NONCE }}"></script>-->
 </body>
 </html>
+

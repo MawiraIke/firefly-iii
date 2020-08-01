@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleGroupController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -106,7 +106,7 @@ class RuleGroupController extends Controller
     {
         $manager = $this->getManager();
         // types to get, page size:
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
 
         // get list of rule groups. Count it and split it.
         $collection = $this->ruleGroupRepository->get();
@@ -177,7 +177,7 @@ class RuleGroupController extends Controller
     {
         $manager = $this->getManager();
         // types to get, page size:
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
 
         // get list of budgets. Count it and split it.
         $collection = $this->ruleGroupRepository->getRules($group);
@@ -246,13 +246,13 @@ class RuleGroupController extends Controller
      * @param RuleGroupTestRequest $request
      * @param RuleGroup            $group
      *
-     * @return JsonResponse
      * @throws FireflyException
      *
+     * @return JsonResponse
      */
     public function testGroup(RuleGroupTestRequest $request, RuleGroup $group): JsonResponse
     {
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
         Log::debug('Now in testGroup()');
         /** @var Collection $rules */
         $rules = $this->ruleGroupRepository->getActiveRules($group);
@@ -305,8 +305,8 @@ class RuleGroupController extends Controller
      * @param RuleGroupTriggerRequest $request
      * @param RuleGroup               $group
      *
-     * @return JsonResponse
      * @throws Exception
+     * @return JsonResponse
      */
     public function triggerGroup(RuleGroupTriggerRequest $request, RuleGroup $group): JsonResponse
     {

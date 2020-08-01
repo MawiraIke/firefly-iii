@@ -1,7 +1,7 @@
 <?php
 /**
  * BillController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -42,6 +42,7 @@ class BillController extends Controller
 
     /**
      * BillController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -79,12 +80,12 @@ class BillController extends Controller
 
         foreach ($paid as $currencyId => $amount) {
             $currencies[$currencyId] = $currencies[$currencyId] ?? $currencyRepository->findNull($currencyId);
-            $label                   = (string)trans('firefly.paid_in_currency', ['currency' => $currencies[$currencyId]->name]);
+            $label                   = (string) trans('firefly.paid_in_currency', ['currency' => $currencies[$currencyId]->name]);
             $chartData[$label]       = ['amount' => $amount, 'currency_symbol' => $currencies[$currencyId]->symbol];
         }
         foreach ($unpaid as $currencyId => $amount) {
             $currencies[$currencyId] = $currencies[$currencyId] ?? $currencyRepository->findNull($currencyId);
-            $label                   = (string)trans('firefly.unpaid_in_currency', ['currency' => $currencies[$currencyId]->name]);
+            $label                   = (string) trans('firefly.unpaid_in_currency', ['currency' => $currencies[$currencyId]->name]);
             $chartData[$label]       = ['amount' => $amount, 'currency_symbol' => $currencies[$currencyId]->symbol];
         }
 
@@ -110,19 +111,28 @@ class BillController extends Controller
         if ($cache->has()) {
             return response()->json($cache->get()); // @codeCoverageIgnore
         }
+        $locale = app('steam')->getLocale();
 
         /** @var GroupCollectorInterface $collector */
         $collector = app(GroupCollectorInterface::class);
         $journals  = $collector->setBill($bill)->getExtractedJournals();
 
+        // sort the other way around:
+        usort(
+            $journals,
+            static function (array $left, array $right) {
+                return $left['date']->gte($right['date']) ? 1 : 0;
+            }
+        );
+
         $chartData = [
-            ['type' => 'bar', 'label' => (string)trans('firefly.min-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
-            ['type' => 'bar', 'label' => (string)trans('firefly.max-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
-            ['type' => 'line', 'label' => (string)trans('firefly.journal-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
+            ['type' => 'line', 'label' => (string) trans('firefly.min-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
+            ['type' => 'line', 'label' => (string) trans('firefly.max-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
+            ['type' => 'bar', 'label' => (string) trans('firefly.journal-amount'), 'currency_symbol' => $bill->transactionCurrency->symbol, 'entries' => []],
         ];
 
         foreach ($journals as $journal) {
-            $date                           = $journal['date']->formatLocalized((string)trans('config.month_and_day'));
+            $date                           = $journal['date']->formatLocalized((string) trans('config.month_and_day', [], $locale));
             $chartData[0]['entries'][$date] = $bill->amount_min; // minimum amount of bill
             $chartData[1]['entries'][$date] = $bill->amount_max; // maximum amount of bill
 

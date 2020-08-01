@@ -1,7 +1,7 @@
 <?php
 /**
  * TransactionJournalMetaFactory.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -36,6 +36,7 @@ class TransactionJournalMetaFactory
 {
     /**
      * Constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -71,7 +72,7 @@ class TransactionJournalMetaFactory
             Log::debug('Is a carbon object.');
             $value = $data['data']->toW3cString();
         }
-        if ('' === (string)$value) {
+        if ('' === (string) $value) {
             Log::debug('Is an empty string.');
             // don't store blank strings.
             if (null !== $entry) {

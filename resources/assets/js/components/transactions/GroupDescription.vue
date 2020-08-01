@@ -1,6 +1,6 @@
 <!--
   - GroupDescription.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -20,17 +20,29 @@
 
 <template>
     <div class="form-group" v-bind:class="{ 'has-error': hasError()}">
+        <div class="col-sm-12 text-sm">
+            {{ $t('firefly.split_transaction_title') }}
+        </div>
         <div class="col-sm-12">
-            <input
-                    type="text"
-                    class="form-control"
-                    name="group_title"
-                    v-bind:title="$t('firefly.split_transaction_title')"
-                    ref="descr"
-                    autocomplete="off"
-                    v-bind:placeholder="$t('firefly.split_transaction_title')"
-                    :value="value" @input="handleInput"
-            >
+            <div class="input-group">
+                <input
+                        type="text"
+                        class="form-control"
+                        name="group_title"
+                        v-bind:title="$t('firefly.split_transaction_title')"
+                        ref="descr"
+                        autocomplete="off"
+                        v-bind:placeholder="$t('firefly.split_transaction_title')"
+                        :value="value" @input="handleInput"
+                >
+                <span class="input-group-btn">
+            <button
+                    tabIndex="-1"
+                    v-on:click="clearField"
+                    class="btn btn-default"
+                    type="button"><i class="fa fa-trash-o"></i></button>
+        </span>
+            </div>
             <p class="help-block" v-if="error.length === 0">
                 {{ $t('firefly.split_transaction_title_help') }}
             </p>
@@ -51,7 +63,13 @@
             },
             handleInput(e) {
                 this.$emit('input', this.$refs.descr.value);
-            }
+            },
+            clearField: function () {
+                //props.value = '';
+                this.name = '';
+                this.$refs.descr.value = '';
+                this.$emit('input', this.$refs.descr.value);
+            },
         }
     }
 </script>

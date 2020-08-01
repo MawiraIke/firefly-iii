@@ -1,7 +1,7 @@
 <?php
 /**
  * HomeController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,9 +25,12 @@ namespace FireflyIII\Http\Controllers\Admin;
 use FireflyIII\Events\AdminRequestedTestMessage;
 use FireflyIII\Http\Controllers\Controller;
 use FireflyIII\Http\Middleware\IsDemoUser;
-use FireflyIII\Http\Middleware\IsSandStormUser;
 use FireflyIII\User;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
+use Illuminate\View\View;
 use Log;
 
 /**
@@ -37,28 +40,27 @@ class HomeController extends Controller
 {
     /**
      * ConfigurationController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
     {
         parent::__construct();
         $this->middleware(IsDemoUser::class)->except(['index']);
-        $this->middleware(IsSandStormUser::class)->except(['index']);
     }
 
     /**
      * Index of the admin.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function index()
     {
         Log::channel('audit')->info('User visits admin index.');
-        $title         = (string)trans('firefly.administration');
+        $title         = (string) trans('firefly.administration');
         $mainTitleIcon = 'fa-hand-spock-o';
-        $sandstorm     = 1 === (int)getenv('SANDSTORM');
 
-        return view('admin.index', compact('title', 'mainTitleIcon', 'sandstorm'));
+        return view('admin.index', compact('title', 'mainTitleIcon'));
     }
 
     /**
@@ -66,7 +68,7 @@ class HomeController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse|Redirector
      */
     public function testMessage(Request $request)
     {
@@ -76,7 +78,7 @@ class HomeController extends Controller
         $ipAddress = $request->ip();
         Log::debug(sprintf('Now in testMessage() controller. IP is %s', $ipAddress));
         event(new AdminRequestedTestMessage($user, $ipAddress));
-        session()->flash('info', (string)trans('firefly.send_test_triggered'));
+        session()->flash('info', (string) trans('firefly.send_test_triggered'));
 
         return redirect(route('admin.index'));
     }

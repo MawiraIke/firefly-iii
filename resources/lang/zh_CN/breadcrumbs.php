@@ -2,7 +2,7 @@
 
 /**
  * breadcrumbs.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -28,7 +28,7 @@ return [
     'delete_currency'        => '删除货币 ":name"',
     'newPiggyBank'           => '创建一个新的存钱罐',
     'edit_piggyBank'         => '编辑存钱罐 ":name"',
-    'preferences'            => '偏好设定',
+    'preferences'            => '设置',
     'profile'                => '个人档案',
     'changePassword'         => '更改您的密码',
     'change_email'           => '更改您的电子邮件地址',
@@ -51,9 +51,15 @@ return [
     'edit_journal'           => '编辑交易 ":description"',
     'edit_reconciliation'    => '编辑 ":description"',
     'delete_journal'         => '删除交易 ":description"',
+    'delete_group'           => '删除交易":description"',
     'tags'                   => '标签',
     'createTag'              => '建立新标签',
     'edit_tag'               => '编辑标签 ":tag"',
     'delete_tag'             => '删除标签 ":tag"',
     'delete_journal_link'    => '删除交易记录之间的连结',
+    'telemetry_index'        => '遥测',
+    'telemetry_view'         => '查看遥测',
+    'edit_object_group'      => 'Edit group ":title"',
+    'delete_object_group'    => 'Delete group ":title"',
+    'logout_others'          => 'Logout other sessions'
 ];

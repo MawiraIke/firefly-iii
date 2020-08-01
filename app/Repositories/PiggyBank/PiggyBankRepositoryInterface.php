@@ -1,7 +1,7 @@
 <?php
 /**
  * PiggyBankRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -37,12 +37,39 @@ use Illuminate\Support\Collection;
 interface PiggyBankRepositoryInterface
 {
     /**
+     *
+     */
+    public function destroyAll(): void;
+
+    /**
+     * @param PiggyBank $piggyBank
+     * @param string    $objectGroupTitle
+     *
+     * @return PiggyBank
+     */
+    public function setObjectGroup(PiggyBank $piggyBank, string $objectGroupTitle): PiggyBank;
+
+    /**
+     * @param PiggyBank $piggyBank
+     *
+     * @return PiggyBank
+     */
+    public function removeObjectGroup(PiggyBank $piggyBank): PiggyBank;
+
+    /**
      * @param PiggyBank $piggyBank
      * @param string    $amount
      *
      * @return PiggyBank
      */
     public function setCurrentAmount(PiggyBank $piggyBank, string $amount): PiggyBank;
+
+    /**
+     * @param PiggyBank $piggyBank
+     *
+     * @return Collection
+     */
+    public function getAttachments(PiggyBank $piggyBank): Collection;
 
     /**
      * @param PiggyBank $piggyBank

@@ -1,7 +1,7 @@
 <?php
 /**
  * AvailableBudgetRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -65,6 +65,17 @@ interface AvailableBudgetRepositoryInterface
      * @return Collection
      */
     public function get(?Carbon $start = null, ?Carbon $end = null): Collection;
+
+    /**
+     * Get by transaction currency and date. Should always result in one entry or NULL.
+     *
+     * @param Carbon              $start
+     * @param Carbon              $end
+     * @param TransactionCurrency $currency
+     *
+     * @return null|AvailableBudget
+     */
+    public function getByCurrencyDate(Carbon $start, Carbon $end, TransactionCurrency $currency): ?AvailableBudget;
 
     /**
      * @param TransactionCurrency $currency

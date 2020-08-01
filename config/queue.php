@@ -1,7 +1,7 @@
 <?php
 /**
  * queue.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Queue Driver
@@ -100,7 +98,7 @@ return [
     */
 
     'failed' => [
-        'database' => envNonEmpty('DB_CONNECTION', 'mysql'),
+        'database' => envNonEmpty('DB_CONNECTION', 'pgsql'),
         'table'    => 'failed_jobs',
     ],
 

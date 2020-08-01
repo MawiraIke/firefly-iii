@@ -1,7 +1,7 @@
 <?php
 /**
  * ConfirmEmailChangeMail.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -70,6 +70,6 @@ class ConfirmEmailChangeMail extends Mailable
     public function build(): self
     {
         return $this->view('emails.confirm-email-change-html')->text('emails.confirm-email-change-text')
-                    ->subject('Your Firefly III email address has changed');
+                    ->subject((string) trans('email.email_change_subject'));
     }
 }

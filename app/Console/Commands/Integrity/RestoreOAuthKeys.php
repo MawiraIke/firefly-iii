@@ -1,7 +1,8 @@
 <?php
+
 /**
  * RestoreOAuthKeys.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -19,12 +20,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+declare(strict_types=1);
+
 namespace FireflyIII\Console\Commands\Integrity;
 
-use Artisan;
-use Crypt;
 use FireflyIII\Support\System\OAuthKeys;
 use Illuminate\Console\Command;
+use Log;
 
 /**
  * Class RestoreOAuthKeys
@@ -93,7 +95,9 @@ class RestoreOAuthKeys extends Command
      */
     private function restoreOAuthKeys(): void
     {
+        Log::debug('Going to restoreOAuthKeys()');
         if (!$this->keysInDatabase() && !$this->keysOnDrive()) {
+            Log::debug('Keys are not in DB and keys are not on the drive.');
             $this->generateKeys();
             $this->storeKeysInDB();
             $this->line('Generated and stored new keys.');
@@ -101,12 +105,14 @@ class RestoreOAuthKeys extends Command
             return;
         }
         if ($this->keysInDatabase() && !$this->keysOnDrive()) {
+            Log::debug('Keys are in DB and keys are not on the drive. Restore.');
             $this->restoreKeysFromDB();
             $this->line('Restored OAuth keys from database.');
 
             return;
         }
         if (!$this->keysInDatabase() && $this->keysOnDrive()) {
+            Log::debug('Keys are not in DB and keys are on the drive. Save in DB.');
             $this->storeKeysInDB();
             $this->line('Stored OAuth keys in database.');
 

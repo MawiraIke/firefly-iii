@@ -1,7 +1,7 @@
 <?php
 /**
  * EventServiceProvider.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -31,6 +31,7 @@ use FireflyIII\Events\RequestedVersionCheckStatus;
 use FireflyIII\Events\StoredTransactionGroup;
 use FireflyIII\Events\UpdatedTransactionGroup;
 use FireflyIII\Events\UserChangedEmail;
+use FireflyIII\Handlers\Events\SendEmailVerificationNotification;
 use FireflyIII\Mail\OAuthTokenCreatedMail;
 use FireflyIII\Models\PiggyBank;
 use FireflyIII\Models\PiggyBankRepetition;
@@ -66,7 +67,6 @@ class EventServiceProvider extends ServiceProvider
             Login::class                       => [
                 'FireflyIII\Handlers\Events\UserEventHandler@checkSingleUserIsAdmin',
                 'FireflyIII\Handlers\Events\UserEventHandler@demoUserBackToEnglish',
-
             ],
             RequestedVersionCheckStatus::class => [
                 'FireflyIII\Handlers\Events\VersionCheckEventHandler@checkForUpdates',
@@ -94,6 +94,7 @@ class EventServiceProvider extends ServiceProvider
             ],
             // is a Transaction Journal related event.
             UpdatedTransactionGroup::class   => [
+                'FireflyIII\Handlers\Events\UpdatedGroupEventHandler@unifyAccounts',
                 'FireflyIII\Handlers\Events\UpdatedGroupEventHandler@processRules',
             ],
             // API related events:

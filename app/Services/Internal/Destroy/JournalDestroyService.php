@@ -1,7 +1,7 @@
 <?php
 /**
  * JournalDestroyService.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -95,9 +95,17 @@ class JournalDestroyService
             // update events
             $journal->piggyBankEvents()->update(['transaction_journal_id' => null]);
 
-
-
             $journal->delete();
+
+            // delete group, if group is empty:
+            $group = $journal->transactionGroup;
+            if (null !== $group) {
+                $count = $group->transactionJournals->count();
+                if (0 === $count) {
+                    $group->delete();
+                }
+            }
+
         } catch (Exception $e) {
             Log::error(sprintf('Could not delete bill: %s', $e->getMessage())); // @codeCoverageIgnore
         }

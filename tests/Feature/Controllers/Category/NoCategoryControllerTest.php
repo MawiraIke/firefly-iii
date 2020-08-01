@@ -1,7 +1,7 @@
 <?php
 /**
  * NoCategoryControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -86,6 +86,8 @@ class NoCategoryControllerTest extends TestCase
         $collector->shouldReceive('setRange')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('withoutCategory')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('getExtractedJournals')->andReturn([])->atLeast()->once();
+        $collector->shouldReceive('withAccountInformation')->andReturnSelf()->atLeast()->once();
+        $collector->shouldReceive('withBudgetInformation')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('getPaginatedGroups')->andReturn(new LengthAwarePaginator([], 0, 10))->atLeast()->once();
 
         $collector->shouldReceive('setPage')->andReturnSelf()->atLeast()->once();
@@ -128,6 +130,8 @@ class NoCategoryControllerTest extends TestCase
         $collector->shouldReceive('setTypes')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('setRange')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('withoutCategory')->andReturnSelf()->atLeast()->once();
+        $collector->shouldReceive('withAccountInformation')->andReturnSelf()->atLeast()->once();
+        $collector->shouldReceive('withBudgetInformation')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('getPaginatedGroups')->andReturn(new LengthAwarePaginator([], 0, 10))->atLeast()->once();
 
         $collector->shouldReceive('setPage')->andReturnSelf()->atLeast()->once();
@@ -171,6 +175,8 @@ class NoCategoryControllerTest extends TestCase
         $collector->shouldReceive('setTypes')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('setRange')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('withoutCategory')->andReturnSelf()->atLeast()->once();
+        $collector->shouldReceive('withAccountInformation')->andReturnSelf()->atLeast()->once();
+        $collector->shouldReceive('withBudgetInformation')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('getPaginatedGroups')->andReturn(new LengthAwarePaginator([], 0, 10))->atLeast()->once();
         $collector->shouldReceive('getExtractedJournals')->andReturn([])->atLeast()->once();
 

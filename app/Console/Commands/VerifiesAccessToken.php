@@ -1,7 +1,7 @@
 <?php
 /**
  * VerifiesAccessToken.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -38,12 +38,12 @@ use Log;
 trait VerifiesAccessToken
 {
     /**
-     * @return User
      * @throws FireflyException
+     * @return User
      */
     public function getUser(): User
     {
-        $userId = (int)$this->option('user');
+        $userId = (int) $this->option('user');
         /** @var UserRepositoryInterface $repository */
         $repository = app(UserRepositoryInterface::class);
         $user       = $repository->findNull($userId);
@@ -70,8 +70,8 @@ trait VerifiesAccessToken
      */
     protected function verifyAccessToken(): bool
     {
-        $userId = (int)$this->option('user');
-        $token  = (string)$this->option('token');
+        $userId = (int) $this->option('user');
+        $token  = (string) $this->option('token');
         /** @var UserRepositoryInterface $repository */
         $repository = app(UserRepositoryInterface::class);
         $user       = $repository->findNull($userId);

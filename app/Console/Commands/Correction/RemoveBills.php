@@ -1,7 +1,7 @@
 <?php
 /**
  * RemoveBills.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -48,7 +48,7 @@ class RemoveBills extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
     public function handle(): int
     {

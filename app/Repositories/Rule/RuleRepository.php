@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -110,26 +110,6 @@ class RuleRepository implements RuleRepositoryInterface
     public function getFirstRuleGroup(): RuleGroup
     {
         return $this->user->ruleGroups()->first();
-    }
-
-    /**
-     * Get the rules for a user tailored to the import process.
-     *
-     * @return Collection
-     */
-    public function getForImport(): Collection
-    {
-        return Rule::distinct()
-                   ->where('rules.user_id', $this->user->id)
-                   ->leftJoin('rule_groups', 'rule_groups.id', '=', 'rules.rule_group_id')
-                   ->leftJoin('rule_triggers', 'rules.id', '=', 'rule_triggers.rule_id')
-                   ->where('rule_groups.active', 1)
-                   ->where('rule_triggers.trigger_type', 'user_action')
-                   ->where('rule_triggers.trigger_value', 'store-journal')
-                   ->where('rules.active', 1)
-                   ->orderBy('rule_groups.order', 'ASC')
-                   ->orderBy('rules.order', 'ASC')
-                   ->get(['rules.*', 'rule_groups.order']);
     }
 
     /**
@@ -474,5 +454,47 @@ class RuleRepository implements RuleRepositoryInterface
         }
 
         return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function duplicate(Rule $rule): Rule
+    {
+        $newRule = $rule->replicate();
+        $newRule->title = (string)trans('firefly.rule_copy_of', ['title' => $rule->title]);
+        $newRule->save();
+
+        // replicate all triggers
+        /** @var RuleTrigger $trigger */
+        foreach ($rule->ruleTriggers as $trigger) {
+            $newTrigger          = $trigger->replicate();
+            $newTrigger->rule_id = $newRule->id;
+            $newTrigger->save();
+        }
+
+        // replicate all actions
+        /** @var RuleAction $action */
+        foreach ($rule->ruleActions as $action) {
+            $newAction          = $action->replicate();
+            $newAction->rule_id = $newRule->id;
+            $newAction->save();
+        }
+
+        return $newRule;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function moveRule(Rule $rule, RuleGroup $ruleGroup, int $order): Rule
+    {
+        $rule->order = $order;
+        if ($rule->rule_group_id !== $ruleGroup->id) {
+            $rule->rule_group_id = $ruleGroup->id;
+        }
+        $rule->save();
+
+        return $rule;
     }
 }

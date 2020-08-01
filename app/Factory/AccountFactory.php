@@ -2,7 +2,7 @@
 
 /**
  * AccountFactory.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -29,6 +29,7 @@ use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
 use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Services\Internal\Support\AccountServiceTrait;
+use FireflyIII\Services\Internal\Support\LocationServiceTrait;
 use FireflyIII\User;
 use Log;
 
@@ -39,22 +40,20 @@ use Log;
  */
 class AccountFactory
 {
-    use AccountServiceTrait;
+    use AccountServiceTrait, LocationServiceTrait;
 
     /** @var AccountRepositoryInterface */
     protected $accountRepository;
-    /** @var User */
-    private $user;
-
-    /** @var array */
-    private $canHaveVirtual;
-
     /** @var array */
     protected $validAssetFields = ['account_role', 'account_number', 'currency_id', 'BIC', 'include_net_worth'];
     /** @var array */
     protected $validCCFields = ['account_role', 'cc_monthly_payment_date', 'cc_type', 'account_number', 'currency_id', 'BIC', 'include_net_worth'];
     /** @var array */
     protected $validFields = ['account_number', 'currency_id', 'BIC', 'interest', 'interest_period', 'include_net_worth'];
+    /** @var array */
+    private $canHaveVirtual;
+    /** @var User */
+    private $user;
 
     /**
      * AccountFactory constructor.
@@ -73,8 +72,8 @@ class AccountFactory
     /**
      * @param array $data
      *
-     * @return Account
      * @throws FireflyException
+     * @return Account
      */
     public function create(array $data): Account
     {
@@ -99,23 +98,23 @@ class AccountFactory
                 'user_id'         => $this->user->id,
                 'account_type_id' => $type->id,
                 'name'            => $data['name'],
-                'virtual_balance' => $data['virtual_balance'] ?? '0',
+                'virtual_balance' => $data['virtual_balance'] ?? null,
                 'active'          => true === $data['active'],
                 'iban'            => $data['iban'],
             ];
 
-            $currency = $this->getCurrency((int)($data['currency_id'] ?? null), (string)($data['currency_code'] ?? null));
+            $currency = $this->getCurrency((int) ($data['currency_id'] ?? null), (string) ($data['currency_code'] ?? null));
             unset($data['currency_code']);
             $data['currency_id'] = $currency->id;
 
             // remove virtual balance when not an asset account or a liability
             if (!in_array($type->type, $this->canHaveVirtual, true)) {
-                $databaseData['virtual_balance'] = '0';
+                $databaseData['virtual_balance'] = null;
             }
 
             // fix virtual balance when it's empty
-            if ('' === $databaseData['virtual_balance']) {
-                $databaseData['virtual_balance'] = '0';
+            if ('' === (string)$databaseData['virtual_balance']) {
+                $databaseData['virtual_balance'] = null;
             }
 
             $return = Account::create($databaseData);
@@ -131,6 +130,9 @@ class AccountFactory
                 }
             }
             $this->updateNote($return, $data['notes'] ?? '');
+
+            // store location
+            $this->storeNewLocation($return, $data);
         }
 
         return $return;
@@ -154,8 +156,8 @@ class AccountFactory
      * @param string $accountName
      * @param string $accountType
      *
-     * @return Account
      * @throws FireflyException
+     * @return Account
      */
     public function findOrCreate(string $accountName, string $accountType): Account
     {
@@ -192,7 +194,7 @@ class AccountFactory
     }
 
     /**
-     * @param int|null $accountTypeId
+     * @param int|null    $accountTypeId
      * @param null|string $accountType
      *
      * @return AccountType|null
@@ -200,7 +202,7 @@ class AccountFactory
      */
     protected function getAccountType(?int $accountTypeId, ?string $accountType): ?AccountType
     {
-        $accountTypeId = (int)$accountTypeId;
+        $accountTypeId = (int) $accountTypeId;
         $result        = null;
         if ($accountTypeId > 0) {
             $result = AccountType::find($accountTypeId);

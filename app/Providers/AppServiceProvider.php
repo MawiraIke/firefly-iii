@@ -1,7 +1,7 @@
 <?php
 /**
  * AppServiceProvider.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,15 +26,18 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use URL;
+use Adldap\Laravel\Middleware\WindowsAuthenticate;
 
 /**
  * @codeCoverageIgnore
- * Class AppServiceProvider.
+ * Class AppServiceProvider
  */
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
+     *
+     * @return void
      */
     public function boot(): void
     {
@@ -42,10 +45,15 @@ class AppServiceProvider extends ServiceProvider
         if ('heroku' === config('app.env')) {
             URL::forceScheme('https');
         }
+        if (config('ldap_auth.identifiers.windows.enabled', false)) {
+            $this->app['router']->pushMiddlewareToGroup('web', WindowsAuthenticate::class);
+        }
     }
 
     /**
      * Register any application services.
+     *
+     * @return void
      */
     public function register(): void
     {

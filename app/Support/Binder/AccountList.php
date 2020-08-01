@@ -1,7 +1,7 @@
 <?php
 /**
  * AccountList.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -44,19 +44,16 @@ class AccountList implements BinderInterface
      */
     public static function routeBinder(string $value, Route $route): Collection
     {
-        //Log::debug(sprintf('Now in AccountList::routeBinder("%s")', $value));
         if (auth()->check()) {
-            //Log::debug('User is logged in.');
             $collection = new Collection;
             if ('allAssetAccounts' === $value) {
                 /** @var Collection $collection */
                 $collection = auth()->user()->accounts()
                                     ->leftJoin('account_types', 'account_types.id', '=', 'accounts.account_type_id')
-                                    ->where('account_types.type', AccountType::ASSET)
+                                    ->whereIn('account_types.type', [AccountType::ASSET, AccountType::LOAN, AccountType::DEBT, AccountType::MORTGAGE])
                                     ->orderBy('accounts.name', 'ASC')
                                     ->get(['accounts.*']);
             }
-
             if ('allAssetAccounts' !== $value) {
                 $incoming = array_map('\intval', explode(',', $value));
                 $list     = array_merge(array_unique($incoming), [0]);
@@ -66,7 +63,6 @@ class AccountList implements BinderInterface
                                     ->whereIn('accounts.id', $list)
                                     ->orderBy('accounts.name', 'ASC')
                                     ->get(['accounts.*']);
-                //Log::debug(sprintf('Collection length is %d', $collection->count()));
             }
 
             if ($collection->count() > 0) {

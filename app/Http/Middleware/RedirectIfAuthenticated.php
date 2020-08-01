@@ -1,7 +1,7 @@
 <?php
 /**
  * RedirectIfAuthenticated.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace FireflyIII\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -35,9 +36,9 @@ class RedirectIfAuthenticated
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     * @param string|null              $guard
+     * @param Request     $request
+     * @param Closure     $next
+     * @param string|null $guard
      *
      * @return mixed
      */

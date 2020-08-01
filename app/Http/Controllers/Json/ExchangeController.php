@@ -1,7 +1,7 @@
 <?php
 /**
  * ExchangeController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -73,7 +73,7 @@ class ExchangeController extends Controller
         $return['amount'] = null;
         if (null !== $request->get('amount')) {
             // assume amount is in "from" currency:
-            $return['amount'] = bcmul($request->get('amount'), (string)$rate->rate, 12);
+            $return['amount'] = bcmul($request->get('amount'), (string) $rate->rate, 12);
             // round to toCurrency decimal places:
             $return['amount'] = round($return['amount'], $toCurrency->decimal_places);
         }

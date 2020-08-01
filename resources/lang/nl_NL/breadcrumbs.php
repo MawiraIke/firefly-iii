@@ -2,7 +2,7 @@
 
 /**
  * breadcrumbs.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -51,9 +51,15 @@ return [
     'edit_journal'           => 'Wijzig transactie ":description"',
     'edit_reconciliation'    => 'Wijzig ":description"',
     'delete_journal'         => 'Verwijder transactie ":description"',
+    'delete_group'           => 'Verwijder transactie ":description"',
     'tags'                   => 'Tags',
     'createTag'              => 'Maak nieuwe tag',
     'edit_tag'               => 'Wijzig tag ":tag"',
     'delete_tag'             => 'Verwijder tag ":tag"',
     'delete_journal_link'    => 'Verwijder koppeling tussen transacties',
+    'telemetry_index'        => 'Telemetrie',
+    'telemetry_view'         => 'Bekijk telemetrie',
+    'edit_object_group'      => 'Wijzig groep ":title"',
+    'delete_object_group'    => 'Verwijder groep ":title"',
+    'logout_others'          => 'Andere sessies afmelden'
 ];

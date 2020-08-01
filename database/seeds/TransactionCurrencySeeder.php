@@ -1,7 +1,7 @@
 <?php
 /**
  * TransactionCurrencySeeder.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,7 +24,7 @@ use FireflyIII\Models\TransactionCurrency;
 use Illuminate\Database\Seeder;
 
 /**
- * Class TransactionCurrencySeeder
+ * Class TransactionCurrencySeeder.
  */
 class TransactionCurrencySeeder extends Seeder
 {
@@ -60,7 +60,7 @@ class TransactionCurrencySeeder extends Seeder
 
         // asian currencies
         $currencies[] = ['code' => 'JPY', 'name' => 'Japanese yen', 'symbol' => '¥', 'decimal_places' => 2];
-        $currencies[] = ['code' => 'RMB', 'name' => 'Chinese yuan', 'symbol' => '元', 'decimal_places' => 2];
+        $currencies[] = ['code' => 'RMB', 'name' => 'Chinese yuan', 'symbol' => '¥', 'decimal_places' => 2];
         $currencies[] = ['code' => 'RUB', 'name' => 'Russian ruble ', 'symbol' => '₽', 'decimal_places' => 2];
         $currencies[] = ['code' => 'INR', 'name' => 'Indian rupee', 'symbol' => '₹', 'decimal_places' => 2];
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * AvailableBudgetController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -92,7 +92,7 @@ class AvailableBudgetController extends Controller
         $manager = $this->getManager();
 
         // types to get, page size:
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
 
         $start = $this->parameters->get('start');
         $end   = $this->parameters->get('end');

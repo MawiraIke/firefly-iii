@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Tipo',
     'lastActivity'            => 'Actividad más reciente',
     'balanceDiff'             => 'Diferencia de saldo',
-    'matchesOn'               => 'Encontrado en',
     'other_meta_data'         => 'Otros metadatos',
     'account_type'            => 'Tipo de cuenta',
     'created_at'              => 'Fecha de creación',
     'account'                 => 'Cuenta',
     'matchingAmount'          => 'Cantidad',
-    'split_number'            => 'División #',
     'destination'             => 'Destino',
     'source'                  => 'Origen',
     'next_expected_match'     => 'Próxima coincidencia esperada',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Repetición:',
     'description'             => 'Descripción',
     'amount'                  => 'Monto',
-    'internal_reference'      => 'Referencia interna',
     'date'                    => 'Fecha',
     'interest_date'           => 'Tasa de interés',
     'book_date'               => 'Libro fecha',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Fecha de vencimiento',
     'payment_date'            => 'Fecha de pago',
     'invoice_date'            => 'Fecha de facturación',
-    'interal_reference'       => 'Referencia interna',
+    'internal_reference'      => 'Referencia interna',
     'notes'                   => 'Notas',
     'from'                    => 'Desde',
     'piggy_bank'              => 'Alcancilla',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Núm. de datos adjuntos',
     'bills_count'             => 'Número de facturas',
     'categories_count'        => 'Número de categorías',
-    'import_jobs_count'       => 'Número de operaciones de importación',
     'budget_count'            => 'Número de presupuestos',
     'rule_and_groups_count'   => 'Número de reglas y grupos de reglas',
     'tags_count'              => 'Número de etiquetas',
@@ -105,11 +101,8 @@ return [
     'sum_withdrawals'         => 'Suma de retiros',
     'sum_deposits'            => 'Suma de depositos',
     'sum_transfers'           => 'Suma de transferencias',
-    'sum_reconciliations'     => 'Sum of reconciliations',
+    'sum_reconciliations'     => 'Suma de reconciliaciones',
     'reconcile'               => 'Reconciliar',
-    'account_on_spectre'      => 'Cuenta (espectro)',
-    'account_on_ynab'         => 'Cuenta (YNAB)',
-    'do_import'               => 'Importar desde esta cuenta',
     'sepa_ct_id'              => 'Identificador de extremo a extremo SEPA',
     'sepa_ct_op'              => 'Identificador de cuenta opuesta SEPA',
     'sepa_db'                 => 'Identificador de mandato SEPA',

@@ -1,7 +1,7 @@
 <?php
 /**
  * ReportGeneratorFactory.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -39,9 +39,9 @@ class ReportGeneratorFactory
      * @param Carbon $start
      * @param Carbon $end
      *
+     * @throws FireflyException
      * @return ReportGeneratorInterface
      *
-     * @throws FireflyException
      */
     public static function reportGenerator(string $type, Carbon $start, Carbon $end): ReportGeneratorInterface
     {

@@ -1,7 +1,7 @@
 <?php
 /**
  * BudgetDestroyService.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -49,10 +49,16 @@ class BudgetDestroyService
      */
     public function destroy(Budget $budget): void
     {
+
         try {
             $budget->delete();
         } catch (Exception $e) { // @codeCoverageIgnore
             Log::error(sprintf('Could not delete budget: %s', $e->getMessage())); // @codeCoverageIgnore
+        }
+
+        // also delete auto budget:
+        foreach ($budget->autoBudgets()->get() as $autoBudget) {
+            $autoBudget->delete();
         }
 
         // also delete all relations between categories and transaction journals:
@@ -60,5 +66,8 @@ class BudgetDestroyService
 
         // also delete all relations between categories and transactions:
         DB::table('budget_transaction')->where('budget_id', (int)$budget->id)->delete();
+
+        // also delete all budget limits
+        $budget->budgetlimits()->delete();
     }
 }

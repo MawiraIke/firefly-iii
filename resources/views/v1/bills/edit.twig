@@ -17,7 +17,11 @@
                     <h3 class="box-title">{{ 'mandatoryFields'|_ }}</h3>
                 </div>
                 <div class="box-body">
-                    {{ ExpandedForm.text('name') }}
+                    {% if rules.count > 0 %}
+                        {{ ExpandedForm.text('name',null, {helpText: trans_choice('firefly.bill_edit_rules', rules.count)}) }}
+                    {% else %}
+                        {{ ExpandedForm.text('name') }}
+                    {% endif %}
                     {{ CurrencyForm.currencyList('transaction_currency_id') }}
                     {{ ExpandedForm.amountNoCurrency('amount_min') }}
                     {{ ExpandedForm.amountNoCurrency('amount_max') }}
@@ -37,11 +41,16 @@
                     {{ ExpandedForm.textarea('notes',null,{helpText: trans('firefly.field_supports_markdown')}) }}
                     {{ ExpandedForm.file('attachments[]', {'multiple': 'multiple','helpText': trans('firefly.upload_max_file_size', {'size': uploadSize|filesize}) }) }}
                     {{ ExpandedForm.integer('skip') }}
+                    {{ ExpandedForm.objectGroup() }}
                     {# only correct way to do active checkbox #}
                     {{ ExpandedForm.checkbox('active', 1) }}
 
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ 'options'|_ }}</h3>
@@ -57,7 +66,7 @@
             </div>
         </div>
     </div>
-    {{ Form.close|raw }}
+    </form>
 
 {% endblock %}
 {% block styles %}
@@ -66,8 +75,12 @@
     <link href="v1/css/jquery-ui/jquery-ui.theme.min.css?v={{ FF_VERSION }}" type="text/css" rel="stylesheet" media="all">
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="v1/js/lib/bootstrap-tagsinput.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/modernizr-custom.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/jquery-ui.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/accounts/edit.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/js/lib/bootstrap-tagsinput.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/modernizr-custom.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/jquery-ui.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/accounts/edit.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+
+    {# auto complete for object groups #}
+    <script type="text/javascript" src="v1/js/lib/typeahead/typeahead.bundle.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/object-groups/create-edit.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}

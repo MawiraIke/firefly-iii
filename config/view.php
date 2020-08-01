@@ -1,7 +1,7 @@
 <?php
 /**
  * view.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | View Storage Paths
@@ -36,7 +34,7 @@ return [
     */
 
     'paths' => [
-        realpath(base_path(sprintf('resources/views/%s', env('FFIII_LAYOUT', 'v1')))),
+        realpath(base_path(sprintf('resources/views/%s', env('FIREFLY_III_LAYOUT', 'v1')))),
     ],
 
     /*
@@ -50,6 +48,6 @@ return [
     |
     */
 
-    'compiled' => realpath(storage_path(sprintf('framework/views/%s', env('FFIII_LAYOUT', 'v1')))),
+    'compiled' => realpath(storage_path(sprintf('framework/views/%s', env('FIREFLY_III_LAYOUT', 'v1')))),
 
 ];

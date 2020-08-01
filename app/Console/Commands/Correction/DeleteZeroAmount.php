@@ -1,7 +1,7 @@
 <?php
 /**
  * DeleteZeroAmount.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -49,6 +49,7 @@ class DeleteZeroAmount extends Command
 
     /**
      * Execute the console command.
+     *
      * @return int
      */
     public function handle(): int

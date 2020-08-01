@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Type',
     'lastActivity'            => 'Siste aktivitet',
     'balanceDiff'             => 'Saldodifferanse',
-    'matchesOn'               => 'Traff på',
     'other_meta_data'         => 'Other meta data',
     'account_type'            => 'Kontotype',
     'created_at'              => 'Opprettet',
     'account'                 => 'Konto',
     'matchingAmount'          => 'Beløp',
-    'split_number'            => 'Del #',
     'destination'             => 'Mål',
     'source'                  => 'Kilde',
     'next_expected_match'     => 'Neste forventede treff',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Gjentas',
     'description'             => 'Beskrivelse',
     'amount'                  => 'Beløp',
-    'internal_reference'      => 'Intern referanse',
     'date'                    => 'Dato',
     'interest_date'           => 'Rentedato',
     'book_date'               => 'Bokføringsdato',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Forfallsdato',
     'payment_date'            => 'Betalingsdato',
     'invoice_date'            => 'Fakturadato',
-    'interal_reference'       => 'Intern referanse',
+    'internal_reference'      => 'Internal reference',
     'notes'                   => 'Notater',
     'from'                    => 'Fra',
     'piggy_bank'              => 'Sparegris',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Antall vedlegg',
     'bills_count'             => 'Antall regninger',
     'categories_count'        => 'Antall kategorier',
-    'import_jobs_count'       => 'Antall importjobber',
     'budget_count'            => 'Antall budsjetter',
     'rule_and_groups_count'   => 'Antall regler og regelgrupper',
     'tags_count'              => 'Antall tagger',
@@ -107,9 +103,6 @@ return [
     'sum_transfers'           => 'Sum av overføringer',
     'sum_reconciliations'     => 'Sum of reconciliations',
     'reconcile'               => 'Avstem',
-    'account_on_spectre'      => 'Konto (Spectre)',
-    'account_on_ynab'         => 'Konto (YNAB)',
-    'do_import'               => 'Importer fra denne kontoen',
     'sepa_ct_id'              => 'SEPA ende-til-ende identifikator',
     'sepa_ct_op'              => 'SEPA Motstående kontoidentifikator',
     'sepa_db'                 => 'SEPA Mandat identifikator',

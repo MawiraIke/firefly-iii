@@ -1,6 +1,6 @@
 <!--
   - Tags.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -22,16 +22,30 @@
     <div class="form-group"
          v-bind:class="{ 'has-error': hasError()}"
     >
+        <div class="col-sm-12 text-sm">
+            {{ $t('firefly.tags') }}
+        </div>
         <div class="col-sm-12">
+            <div class="input-group">
             <vue-tags-input
                     v-model="tag"
                     :tags="tags"
+                    :title="$t('firefly.tags')"
                     classes="form-input"
                     :autocomplete-items="autocompleteItems"
                     :add-only-from-autocomplete="false"
                     @tags-changed="update"
                     v-bind:placeholder="$t('firefly.tags')"
             />
+                <span class="input-group-btn">
+                <button
+                        v-on:click="clearTags"
+                        tabIndex="-1"
+                        class="btn btn-default"
+                        type="button"><i class="fa fa-trash-o"></i></button>
+                </span>
+            </div>
+            </div>
             <ul class="list-unstyled" v-for="error in this.error">
                 <li class="text-danger">{{ error }}</li>
             </ul>
@@ -65,6 +79,9 @@
                 this.autocompleteItems = [];
                 this.tags = newTags;
                 this.$emit('input', this.tags);
+            },
+            clearTags() {
+                this.tags = [];
             },
             hasError: function () {
                 return this.error.length > 0;

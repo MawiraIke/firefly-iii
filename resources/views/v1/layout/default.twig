@@ -41,13 +41,12 @@
     {# Any local custom CSS.  #}
     {% block styles %}{% endblock %}
     <!--[if lt IE 9]>
-    <script src="v1/js/lib/html5shiv.min.js?v={{ FF_VERSION }}"></script>
-    <script src="v1/js/lib/respond.min.js?v={{ FF_VERSION }}"></script>
+    <script src="v1/js/lib/html5shiv.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script src="v1/js/lib/respond.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
     <![endif]-->
 
     {# this entry is in the header so it's loaded early #}
-    {# SHA256: C45493A8175B10AC47EEDFC7C20AC31FAE5C804FB6C4F75468DB0F95112664BF #}
-    <script type="text/javascript">var forceDemoOff = false;</script>
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">var forceDemoOff = false;</script>
 
     {# favicons #}
     {% include('partials.favicons') %}
@@ -85,13 +84,11 @@
                         </span>
                     </li>
 
-                    {% if not SANDSTORM %}
-                        <li class="dropdown user user-menu">
-                        <span style="cursor:default;color:#fff;padding: 15px;display: block;line-height: 20px;">
-                            <span class="hidden-xs">{{ Auth.user.email }}</span>
-                        </span>
-                        </li>
-                    {% endif %}
+                    <li class="dropdown user user-menu">
+                    <span style="cursor:default;color:#fff;padding: 15px;display: block;line-height: 20px;">
+                        <span class="hidden-xs">{{ Auth.user.email }}</span>
+                    </span>
+                    </li>
                     <li id="sidebar-toggle">
                         <a href="#" data-toggle="control-sidebar"><i class="fa fa-plus-circle"></i></a>
                     </li>
@@ -137,13 +134,13 @@
         </section>
     </div>
     <footer class="main-footer">
-        <div class="pull-right hidden-xs">
-            <b>{{ 'version'|_ }}</b> <a href="{{ route('debug') }}">{{ Config.get('firefly.version') }}</a>
+        <div class="pull-right">
+            <b class="hidden-xs">{{ 'version'|_ }}</b> <a href="{{ route('debug') }}">{{ Config.get('firefly.version') }}</a>
         </div>
         <strong><a href="https://github.com/firefly-iii/firefly-iii">Firefly III</a></strong>
-        <small class="text-muted">Developed by James Cole, the source code is licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a>.</small>
-        {% if FF_IS_ALPHA %}<small class="text-danger"><br>You are running an ALPHA version. Be wary of bugs and issues.</small>{% endif %}
-        {% if FF_IS_BETA %}<small class="text-warning"><br>You are running an BETA version. Be wary of bugs and issues.</small>{% endif %}
+        <small class="text-muted">&copy; James Cole, <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a>.</small>
+        {% if FF_IS_ALPHA %}<small class="text-danger hidden-xs"><br>{{ 'is_alpha_warning'|_ }}</small>{% endif %}
+        {% if FF_IS_BETA %}<small class="text-warning hidden-xs"><br>{{ 'is_beta_warning'|_ }}</small>{% endif %}
     </footer>
 
     {% include('partials.control-bar') %}
@@ -176,46 +173,56 @@
 {# Java libraries and stuff: #}
 
 {# Moment JS #}
-<script src="v1/js/lib/moment.min.js?v={{ FF_VERSION }}" type="text/javascript"></script>
-<script src="v1/js/ff/moment/{{ language }}.js?v={{ FF_VERSION }}" type="text/javascript"></script>
+<script src="v1/js/lib/moment.min.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+<script src="v1/js/ff/moment/{{ language }}.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
 
 {# All kinds of variables. #}
-<script src="{{ route('javascript.variables') }}?ext=.js&amp;v={{ FF_VERSION }}{% if account %}&amp;account={{ account.id }}{% endif %}" type="text/javascript"></script>
+<script src="{{ route('javascript.variables') }}?ext=.js&amp;v={{ FF_VERSION }}{% if account %}&amp;account={{ account.id }}{% endif %}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
 
-{# big fat JS thing courtesy of Vue#}
-<script src="v1/js/app.js?v={{ FF_VERSION }}" type="text/javascript"></script>
+{# Base script: jquery and bootstrap #}
+<script src="v1/js/app.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+
+{# Vue scripts and components. Only loaded when needed #}
+{% if VUE_SCRIPT_NAME %}
+    <script src="v1/js/app_vue.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+    <script src="v1/js/{{ VUE_SCRIPT_NAME }}.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+{% endif %}
 
 {# date range picker, current template, etc.#}
-<script src="v1/js/lib/daterangepicker.js?v={{ FF_VERSION }}" type="text/javascript"></script>
-<script src="v1/lib/adminlte/js/adminlte.min.js?v={{ FF_VERSION }}" type="text/javascript"></script>
-<script type="text/javascript" src="v1/js/lib/accounting.min.js?v={{ FF_VERSION }}"></script>
+<script src="v1/js/lib/daterangepicker.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+<script src="v1/lib/adminlte/js/adminlte.min.js?v={{ FF_VERSION }}" type="text/javascript" nonce="{{ JS_NONCE }}"></script>
+<script type="text/javascript" src="v1/js/lib/accounting.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 
 {# Firefly III code#}
-<script type="text/javascript" src="v1/js/ff/firefly.js?v={{ FF_VERSION }}"></script>
-<script type="text/javascript" src="v1/js/ff/help.js?v={{ FF_VERSION }}"></script>
+<script type="text/javascript" src="v1/js/ff/firefly.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+<script type="text/javascript" src="v1/js/ff/help.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% if not shownDemo %}
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">
         var routeForTour = "{{ current_route_name }}";
         var routeStepsUri = "{{ route('json.intro', [current_route_name, objectType|default("")]) }}";
         var routeForFinishedTour = "{{ route('json.intro.finished', [current_route_name, objectType|default("")]) }}";
     </script>
-    <script type="text/javascript" src="v1/lib/intro/intro.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/intro/intro.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/lib/intro/intro.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/intro/intro.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endif %}
 {% block scripts %}{% endblock %}
 
-{% if config('firefly.analytics_id') != '' %}
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- This tag is only here because this instance of Firefly III was purposefully configured to include it -->
-    <!-- Your own installation will NOT include it -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('firefly.analytics_id')  }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', '{{ config('firefly.analytics_id')  }}');
+{% if config('firefly.tracker_site_id') != '' and config('firefly.tracker_url') != '' %}
+    <!-- This tracker tag is only here because this instance of Firefly III was purposefully configured to include it -->
+    <!-- Your own installation will NOT include it, unless you explicitely configure it to have it. -->
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">
+        var _paq = window._paq || [];
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+            var u="//{{ config('firefly.tracker_url') }}/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '{{ config('firefly.tracker_site_id') }}']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
     </script>
+    <noscript><p><img src="//{{ config('firefly.tracker_url') }}/matomo.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 {% endif %}
 
 </body>

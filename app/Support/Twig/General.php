@@ -1,7 +1,7 @@
 <?php
 /**
  * General.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -27,16 +27,15 @@ use FireflyIII\Models\Account;
 use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Repositories\User\UserRepositoryInterface;
 use League\CommonMark\CommonMarkConverter;
-use Log;
 use Route;
-use Twig_Extension;
-use Twig_SimpleFilter;
-use Twig_SimpleFunction;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 /**
  * Class TwigSupport.
  */
-class General extends Twig_Extension
+class General extends AbstractExtension
 {
     /**
      * @return array
@@ -61,6 +60,7 @@ class General extends Twig_Extension
             $this->activeRouteStrict(),
             $this->activeRoutePartial(),
             $this->activeRoutePartialObjectType(),
+            $this->menuOpenRoutePartial(),
             $this->formatDate(),
             $this->getMetaField(),
             $this->hasRole(),
@@ -71,13 +71,13 @@ class General extends Twig_Extension
      * Will return "active" when a part of the route matches the argument.
      * ie. "accounts" will match "accounts.index".
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function activeRoutePartial(): Twig_SimpleFunction
+    protected function activeRoutePartial(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'activeRoutePartial',
-            function (): string {
+            static function (): string {
                 $args  = func_get_args();
                 $route = $args[0]; // name of the route.
                 $name  = Route::getCurrentRoute()->getName() ?? '';
@@ -91,14 +91,37 @@ class General extends Twig_Extension
     }
 
     /**
-     * This function will return "active" when the current route matches the first argument (even partly)
-     * but, the variable $what has been set and matches the second argument.
+     * Will return "menu-open" when a part of the route matches the argument.
+     * ie. "accounts" will match "accounts.index".
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function activeRoutePartialObjectType(): Twig_SimpleFunction
+    protected function menuOpenRoutePartial(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
+            'menuOpenRoutePartial',
+            static function (): string {
+                $args  = func_get_args();
+                $route = $args[0]; // name of the route.
+                $name  = Route::getCurrentRoute()->getName() ?? '';
+                if (!(false === strpos($name, $route))) {
+                    return 'menu-open';
+                }
+
+                return '';
+            }
+        );
+    }
+
+    /**
+     * This function will return "active" when the current route matches the first argument (even partly)
+     * but, the variable $objectType has been set and matches the second argument.
+     *
+     * @return TwigFunction
+     */
+    protected function activeRoutePartialObjectType(): TwigFunction
+    {
+        return new TwigFunction(
             'activeRoutePartialObjectType',
             static function ($context): string {
                 [, $route, $objectType] = func_get_args();
@@ -118,13 +141,13 @@ class General extends Twig_Extension
      * Will return "active" when the current route matches the given argument
      * exactly.
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function activeRouteStrict(): Twig_SimpleFunction
+    protected function activeRouteStrict(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'activeRouteStrict',
-            function (): string {
+            static function (): string {
                 $args  = func_get_args();
                 $route = $args[0]; // name of the route.
 
@@ -140,15 +163,15 @@ class General extends Twig_Extension
     /**
      * Show account balance. Only used on the front page of Firefly III.
      *
-     * @return Twig_SimpleFilter
+     * @return TwigFilter
      */
-    protected function balance(): Twig_SimpleFilter
+    protected function balance(): TwigFilter
     {
-        return new Twig_SimpleFilter(
+        return new TwigFilter(
             'balance',
             static function (?Account $account): string {
                 if (null === $account) {
-                    return 'NULL';
+                    return '0';
                 }
                 /** @var Carbon $date */
                 $date = session('end', Carbon::now()->endOfMonth());
@@ -161,11 +184,11 @@ class General extends Twig_Extension
     /**
      * Formats a string as a thing by converting it to a Carbon first.
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function formatDate(): Twig_SimpleFunction
+    protected function formatDate(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'formatDate',
             function (string $date, string $format): string {
                 $carbon = new Carbon($date);
@@ -178,13 +201,13 @@ class General extends Twig_Extension
     /**
      * Used to convert 1024 to 1kb etc.
      *
-     * @return Twig_SimpleFilter
+     * @return TwigFilter
      */
-    protected function formatFilesize(): Twig_SimpleFilter
+    protected function formatFilesize(): TwigFilter
     {
-        return new Twig_SimpleFilter(
+        return new TwigFilter(
             'filesize',
-            function (int $size): string {
+            static function (int $size): string {
                 // less than one GB, more than one MB
                 if ($size < (1024 * 1024 * 2014) && $size >= (1024 * 1024)) {
                     return round($size / (1024 * 1024), 2) . ' MB';
@@ -201,11 +224,11 @@ class General extends Twig_Extension
     }
 
     /**
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function getMetaField(): Twig_SimpleFunction
+    protected function getMetaField(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'accountGetMetaField',
             static function (Account $account, string $field): string {
                 /** @var AccountRepositoryInterface $repository */
@@ -223,11 +246,11 @@ class General extends Twig_Extension
     /**
      * Will return true if the user is of role X.
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function hasRole(): Twig_SimpleFunction
+    protected function hasRole(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'hasRole',
             static function (string $role): bool {
                 $repository = app(UserRepositoryInterface::class);
@@ -241,11 +264,11 @@ class General extends Twig_Extension
     }
 
     /**
-     * @return Twig_SimpleFilter
+     * @return TwigFilter
      */
-    protected function markdown(): Twig_SimpleFilter
+    protected function markdown(): TwigFilter
     {
-        return new Twig_SimpleFilter(
+        return new TwigFilter(
             'markdown',
             static function (string $text): string {
                 $converter = new CommonMarkConverter;
@@ -258,11 +281,11 @@ class General extends Twig_Extension
     /**
      * Show icon with attachment.
      *
-     * @return Twig_SimpleFilter
+     * @return TwigFilter
      */
-    protected function mimeIcon(): Twig_SimpleFilter
+    protected function mimeIcon(): TwigFilter
     {
-        return new Twig_SimpleFilter(
+        return new TwigFilter(
             'mimeIcon',
             static function (string $string): string {
                 switch ($string) {
@@ -337,11 +360,11 @@ class General extends Twig_Extension
     /**
      * Basic example thing for some views.
      *
-     * @return Twig_SimpleFunction
+     * @return TwigFunction
      */
-    protected function phpdate(): Twig_SimpleFunction
+    protected function phpdate(): TwigFunction
     {
-        return new Twig_SimpleFunction(
+        return new TwigFunction(
             'phpdate',
             static function (string $str): string {
                 return date($str);

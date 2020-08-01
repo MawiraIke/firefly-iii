@@ -2,7 +2,7 @@
 
 /**
  * Handler.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -33,9 +33,9 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException as LaravelValidationException;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Illuminate\Http\Request;
+use Throwable;
 /**
  * Class Handler
  *
@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
      *
      * @return mixed
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         if ($exception instanceof LaravelValidationException && $request->expectsJson()) {
             // ignore it: controller will handle it.
@@ -82,15 +82,17 @@ class Handler extends ExceptionHandler
                         'line'      => $exception->getLine(),
                         'file'      => $exception->getFile(),
                         'trace'     => $exception->getTrace(),
-                    ], 500
+                    ],
+                    500
                 );
             }
 
-            return response()->json(['message' => 'Internal Firefly III Exception. See log files.', 'exception' => get_class($exception)], 500);
+            return response()->json(['message' => sprintf('Internal Firefly III Exception: %s', $exception->getMessage()), 'exception' => get_class($exception)], 500);
         }
 
-        if($exception instanceof NotFoundHttpException) {
+        if ($exception instanceof NotFoundHttpException) {
             $handler = app(GracefulNotFoundHandler::class);
+
             return $handler->render($request, $exception);
         }
 
@@ -113,13 +115,12 @@ class Handler extends ExceptionHandler
      *
      * @param Exception $exception
      *
-     * @return mixed|void
-     *
      * @throws Exception
+     *
+     * @return void
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
-
         $doMailError = config('firefly.send_error_message');
         // if the user wants us to mail:
         if (true === $doMailError
@@ -142,14 +143,14 @@ class Handler extends ExceptionHandler
                 'line'         => $exception->getLine(),
                 'code'         => $exception->getCode(),
                 'version'      => config('firefly.version'),
-                'url'          => Request::fullUrl(),
-                'userAgent'    => Request::userAgent(),
-                'json'         => Request::acceptsJson(),
+                'url'          => request()->fullUrl(),
+                'userAgent'    => request()->userAgent(),
+                'json'         => request()->acceptsJson(),
             ];
 
             // create job that will mail.
-            $ipAddress = Request::ip() ?? '0.0.0.0';
-            $job       = new MailError($userData, (string)config('firefly.site_owner'), $ipAddress, $data);
+            $ipAddress = request()->ip() ?? '0.0.0.0';
+            $job       = new MailError($userData, (string) config('firefly.site_owner'), $ipAddress, $data);
             dispatch($job);
         }
 

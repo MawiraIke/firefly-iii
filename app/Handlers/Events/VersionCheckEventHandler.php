@@ -1,7 +1,7 @@
 <?php
 /**
  * VersionCheckEventHandler.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,7 +26,6 @@ namespace FireflyIII\Handlers\Events;
 
 
 use FireflyIII\Events\RequestedVersionCheckStatus;
-use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Helpers\Update\UpdateTrait;
 use FireflyIII\Models\Configuration;
 use FireflyIII\Repositories\User\UserRepositoryInterface;
@@ -49,10 +48,13 @@ class VersionCheckEventHandler
     public function checkForUpdates(RequestedVersionCheckStatus $event): void
     {
         Log::debug('Now in checkForUpdates()');
-        // in Sandstorm, cannot check for updates:
-        $sandstorm = 1 === (int)getenv('SANDSTORM');
-        if (true === $sandstorm) {
-            Log::debug('This is Sandstorm instance, done.');
+
+        // should not check for updates:
+        $permission = app('fireflyconfig')->get('permission_update_check', -1);
+        $value      = (int) $permission->data;
+        if (1 !== $value) {
+            Log::info('Update check is not enabled.');
+            $this->warnToCheckForUpdates($event);
 
             return;
         }
@@ -79,21 +81,41 @@ class VersionCheckEventHandler
         }
         // last check time was more than a week ago.
         Log::debug('Have not checked for a new version in a week!');
-        try {
-            $latestRelease = $this->getLatestRelease();
-        } catch (FireflyException $e) {
-            Log::error($e);
-            session()->flash('error', (string)trans('firefly.update_check_error'));
+        $release = $this->getLatestRelease();
 
-            // softfail.
+        session()->flash($release['level'], $release['message']);
+        app('fireflyconfig')->set('last_update_check', time());
+    }
+
+    /**
+     * @param RequestedVersionCheckStatus $event
+     */
+    protected function warnToCheckForUpdates(RequestedVersionCheckStatus $event): void
+    {
+        /** @var UserRepositoryInterface $repository */
+        $repository = app(UserRepositoryInterface::class);
+        /** @var User $user */
+        $user = $event->user;
+        if (!$repository->hasRole($user, 'owner')) {
+            Log::debug('User is not admin, done.');
+
             return;
         }
-        $versionCheck  = $this->versionCheck($latestRelease);
-        $resultString  = $this->parseResult($versionCheck, $latestRelease);
-        if (0 !== $versionCheck && '' !== $resultString) {
-            // flash info
-            session()->flash('info', $resultString);
+
+        /** @var Configuration $lastCheckTime */
+        $lastCheckTime = app('fireflyconfig')->get('last_update_warning', time());
+        $now           = time();
+        $diff          = $now - $lastCheckTime->data;
+        Log::debug(sprintf('Last warning time is %d, current time is %d, difference is %d', $lastCheckTime->data, $now, $diff));
+        if ($diff < 604800 * 4) {
+            Log::debug(sprintf('Warned about updates less than four weeks ago (on %s).', date('Y-m-d H:i:s', $lastCheckTime->data)));
+
+            return;
         }
-        app('fireflyconfig')->set('last_update_check', time());
+        // last check time was more than a week ago.
+        Log::debug('Have warned about a new version in four weeks!');
+
+        session()->flash('info', (string) trans('firefly.disabled_but_check'));
+        app('fireflyconfig')->set('last_update_warning', time());
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * BudgetRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,16 +26,20 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use FireflyIII\Exceptions\FireflyException;
+use FireflyIII\Models\Attachment;
+use FireflyIII\Models\AutoBudget;
 use FireflyIII\Models\Budget;
 use FireflyIII\Models\BudgetLimit;
 use FireflyIII\Models\RecurrenceTransactionMeta;
 use FireflyIII\Models\RuleAction;
 use FireflyIII\Models\RuleTrigger;
+use FireflyIII\Repositories\Currency\CurrencyRepositoryInterface;
 use FireflyIII\Services\Internal\Destroy\BudgetDestroyService;
 use FireflyIII\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Log;
+use Storage;
 
 /**
  * Class BudgetRepository.
@@ -77,6 +81,8 @@ class BudgetRepository implements BudgetRepositoryInterface
             $budget->order = $index + 1;
             $budget->save();
         }
+        // other budgets, set to 0.
+        $this->user->budgets()->where('active', 0)->update(['order' => 0]);
 
         return true;
     }
@@ -190,7 +196,6 @@ class BudgetRepository implements BudgetRepositoryInterface
                           ->orderBy('order', 'ASC')
                           ->orderBy('name', 'ASC')
                           ->get();
-
         return $set;
     }
 
@@ -200,7 +205,7 @@ class BudgetRepository implements BudgetRepositoryInterface
     public function getBudgets(): Collection
     {
         /** @var Collection $set */
-        $set = $this->user->budgets()->orderBy('order', 'DESC')
+        $set = $this->user->budgets()->orderBy('order', 'ASC')
                           ->orderBy('name', 'ASC')->get();
 
         return $set;
@@ -225,7 +230,7 @@ class BudgetRepository implements BudgetRepositoryInterface
     {
         /** @var Collection $set */
         $set = $this->user->budgets()
-                          ->orderBy('order', 'DESC')
+                          ->orderBy('order', 'ASC')
                           ->orderBy('name', 'ASC')->where('active', 0)->get();
 
         return $set;
@@ -243,7 +248,7 @@ class BudgetRepository implements BudgetRepositoryInterface
         if ('' !== $query) {
             $search->where('name', 'LIKE', sprintf('%%%s%%', $query));
         }
-        $search->orderBy('order', 'DESC')
+        $search->orderBy('order', 'ASC')
         ->orderBy('name', 'ASC')->where('active', 1);
 
         return $search->get();
@@ -275,16 +280,68 @@ class BudgetRepository implements BudgetRepositoryInterface
      */
     public function store(array $data): Budget
     {
+        $order = $this->getMaxOrder();
         try {
             $newBudget = Budget::create(
                 [
                     'user_id' => $this->user->id,
                     'name'    => $data['name'],
+                    'order'   => $order + 1,
                 ]
             );
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
             throw new FireflyException('400002: Could not store budget.');
         }
+
+        // try to create associated auto budget:
+        $type = $data['auto_budget_type'] ?? 0;
+        if (0 === $type) {
+            return $newBudget;
+        }
+        if ('reset' === $type) {
+            $type = AutoBudget::AUTO_BUDGET_RESET;
+        }
+        if ('rollover' === $type) {
+            $type = AutoBudget::AUTO_BUDGET_ROLLOVER;
+        }
+        $repos = app(CurrencyRepositoryInterface::class);
+        $currencyId = (int)($data['transaction_currency_id'] ?? 0);
+        $currencyCode = (string)($data['transaction_currency_code'] ?? '');
+
+        $currency = $repos->findNull($currencyId);
+        if(null === $currency) {
+            $currency = $repos->findByCodeNull($currencyCode);
+        }
+        if(null === $currency) {
+            $currency = app('amount')->getDefaultCurrencyByUser($this->user);
+        }
+
+        $autoBudget = new AutoBudget;
+        $autoBudget->budget()->associate($newBudget);
+        $autoBudget->transaction_currency_id = $currency->id;
+        $autoBudget->auto_budget_type        = $type;
+        $autoBudget->amount                  = $data['auto_budget_amount'] ?? '1';
+        $autoBudget->period                  = $data['auto_budget_period'] ?? 'monthly';
+        $autoBudget->save();
+
+        // create initial budget limit.
+        $today = new Carbon;
+        $start = app('navigation')->startOfPeriod($today, $autoBudget->period);
+        $end   = app('navigation')->endOfPeriod($start, $autoBudget->period);
+
+        $limitRepos = app(BudgetLimitRepositoryInterface::class);
+        $limitRepos->setUser($this->user);
+        $limitRepos->store(
+            [
+                'budget_id'               => $newBudget->id,
+                'transaction_currency_id' => $autoBudget->transaction_currency_id,
+                'start_date'              => $start->format('Y-m-d'),
+                'end_date'                => $end->format('Y-m-d'),
+                'amount'                  => $autoBudget->amount,
+            ]
+        );
 
         return $newBudget;
     }
@@ -301,6 +358,49 @@ class BudgetRepository implements BudgetRepositoryInterface
         $budget->name   = $data['name'];
         $budget->active = $data['active'];
         $budget->save();
+
+        // update or create auto-budget:
+        $autoBudgetType = $data['auto_budget_type'] ?? 0;
+        if ('reset' === $autoBudgetType) {
+            $autoBudgetType = AutoBudget::AUTO_BUDGET_RESET;
+        }
+        if ('rollover' === $autoBudgetType) {
+            $autoBudgetType = AutoBudget::AUTO_BUDGET_ROLLOVER;
+        }
+        if ('none' === $autoBudgetType) {
+            $autoBudgetType = 0;
+        }
+        if (0 !== $autoBudgetType) {
+            $autoBudget = $this->getAutoBudget($budget);
+            if (null === $autoBudget) {
+                $autoBudget = new AutoBudget;
+                $autoBudget->budget()->associate($budget);
+            }
+
+            $repos = app(CurrencyRepositoryInterface::class);
+            $currencyId = (int)($data['transaction_currency_id'] ?? 0);
+            $currencyCode = (string)($data['transaction_currency_code'] ?? '');
+
+            $currency = $repos->findNull($currencyId);
+            if(null === $currency) {
+                $currency = $repos->findByCodeNull($currencyCode);
+            }
+            if(null === $currency) {
+                $currency = app('amount')->getDefaultCurrencyByUser($this->user);
+            }
+
+            $autoBudget->transaction_currency_id = $currency->id;
+            $autoBudget->auto_budget_type        = $autoBudgetType;
+            $autoBudget->amount                  = $data['auto_budget_amount'] ?? '0';
+            $autoBudget->period                  = $data['auto_budget_period'] ?? 'monthly';
+            $autoBudget->save();
+        }
+        if (0 === $autoBudgetType) {
+            $autoBudget = $this->getAutoBudget($budget);
+            if (null !== $autoBudget) {
+                $this->destroyAutoBudget($budget);
+            }
+        }
         $this->updateRuleTriggers($oldName, $data['name']);
         $this->updateRuleActions($oldName, $data['name']);
         app('preferences')->mark();
@@ -364,5 +464,52 @@ class BudgetRepository implements BudgetRepositoryInterface
             RuleAction::where('action_type', 'set_budget')->where('action_value', $budget->id)->delete();
             $budget->delete();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAutoBudget(Budget $budget): ?AutoBudget
+    {
+        return $budget->autoBudgets()->first();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function destroyAutoBudget(Budget $budget): void
+    {
+        /** @var AutoBudget $autoBudget */
+        foreach ($budget->autoBudgets()->get() as $autoBudget) {
+            $autoBudget->delete();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttachments(Budget $budget): Collection
+    {
+        $set = $budget->attachments()->get();
+
+        /** @var Storage $disk */
+        $disk = Storage::disk('upload');
+
+        $set = $set->each(
+            static function (Attachment $attachment) use ($disk) {
+                $notes                   = $attachment->notes()->first();
+                $attachment->file_exists = $disk->exists($attachment->fileName());
+                $attachment->notes       = $notes ? $notes->text : '';
+
+                return $attachment;
+            }
+        );
+
+        return $set;
+    }
+
+    public function getMaxOrder(): int
+    {
+        return (int)$this->user->budgets()->max('order');
     }
 }

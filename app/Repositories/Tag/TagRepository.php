@@ -1,7 +1,7 @@
 <?php
 /**
  * TagRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,12 +26,16 @@ use Carbon\Carbon;
 use DB;
 use FireflyIII\Factory\TagFactory;
 use FireflyIII\Helpers\Collector\GroupCollectorInterface;
+use FireflyIII\Models\Attachment;
+use FireflyIII\Models\Location;
+use FireflyIII\Models\RuleAction;
+use FireflyIII\Models\RuleTrigger;
 use FireflyIII\Models\Tag;
 use FireflyIII\Models\TransactionType;
 use FireflyIII\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Log;
+use Storage;
 
 /**
  * Class TagRepository.
@@ -72,6 +76,19 @@ class TagRepository implements TagRepositoryInterface
         $tag->delete();
 
         return true;
+    }
+
+    /**
+     * Destroy all tags.
+     */
+    public function destroyAll(): void
+    {
+        $tags = $this->get();
+        /** @var Tag $tag */
+        foreach ($tags as $tag) {
+            DB::table('tag_transaction_journal')->where('tag_id', $tag->id)->delete();
+            $tag->delete();
+        }
     }
 
     /**
@@ -154,6 +171,51 @@ class TagRepository implements TagRepositoryInterface
         $tags = $this->user->tags()->orderBy('tag', 'ASC')->get();
 
         return $tags;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLocation(Tag $tag): ?Location
+    {
+        return $tag->locations()->first();
+    }
+
+    /**
+     * @param int|null $year
+     *
+     * @return Collection
+     */
+    public function getTagsInYear(?int $year): array
+    {
+        // get all tags in the year (if present):
+        $tagQuery = $this->user->tags()->with(['locations', 'attachments'])->orderBy('tags.tag');
+
+        // add date range (or not):
+        if (null === $year) {
+            Log::debug('Get tags without a date.');
+            $tagQuery->whereNull('tags.date');
+        }
+
+        if (null !== $year) {
+            Log::debug(sprintf('Get tags with year %s.', $year));
+            $tagQuery->where('tags.date', '>=', $year . '-01-01 00:00:00')->where('tags.date', '<=', $year . '-12-31 23:59:59');
+        }
+        $collection = $tagQuery->get();
+        $return     = [];
+        /** @var Tag $tag */
+        foreach ($collection as $tag) {
+            // return value for tag cloud:
+            $return[$tag->id] = [
+                'tag'         => $tag->tag,
+                'id'          => $tag->id,
+                'created_at'  => $tag->created_at,
+                'location'    => $tag->locations->first(),
+                'attachments' => $tag->attachments,
+            ];
+        }
+
+        return $return;
     }
 
     /**
@@ -327,11 +389,13 @@ class TagRepository implements TagRepositoryInterface
      * @param int|null $year
      *
      * @return array
+     * @deprecated
      */
     public function tagCloud(?int $year): array
     {
         // Some vars
-        $tags          = $this->getTagsInYear($year);
+        $tags = $this->getTagsInYear($year);
+
         $max           = $this->getMaxAmount($tags);
         $min           = $this->getMinAmount($tags);
         $diff          = bcsub($max, $min);
@@ -363,6 +427,7 @@ class TagRepository implements TagRepositoryInterface
                 'tag'        => $tag->tag,
                 'id'         => $tag->id,
                 'created_at' => $tag->created_at,
+                'location'   => $this->getLocation($tag),
             ];
         }
 
@@ -394,13 +459,39 @@ class TagRepository implements TagRepositoryInterface
      */
     public function update(Tag $tag, array $data): Tag
     {
+        $oldTag           = $data['tag'];
         $tag->tag         = $data['tag'];
         $tag->date        = $data['date'];
         $tag->description = $data['description'];
-        $tag->latitude    = $data['latitude'];
-        $tag->longitude   = $data['longitude'];
-        $tag->zoomLevel   = $data['zoom_level'];
+        $tag->latitude    = null;
+        $tag->longitude   = null;
+        $tag->zoomLevel   = null;
         $tag->save();
+
+        // update, delete or create location:
+        $updateLocation = $data['update_location'] ?? false;
+
+        // location must be updated?
+        if (true === $updateLocation) {
+            // if all set to NULL, delete
+            if (null === $data['latitude'] && null === $data['longitude'] && null === $data['zoom_level']) {
+                $tag->locations()->delete();
+            }
+
+            // otherwise, update or create.
+            if (!(null === $data['latitude'] && null === $data['longitude'] && null === $data['zoom_level'])) {
+                $location = $this->getLocation($tag);
+                if (null === $location) {
+                    $location = new Location;
+                    $location->locatable()->associate($tag);
+                }
+
+                $location->latitude   = $data['latitude'] ?? config('firefly.default_location.latitude');
+                $location->longitude  = $data['longitude'] ?? config('firefly.default_location.longitude');
+                $location->zoom_level = $data['zoom_level'] ?? config('firefly.default_location.zoom_level');
+                $location->save();
+            }
+        }
 
         return $tag;
     }
@@ -456,49 +547,66 @@ class TagRepository implements TagRepositoryInterface
     }
 
     /**
-     * @param int|null $year
-     *
-     * @return Collection
+     * @inheritDoc
      */
-    private function getTagsInYear(?int $year): Collection
+    public function getAttachments(Tag $tag): Collection
     {
-        // get all tags in the year (if present):
-        $tagQuery = $this->user->tags()
-                               ->leftJoin('tag_transaction_journal', 'tag_transaction_journal.tag_id', '=', 'tags.id')
-                               ->leftJoin('transaction_journals', 'tag_transaction_journal.transaction_journal_id', '=', 'transaction_journals.id')
-                               ->leftJoin('transactions', 'transaction_journals.id', '=', 'transactions.transaction_journal_id')
-                               ->where(
-                                   static function (Builder $query) {
-                                       $query->where('transactions.amount', '>', 0);
-                                       $query->orWhereNull('transactions.amount');
-                                   }
-                               )
-                               ->groupBy(['tags.id', 'tags.tag', 'tags.created_at']);
+        $set= $tag->attachments()->get();
+        /** @var Storage $disk */
+        $disk = Storage::disk('upload');
 
-        // add date range (or not):
-        if (null === $year) {
-            Log::debug('Get tags without a date.');
-            $tagQuery->whereNull('tags.date');
-        }
-        if (null !== $year) {
-            Log::debug(sprintf('Get tags with year %s.', $year));
-            $tagQuery->where('tags.date', '>=', $year . '-01-01 00:00:00')->where('tags.date', '<=', $year . '-12-31 23:59:59');
-        }
+        $set = $set->each(
+            static function (Attachment $attachment) use ($disk) {
+                $notes                   = $attachment->notes()->first();
+                $attachment->file_exists = $disk->exists($attachment->fileName());
+                $attachment->notes       = $notes ? $notes->text : '';
 
-        return $tagQuery->get(['tags.id', 'tags.tag','tags.created_at', DB::raw('SUM(transactions.amount) as amount_sum')]);
+                return $attachment;
+            }
+        );
 
+        return $set;
     }
 
     /**
-     * Destroy all tags.
+     * @param string $oldName
+     * @param string $newName
      */
-    public function destroyAll(): void
+    private function updateRuleActions(string $oldName, string $newName): void
     {
-        $tags = $this->get();
-        /** @var Tag $tag */
-        foreach ($tags as $tag) {
-            DB::table('tag_transaction_journal')->where('tag_id', $tag->id)->delete();
-            $tag->delete();
+        $types   = ['add_tag', 'remove_tag'];
+        $actions = RuleAction::leftJoin('rules', 'rules.id', '=', 'rule_actions.rule_id')
+                             ->where('rules.user_id', $this->user->id)
+                             ->whereIn('rule_actions.action_type', $types)
+                             ->where('rule_actions.action_value', $oldName)
+                             ->get(['rule_actions.*']);
+        Log::debug(sprintf('Found %d actions to update.', $actions->count()));
+        /** @var RuleAction $action */
+        foreach ($actions as $action) {
+            $action->action_value = $newName;
+            $action->save();
+            Log::debug(sprintf('Updated action %d: %s', $action->id, $action->action_value));
+        }
+    }
+
+    /**
+     * @param string $oldName
+     * @param string $newName
+     */
+    private function updateRuleTriggers(string $oldName, string $newName): void
+    {
+        $types    = ['tag_is',];
+        $triggers = RuleTrigger::leftJoin('rules', 'rules.id', '=', 'rule_triggers.rule_id')
+                               ->where('rules.user_id', $this->user->id)
+                               ->whereIn('rule_triggers.trigger_type', $types)
+                               ->where('rule_triggers.trigger_value', $oldName)
+                               ->get(['rule_triggers.*']);
+        Log::debug(sprintf('Found %d triggers to update.', $triggers->count()));
+        /** @var RuleTrigger $trigger */
+        foreach ($triggers as $trigger) {
+            $trigger->trigger_value = $newName;
+            $trigger->save();
+            Log::debug(sprintf('Updated trigger %d: %s', $trigger->id, $trigger->trigger_value));
         }
     }
 }

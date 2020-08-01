@@ -1,7 +1,7 @@
 <?php
 /**
  * FormSupport.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -159,7 +159,7 @@ trait FormSupport
      * @param $name
      * @param $options
      *
-     * @return mixed
+     * @return string
      */
     protected function label(string $name, array $options = null): string
     {

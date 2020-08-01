@@ -1,6 +1,6 @@
 /*
  * show.js
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -27,7 +27,13 @@ $(function () {
         makeAutoComplete();
     })
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('#clone_button').click(cloneNewFunction);
 });
+
+function cloneNewFunction() {
+    return confirm(newCloneInstructions);
+}
 
 function getLinkModal(e) {
     var button = $(e.currentTarget);

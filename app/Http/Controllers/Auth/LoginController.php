@@ -1,7 +1,7 @@
 <?php
 /**
  * LoginController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,9 +25,16 @@ namespace FireflyIII\Http\Controllers\Auth;
 use Adldap;
 use DB;
 use FireflyIII\Http\Controllers\Controller;
+use FireflyIII\Providers\RouteServiceProvider;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Log;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class LoginController
@@ -47,10 +54,12 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -58,28 +67,25 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+
     /**
-     * Log in a user.
+     * Handle a login request to the application.
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response|void
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
+     * @return RedirectResponse|\Illuminate\Http\Response|JsonResponse
+     *
      */
     public function login(Request $request)
     {
         Log::channel('audit')->info(sprintf('User is trying to login using "%s"', $request->get('email')));
         Log::info(sprintf('User is trying to login.'));
         if ('ldap' === config('auth.providers.users.driver')) {
-            /**
-             * Temporary bug fix for something that doesn't seem to work in
-             * AdLdap.
-             */
-            $schema = config('ldap.connections.default.schema');
-
             /** @var Adldap\Connections\Provider $provider */
-            Adldap::getProvider('default')->setSchema(new $schema);
+            Adldap::getProvider('default');
         }
+
         $this->validateLogin($request);
 
         /** Copied directly from AuthenticatesUsers, but with logging added: */
@@ -114,18 +120,17 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
-     * @param Request $request
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|\Illuminate\Http\Response|View
      */
     public function showLoginForm(Request $request)
     {
         $count         = DB::table('users')->count();
         $loginProvider = config('firefly.login_provider');
-        $title         = (string)trans('firefly.login_page_title');
+        $title         = (string) trans('firefly.login_page_title');
         if (0 === $count && 'eloquent' === $loginProvider) {
             return redirect(route('register')); // @codeCoverageIgnore
         }
+
 
         // is allowed to?
         $singleUserMode    = app('fireflyconfig')->get('single_user_mode', config('firefly.configuration.single_user_mode'))->data;
@@ -144,6 +149,62 @@ class LoginController extends Controller
         $email    = $request->old('email');
         $remember = $request->old('remember');
 
+        // todo must forget 2FA if user ends up here.
+
+
         return view('auth.login', compact('allowRegistration', 'email', 'remember', 'allowReset', 'title'));
     }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param Request $request
+     *
+     * @throws ValidationException
+     * @return Response
+     *
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $exception             = ValidationException::withMessages(
+            [
+                $this->username() => [trans('auth.failed')],
+            ]
+        );
+        $exception->redirectTo = route('login');
+
+        throw $exception;
+    }
+
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $authGuard = config('firefly.authentication_guard');
+        $logoutUri = config('firefly.custom_logout_uri');
+        if ('remote_user_guard' === $authGuard && '' !== $logoutUri) {
+            return redirect($logoutUri);
+        }
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new \Illuminate\Http\Response('', 204)
+            : redirect('/');
+    }
+
 }

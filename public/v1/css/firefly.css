@@ -1,6 +1,6 @@
 /*
  * firefly.css
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -87,7 +87,13 @@ p.tagcloud .label {
     line-height: 2;
 }
 
-.handle {
+.piggy-handle {
+    cursor: move;
+}
+.rule-handle {
+    cursor: move;
+}
+.bill-handle {
     cursor: move;
 }
 
@@ -106,26 +112,6 @@ body.waiting * {
     height: 100%;
     margin: 0;
     padding: 0;
-}
-
-.ff-error-page {
-    width: 1000px;
-    margin: 20px auto 0 auto;
-}
-
-.ff-error-page > .error-content {
-    margin-left: 190px;
-    display: block;
-}
-
-.ff-error-page > .error-content > h3 {
-    font-weight: 300;
-    font-size: 25px;
-}
-
-.ff-error-box {
-    width: 460px;
-    margin: 7% auto;
 }
 
 /* cursors */
@@ -152,7 +138,7 @@ body.waiting * {
 }
 
 .loading {
-    background: url('/images/loading-small.gif') no-repeat center center;
+    background: url('/v1/images/loading-small.gif') no-repeat center center;
     min-height: 30px;
 }
 

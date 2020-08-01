@@ -1,7 +1,7 @@
 <?php
 /**
  * Budget.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,50 +23,64 @@ declare(strict_types=1);
 namespace FireflyIII\Models;
 
 use Carbon\Carbon;
+use Eloquent;
 use FireflyIII\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class Budget.
  *
- * @property int         $id
- * @property string      $name
- * @property bool        $active
- * @property int         $user_id
- * @property-read string $email
- * @property bool        encrypted
- * @property Collection  budgetlimits
- * @property int         $order
- * @property Carbon      created_at
- * @property Carbon      updated_at
- * @property User        $user
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\FireflyIII\Models\TransactionJournal[] $transactionJournals
- * @property-read \Illuminate\Database\Eloquent\Collection|\FireflyIII\Models\Transaction[] $transactions
+ * @property int                                                                                   $id
+ * @property string                                                                                $name
+ * @property bool                                                               $active
+ * @property int                                                                $user_id
+ * @property-read string                                                        $email
+ * @property bool                                                               encrypted
+ * @property Collection                                                         budgetlimits
+ * @property int                                                                $order
+ * @property Carbon                                                             created_at
+ * @property Carbon                                                             updated_at
+ * @property User                                                               $user
+ * @property \Illuminate\Support\Carbon|null                                    $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|TransactionJournal[] $transactionJournals
+ * @property-read \Illuminate\Database\Eloquent\Collection|Transaction[]        $transactions
  * @method static bool|null forceDelete()
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget newQuery()
- * @method static \Illuminate\Database\Query\Builder|\FireflyIII\Models\Budget onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget newQuery()
+ * @method static Builder|Budget onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget query()
  * @method static bool|null restore()
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereEncrypted($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereOrder($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\Budget whereUserId($value)
- * @method static \Illuminate\Database\Query\Builder|\FireflyIII\Models\Budget withTrashed()
- * @method static \Illuminate\Database\Query\Builder|\FireflyIII\Models\Budget withoutTrashed()
- * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereEncrypted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Budget whereUserId($value)
+ * @method static Builder|Budget withTrashed()
+ * @method static Builder|Budget withoutTrashed()
+ * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|Attachment[] $attachments
+ * @property-read int|null                                              $attachments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|AutoBudget[] $autoBudgets
+ * @property-read int|null                                              $auto_budgets_count
+ * @property-read int|null                                              $budgetlimits_count
+ * @property-read int|null                                              $transaction_journals_count
+ * @property-read int|null                                              $transactions_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property bool $encrypted
+ * @property-read \Illuminate\Database\Eloquent\Collection|\FireflyIII\Models\BudgetLimit[] $budgetlimits
  */
 class Budget extends Model
 {
@@ -95,13 +109,13 @@ class Budget extends Model
      *
      * @param string $value
      *
-     * @return Budget
      * @throws NotFoundHttpException
+     * @return Budget
      */
     public static function routeBinder(string $value): Budget
     {
         if (auth()->check()) {
-            $budgetId = (int)$value;
+            $budgetId = (int) $value;
             /** @var User $user */
             $user = auth()->user();
             /** @var Budget $budget */
@@ -117,9 +131,28 @@ class Budget extends Model
      * @codeCoverageIgnore
      * @return HasMany
      */
+    public function autoBudgets(): HasMany
+    {
+        return $this->hasMany(AutoBudget::class);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return HasMany
+     */
     public function budgetlimits(): HasMany
     {
         return $this->hasMany(BudgetLimit::class);
+    }
+
+
+    /**
+     * @codeCoverageIgnore
+     * @return MorphMany
+     */
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 
     /**

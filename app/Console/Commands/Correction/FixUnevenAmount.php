@@ -1,7 +1,7 @@
 <?php
 /**
  * FixUnevenAmount.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -63,8 +63,8 @@ class FixUnevenAmount extends Command
                       ->get(['transaction_journal_id', DB::raw('SUM(amount) AS the_sum')]);
         /** @var stdClass $entry */
         foreach ($journals as $entry) {
-            if (0 !== bccomp((string)$entry->the_sum, '0')) {
-                $this->fixJournal((int)$entry->transaction_journal_id);
+            if (0 !== bccomp((string) $entry->the_sum, '0')) {
+                $this->fixJournal((int) $entry->transaction_journal_id);
                 $count++;
             }
         }
@@ -90,11 +90,42 @@ class FixUnevenAmount extends Command
         }
         /** @var Transaction $source */
         $source = $journal->transactions()->where('amount', '<', 0)->first();
-        $amount = bcmul('-1', (string)$source->amount);
+
+        if (null === $source) {
+            $this->error(
+                sprintf(
+                    'Journal #%d ("%s") has no source transaction. It will be deleted to maintain database consistency.',
+                    $journal->id ?? 0,
+                    $journal->description ?? ''
+                )
+            );
+            Transaction::where('transaction_journal_id', $journal->id ?? 0)->forceDelete();
+            TransactionJournal::where('id', $journal->description ?? 0)->forceDelete();
+
+            return;
+        }
+
+        $amount = bcmul('-1', (string) $source->amount);
 
         // fix amount of destination:
         /** @var Transaction $destination */
-        $destination         = $journal->transactions()->where('amount', '>', 0)->first();
+        $destination = $journal->transactions()->where('amount', '>', 0)->first();
+
+        if (null === $destination) {
+            $this->error(
+                sprintf(
+                    'Journal #%d ("%s") has no destination transaction. It will be deleted to maintain database consistency.',
+                    $journal->id ?? 0,
+                    $journal->description ?? ''
+                )
+            );
+
+            Transaction::where('transaction_journal_id', $journal->id ?? 0)->forceDelete();
+            TransactionJournal::where('id', $journal->description ?? 0)->forceDelete();
+
+            return;
+        }
+
         $destination->amount = $amount;
         $destination->save();
 

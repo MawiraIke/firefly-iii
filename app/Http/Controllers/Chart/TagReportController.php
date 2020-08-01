@@ -1,7 +1,7 @@
 <?php
 /**
  * TagReportController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -264,7 +264,9 @@ class TagReportController extends Controller
             $spentKey             = sprintf('%d-spent', $currency['currency_id']);
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.spent_in_specific_tag', ['tag' => $tag->tag]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.spent_in_specific_tag', ['tag' => $tag->tag]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -288,7 +290,9 @@ class TagReportController extends Controller
             $spentKey             = sprintf('%d-earned', $currency['currency_id']);
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.earned_in_specific_tag', ['tag' => $tag->tag]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.earned_in_specific_tag', ['tag' => $tag->tag]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -446,8 +450,6 @@ class TagReportController extends Controller
         $data = $this->generator->multiCurrencyPieChart($result);
 
         return response()->json($data);
-
-        return response()->json($data);
     }
 
 
@@ -475,5 +477,4 @@ class TagReportController extends Controller
 
         return $return;
     }
-
 }

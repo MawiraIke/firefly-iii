@@ -56,6 +56,9 @@
                                         </div>
                                     </td>
                                     <td data-value="{{ rt.title }}">
+                                        {% if rt.attachments > 0 %}
+                                            <i class="fa fa-fw fa-paperclip"></i>
+                                        {% endif %}
                                         {% if rt.active == false %}<s>{% endif %}
                                             {{ rt.type|_ }}:
                                             <a href="{{ route('recurring.show',rt.id) }}">{{ rt.title }}</a>
@@ -85,6 +88,11 @@
                                         </ol>
                                     </td>
                                     <td>
+                                        {% if null != rt.repeat_until and today > rt.repeat_until %}
+                                        <span class="text-danger">
+                                            {{ trans('firefly.repeat_until_in_past', {date: rt.repeat_until.formatLocalized(monthAndDayFormat) }) }}
+                                        </span>
+                                        {% endif %}
                                         <ul>
                                             {% for rep in rt.repetitions %}
                                                 <li>{{ rep.description }}
@@ -95,13 +103,13 @@
                                                         ({{ trans('firefly.recurring_skips_more', {count: rep.repetition_skip})|lower }}).
                                                     {% endif %}
                                                     {% if rep.weekend == 3 %}
-                                                        {{ 'will_jump_friday'|_ }}
+                                                        <br>{{ 'will_jump_friday'|_ }}
                                                     {% endif %}
                                                     {% if rep.weekend == 4 %}
-                                                        {{ 'will_jump_monday'|_ }}
+                                                        <br>{{ 'will_jump_monday'|_ }}
                                                     {% endif %}
                                                     {% if rep.weekend == 2 %}
-                                                        {{ 'except_weekends'|_ }}
+                                                        <br>{{ 'except_weekends'|_ }}
                                                     {% endif %}
                                                 </li>
                                             {% endfor %}
@@ -114,15 +122,19 @@
                                                 {{ trans('firefly.recurring_repeats_until', {date: rt.repeat_until.formatLocalized(monthAndDayFormat)}) }}.
                                             {% endif %}
                                             {% if null == rt.repeat_until and rt.nr_of_repetitions != 0 %}
-                                                {{ trans('firefly.recurring_repeats_x_times', {count: rt.nr_of_repetitions}) }}.
+                                                {{ trans_choice('firefly.recurring_repeats_x_times', rt.nr_of_repetitions) }}.
                                             {% endif %}
                                         </p>
                                     </td>
-                                    {% if rt.occurrences|length == 0 %}
-                                        <td>&nbsp;</td>
-                                    {% else %}
-                                        <td>{{ rt.occurrences[0].formatLocalized(monthAndDayFormat) }}</td>
-                                    {% endif %}
+                                    <td>
+                                        <ul>
+                                            {% for rep in rt.repetitions %}
+                                                {% for occ in rep.occurrences %}
+                                                    <li>{{ occ.formatLocalized(monthAndDayFormat) }}</li>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -152,5 +164,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="v1/js/lib/bootstrap-sortable.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/js/lib/bootstrap-sortable.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}

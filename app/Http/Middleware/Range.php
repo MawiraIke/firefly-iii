@@ -1,7 +1,7 @@
 <?php
 /**
  * Range.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,18 +26,21 @@ use App;
 use Carbon\Carbon;
 use Closure;
 use FireflyIII\Repositories\Journal\JournalRepositoryInterface;
+use FireflyIII\Support\Http\Controllers\RequestInformation;
 use Illuminate\Http\Request;
+use Log;
 
 /**
  * Class SessionFilter.
  */
 class Range
 {
+    use RequestInformation;
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param Closure                  $next
+     * @param Request $request
+     * @param Closure $next
      *
      * @return mixed
      */
@@ -72,29 +75,30 @@ class Range
      */
     private function configureView(): void
     {
-        $pref = app('preferences')->get('language', config('firefly.default_language', 'en_US'));
-        /** @noinspection NullPointerExceptionInspection */
-        $lang = $pref->data;
-        App::setLocale($lang);
-        Carbon::setLocale(substr($lang, 0, 2));
-        $locale = explode(',', (string)trans('config.locale'));
-        $locale = array_map('trim', $locale);
+        // get locale preference:
+        $language = app('steam')->getLanguage();
+        $locale   = app('steam')->getLocale();
+        App::setLocale($language);
+        Carbon::setLocale(substr($locale, 0, 2));
 
-        setlocale(LC_TIME, $locale);
-        $moneyResult = setlocale(LC_MONETARY, $locale);
+        $localeArray = app('steam')->getLocaleArray($locale);
+
+        setlocale(LC_TIME, $localeArray);
+        $moneyResult = setlocale(LC_MONETARY, $localeArray);
 
         // send error to view if could not set money format
         if (false === $moneyResult) {
+            Log::error('Could not set locale. The following array doesnt work: ', $localeArray);
             app('view')->share('invalidMonetaryLocale', true); // @codeCoverageIgnore
         }
 
         // save some formats:
-        $monthAndDayFormat = (string)trans('config.month_and_day');
-        $dateTimeFormat    = (string)trans('config.date_time');
+        $monthAndDayFormat = (string) trans('config.month_and_day', [], $locale);
+        $dateTimeFormat    = (string) trans('config.date_time', [], $locale);
         $defaultCurrency   = app('amount')->getDefaultCurrency();
 
         // also format for moment JS:
-        $madMomentJS = (string)trans('config.month_and_day_moment_js');
+        $madMomentJS = (string) trans('config.month_and_day_moment_js', [], $locale);
 
         app('view')->share('madMomentJS', $madMomentJS);
         app('view')->share('monthAndDayFormat', $monthAndDayFormat);
@@ -110,7 +114,8 @@ class Range
         // ignore preference. set the range to be the current month:
         if (!app('session')->has('start') && !app('session')->has('end')) {
             $viewRange = app('preferences')->get('viewRange', '1M')->data;
-            $start     = app('navigation')->updateStartDate($viewRange, new Carbon);
+            $today     = today(config('app.timezone'));
+            $start     = app('navigation')->updateStartDate($viewRange, $today);
             $end       = app('navigation')->updateEndDate($viewRange, $start);
 
             app('session')->put('start', $start);
@@ -120,7 +125,7 @@ class Range
             /** @var JournalRepositoryInterface $repository */
             $repository = app(JournalRepositoryInterface::class);
             $journal    = $repository->firstNull();
-            $first      = Carbon::now()->startOfYear();
+            $first      = today(config('app.timezone'))->startOfYear();
 
             if (null !== $journal) {
                 $first = $journal->date ?? $first;

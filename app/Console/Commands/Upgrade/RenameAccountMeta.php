@@ -1,7 +1,7 @@
 <?php
 /**
  * RenameAccountMeta.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -76,7 +76,7 @@ class RenameAccountMeta extends Command
             $count += AccountMeta::where('name', $old)->update(['name' => $new]);
 
             // delete empty entries while we're at it.
-            AccountMeta::where('name', $new)->where('data','""')->delete();
+            AccountMeta::where('name', $new)->where('data', '""')->delete();
         }
 
         $this->markAsExecuted();
@@ -101,7 +101,7 @@ class RenameAccountMeta extends Command
     {
         $configVar = app('fireflyconfig')->get(self::CONFIG_NAME, false);
         if (null !== $configVar) {
-            return (bool)$configVar->data;
+            return (bool) $configVar->data;
         }
 
         return false; // @codeCoverageIgnore

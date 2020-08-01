@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -42,13 +42,11 @@ return [
     'transaction_type'        => 'Tip',
     'lastActivity'            => 'Son Etkinlik',
     'balanceDiff'             => 'Bakiye farkı',
-    'matchesOn'               => 'Eşleşti',
     'other_meta_data'         => 'Diğer meta verisi',
     'account_type'            => 'Hesap Türü',
     'created_at'              => 'Tarihinde oluşturuldu',
     'account'                 => 'Hesap',
     'matchingAmount'          => 'Miktar',
-    'split_number'            => 'Ayır #',
     'destination'             => 'Hedef',
     'source'                  => 'Kaynak',
     'next_expected_match'     => 'Beklenen sonraki eşleşme',
@@ -56,7 +54,6 @@ return [
     'repeat_freq'             => 'Tekrarlar',
     'description'             => 'Açıklama',
     'amount'                  => 'Miktar',
-    'internal_reference'      => 'Dahili referans',
     'date'                    => 'Tarih',
     'interest_date'           => 'Faiz tarihi',
     'book_date'               => 'Kitap tarihi',
@@ -64,7 +61,7 @@ return [
     'due_date'                => 'Bitiş tarihi',
     'payment_date'            => 'Ödeme tarihi',
     'invoice_date'            => 'Fatura tarihi',
-    'interal_reference'       => 'Dahili referans',
+    'internal_reference'      => 'Internal reference',
     'notes'                   => 'Notlar',
     'from'                    => 'Kimden',
     'piggy_bank'              => 'Kumbara',
@@ -92,7 +89,6 @@ return [
     'attachments_count'       => 'Eklerin sayısı',
     'bills_count'             => 'Fatura sayısı',
     'categories_count'        => 'Kategori sayısı',
-    'import_jobs_count'       => 'İthalat sayısı',
     'budget_count'            => 'Bütçelerin sayısı',
     'rule_and_groups_count'   => 'Kuralların ve kural gruplarının sayısı',
     'tags_count'              => 'Etiket sayısı',
@@ -108,9 +104,6 @@ return [
     'sum_transfers'           => 'Transferlerin toplamı',
     'sum_reconciliations'     => 'Sum of reconciliations',
     'reconcile'               => 'Onaylanmış',
-    'account_on_spectre'      => '(Spectre) Hesabı',
-    'account_on_ynab'         => 'Hesap (YNAB)',
-    'do_import'               => 'Bu hesaptan içeri aktar',
     'sepa_ct_id'              => 'Uçtan uca SEPA tanımlayıcı',
     'sepa_ct_op'              => 'SEPA Karşı Hesap Tanımlayıcısı',
     'sepa_db'                 => 'SEPA Vekil Tanımlayıcısı',

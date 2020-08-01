@@ -1,7 +1,7 @@
 <?php
 /**
  * AccessTokenCreatedMail.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -63,6 +63,6 @@ class AccessTokenCreatedMail extends Mailable
     public function build(): self
     {
         return $this->view('emails.access-token-created-html')->text('emails.access-token-created-text')
-                    ->subject('A new access token was created');
+                    ->subject((string) trans('email.access_token_created_subject'));
     }
 }

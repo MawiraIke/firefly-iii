@@ -1,7 +1,7 @@
 <?php
 /**
  * database.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Str;
 
-
-
 $databaseUrl = getenv('DATABASE_URL');
 $host        = '';
 $username    = '';
@@ -33,7 +31,6 @@ $database    = '';
 $port        = '';
 
 if (!(false === $databaseUrl)) {
-
     $options  = parse_url($databaseUrl);
     $host     = $options['host'] ?? 'firefly_iii_db';
     $username = $options['user'] ?? 'firefly';
@@ -42,9 +39,40 @@ if (!(false === $databaseUrl)) {
     $database = substr($options['path'] ?? '/firefly', 1);
 }
 
-return [
+/*
+ * Get SSL parameters from .env file.
+ */
+$mysql_ssl_ca_dir  = envNonEmpty('MYSQL_SSL_CAPATH', null);
+$mysql_ssl_ca_file = envNonEmpty('MYSQL_SSL_CA', null);
+$mysql_ssl_cert    = envNonEmpty('MYSQL_SSL_CERT', null);
+$mysql_ssl_key     = envNonEmpty('MYSQL_SSL_KEY', null);
+$mysql_ssl_ciphers = envNonEmpty('MYSQL_SSL_CIPHER', null);
+$mysql_ssl_verify  = envNonEmpty('MYSQL_SSL_VERIFY_SERVER_CERT', null);
 
-    'default'     => envNonEmpty('DB_CONNECTION', 'mysql'),
+$mySqlSSLOptions = [];
+if (false !== envNonEmpty('MYSQL_USE_SSL', false)) {
+    if (null !== $mysql_ssl_ca_dir) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_CAPATH] = $mysql_ssl_ca_dir;
+    }
+    if (null !== $mysql_ssl_ca_file) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_CA] = $mysql_ssl_ca_file;
+    }
+    if (null !== $mysql_ssl_cert) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_CERT] = $mysql_ssl_cert;
+    }
+    if (null !== $mysql_ssl_key) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_KEY] = $mysql_ssl_key;
+    }
+    if (null !== $mysql_ssl_ciphers) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_CIPHER] = $mysql_ssl_ciphers;
+    }
+    if (null !== $mysql_ssl_verify) {
+        $mySqlSSLOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $mysql_ssl_verify;
+    }
+}
+
+return [
+    'default'     => envNonEmpty('DB_CONNECTION', 'pgsql'),
     'connections' => [
         'sqlite' => [
             'driver'   => 'sqlite',
@@ -64,6 +92,7 @@ return [
             'prefix'      => '',
             'strict'      => true,
             'engine'      => 'InnoDB',
+            'options'     => $mySqlSSLOptions,
         ],
         'pgsql'  => [
             'driver'      => 'pgsql',

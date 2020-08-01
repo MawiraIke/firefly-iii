@@ -2,7 +2,7 @@
 
 /**
  * RegisteredUser.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -61,6 +61,6 @@ class RegisteredUser extends Mailable
      */
     public function build(): self
     {
-        return $this->view('emails.registered-html')->text('emails.registered-text')->subject('Welcome to Firefly III!');
+        return $this->view('emails.registered-html')->text('emails.registered-text')->subject((string) trans('email.registered_subject'));
     }
 }

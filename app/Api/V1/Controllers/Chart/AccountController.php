@@ -2,7 +2,7 @@
 
 /**
  * AccountController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -42,10 +42,8 @@ use Illuminate\Http\JsonResponse;
 class AccountController extends Controller
 {
     use ApiSupport;
-    /** @var CurrencyRepositoryInterface */
-    private $currencyRepository;
-    /** @var AccountRepositoryInterface */
-    private $repository;
+    private CurrencyRepositoryInterface $currencyRepository;
+    private AccountRepositoryInterface $repository;
 
     /**
      * AccountController constructor.
@@ -99,10 +97,10 @@ class AccountController extends Controller
 
         // loop the end balances. This is an array for each account ($expenses)
         foreach ($endBalances as $accountId => $expenses) {
-            $accountId = (int)$accountId;
+            $accountId = (int) $accountId;
             // loop each expense entry (each entry can be a different currency).
             foreach ($expenses as $currencyId => $endAmount) {
-                $currencyId = (int)$currencyId;
+                $currencyId = (int) $currencyId;
 
                 // see if there is an accompanying start amount.
                 // grab the difference and find the currency.
@@ -114,7 +112,7 @@ class AccountController extends Controller
                     $tempData[] = [
                         'name'        => $accountNames[$accountId],
                         'difference'  => $diff,
-                        'diff_float'  => (float)$diff,
+                        'diff_float'  => (float) $diff,
                         'currency_id' => $currencyId,
                     ];
                 }
@@ -196,6 +194,8 @@ class AccountController extends Controller
                 'currency_code'           => $currency->code,
                 'currency_symbol'         => $currency->symbol,
                 'currency_decimal_places' => $currency->decimal_places,
+                'start_date'              => $start->format('Y-m-d'),
+                'end_date'                => $end->format('Y-m-d'),
                 'type'                    => 'line', // line, area or bar
                 'yAxisID'                 => 0, // 0, 1, 2
                 'entries'                 => [],
@@ -247,10 +247,10 @@ class AccountController extends Controller
 
         // loop the end balances. This is an array for each account ($expenses)
         foreach ($endBalances as $accountId => $expenses) {
-            $accountId = (int)$accountId;
+            $accountId = (int) $accountId;
             // loop each expense entry (each entry can be a different currency).
             foreach ($expenses as $currencyId => $endAmount) {
-                $currencyId = (int)$currencyId;
+                $currencyId = (int) $currencyId;
 
                 // see if there is an accompanying start amount.
                 // grab the difference and find the currency.
@@ -263,7 +263,7 @@ class AccountController extends Controller
                         'name'        => $accountNames[$accountId],
                         'difference'  => bcmul($diff, '-1'),
                         //  For some reason this line is never covered in code coverage:
-                        'diff_float'  => ((float)$diff) * -1, // @codeCoverageIgnore
+                        'diff_float'  => ((float) $diff) * -1, // @codeCoverageIgnore
                         'currency_id' => $currencyId,
                     ];
                 }

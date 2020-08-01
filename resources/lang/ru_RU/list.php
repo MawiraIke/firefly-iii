@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Тип',
     'lastActivity'            => 'Последняя активность',
     'balanceDiff'             => 'Разность баланса',
-    'matchesOn'               => 'Совпадает на',
     'other_meta_data'         => 'Другие метаданные',
     'account_type'            => 'Тип профиля',
     'created_at'              => 'Создан',
     'account'                 => 'Счёт',
     'matchingAmount'          => 'Сумма',
-    'split_number'            => 'Часть №',
     'destination'             => 'Получатель',
     'source'                  => 'Источник',
     'next_expected_match'     => 'Следующий ожидаемый результат',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Повторы',
     'description'             => 'Описание',
     'amount'                  => 'Сумма',
-    'internal_reference'      => 'Внутренняя ссылка',
     'date'                    => 'Дата',
     'interest_date'           => 'Проценты',
     'book_date'               => 'Забронировать',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Срок',
     'payment_date'            => 'Дата платежа',
     'invoice_date'            => 'Дата выставления счёта',
-    'interal_reference'       => 'Внутренняя ссылка',
+    'internal_reference'      => 'Внутренняя ссылка',
     'notes'                   => 'Заметки',
     'from'                    => 'Откуда',
     'piggy_bank'              => 'Копилка',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Всего вложений',
     'bills_count'             => 'Всего счетов к оплате',
     'categories_count'        => 'Всего категорий',
-    'import_jobs_count'       => 'Задачи по импорту',
     'budget_count'            => 'Всего категорий бюджета',
     'rule_and_groups_count'   => 'Всего правил и групп правил',
     'tags_count'              => 'Всего меток',
@@ -105,11 +101,8 @@ return [
     'sum_withdrawals'         => 'Сумма расходов',
     'sum_deposits'            => 'Сумма доходов',
     'sum_transfers'           => 'Сумма переводов',
-    'sum_reconciliations'     => 'Sum of reconciliations',
+    'sum_reconciliations'     => 'Сумма сверки',
     'reconcile'               => 'Сверка',
-    'account_on_spectre'      => 'Счёт (Spectre)',
-    'account_on_ynab'         => 'Счёт (YNAB)',
-    'do_import'               => 'Импортировать с этого счёта',
     'sepa_ct_id'              => 'Идентификатор SEPA end-to-end',
     'sepa_ct_op'              => 'Идентификатор учетной записи SEPA',
     'sepa_db'                 => 'Идентификатор SEPA Mandate',

@@ -1,7 +1,7 @@
 <?php
 /**
  * ProfileFormRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -50,7 +50,7 @@ class ProfileFormRequest extends Request
         // fixed
         return [
             'current_password'          => 'required',
-            'new_password'              => 'required|confirmed|secure_password',
+            'new_password'              => 'required|confirmed|secure_password|min:16',
             'new_password_confirmation' => 'required',
         ];
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * CurrencyRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace FireflyIII\Repositories\Currency;
 
 use Carbon\Carbon;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\CurrencyExchangeRate;
 use FireflyIII\Models\Preference;
 use FireflyIII\Models\TransactionCurrency;
@@ -34,6 +35,14 @@ use Illuminate\Support\Collection;
  */
 interface CurrencyRepositoryInterface
 {
+
+    /**
+     * @param TransactionCurrency $currency
+     *
+     * @return bool
+     */
+    public function isFallbackCurrency(TransactionCurrency $currency): bool;
+
     /**
      * @param TransactionCurrency $currency
      *
@@ -147,7 +156,7 @@ interface CurrencyRepositoryInterface
      * @param int|null    $currencyId
      * @param string|null $currencyCode
      *
-     * @return TransactionCurrency|null
+     * @return TransactionCurrency
      */
     public function findCurrency(?int $currencyId, ?string $currencyCode): TransactionCurrency;
 
@@ -233,7 +242,7 @@ interface CurrencyRepositoryInterface
 
     /**
      * @param array $data
-     *
+     * @throws FireflyException
      * @return TransactionCurrency
      */
     public function store(array $data): TransactionCurrency;

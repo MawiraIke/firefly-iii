@@ -1,7 +1,7 @@
 <?php
 /**
  * SetSourceAccount.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -71,8 +71,9 @@ class SetSourceAccount implements ActionInterface
         $this->repository->setUser($journal->user);
         // journal type:
         $type = $journal->transactionType->type;
+
         // if this is a transfer or a withdrawal, the new source account must be an asset account or a default account, and it MUST exist:
-        if ((TransactionType::WITHDRAWAL === $type || TransactionType::TRANSFER === $type) && !$this->findAssetAccount()) {
+        if ((TransactionType::WITHDRAWAL === $type || TransactionType::TRANSFER === $type) && !$this->findAssetAccount($type)) {
             Log::error(
                 sprintf(
                     'Cannot change source account of journal #%d because no asset account with name "%s" exists.',
@@ -110,18 +111,26 @@ class SetSourceAccount implements ActionInterface
     }
 
     /**
+     * @param string $type
+     *
      * @return bool
      */
-    private function findAssetAccount(): bool
+    private function findAssetAccount(string $type): bool
     {
-        $account = $this->repository->findByName($this->action->action_value, [AccountType::DEFAULT, AccountType::ASSET]);
+        // switch on type:
+        $allowed = config(sprintf('firefly.expected_source_types.source.%s', $type));
+        $allowed = is_array($allowed) ? $allowed : [];
+
+        Log::debug(sprintf('Check config for expected_source_types.source.%s, result is', $type), $allowed);
+
+        $account = $this->repository->findByName($this->action->action_value, $allowed);
 
         if (null === $account) {
-            Log::debug(sprintf('There is NO asset account called "%s".', $this->action->action_value));
+            Log::debug(sprintf('There is NO valid source account called "%s".', $this->action->action_value));
 
             return false;
         }
-        Log::debug(sprintf('There exists an asset account called "%s". ID is #%d', $this->action->action_value, $account->id));
+        Log::debug(sprintf('There exists a valid source account called "%s". ID is #%d', $this->action->action_value, $account->id));
         $this->newSourceAccount = $account;
 
         return true;
@@ -132,7 +141,8 @@ class SetSourceAccount implements ActionInterface
      */
     private function findRevenueAccount(): void
     {
-        $account = $this->repository->findByName($this->action->action_value, [AccountType::REVENUE]);
+        $allowed = config('firefly.expected_source_types.source.Deposit');
+        $account = $this->repository->findByName($this->action->action_value, $allowed);
         if (null === $account) {
             // create new revenue account with this name:
             $data    = [

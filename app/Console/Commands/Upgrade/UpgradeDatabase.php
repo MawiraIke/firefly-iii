@@ -1,7 +1,7 @@
 <?php
 /**
  * UpgradeDatabase.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -30,6 +30,7 @@ use Illuminate\Console\Command;
 
 /**
  * Class UpgradeDatabase
+ *
  * @codeCoverageIgnore
  */
 class UpgradeDatabase extends Command
@@ -59,7 +60,7 @@ class UpgradeDatabase extends Command
 
 
         $commands = [
-            // there are 13 upgrade commands.
+            // there are 14 upgrade commands.
             'firefly-iii:transaction-identifiers',
             'firefly-iii:migrate-to-groups',
             'firefly-iii:account-currencies',
@@ -73,6 +74,7 @@ class UpgradeDatabase extends Command
             'firefly-iii:back-to-journals',
             'firefly-iii:rename-account-meta',
             'firefly-iii:migrate-recurrence-meta',
+            'firefly-iii:migrate-tag-locations',
 
             // there are 15 verify commands.
             'firefly-iii:fix-piggies',
@@ -90,6 +92,8 @@ class UpgradeDatabase extends Command
             'firefly-iii:rename-meta-fields',
             'firefly-iii:fix-ob-currencies',
             'firefly-iii:fix-long-descriptions',
+            'firefly-iii:fix-recurring-transactions',
+            'firefly-iii:unify-group-accounts',
 
             // two report commands
             'firefly-iii:report-empty-objects',
@@ -110,9 +114,9 @@ class UpgradeDatabase extends Command
             echo $result;
         }
         // set new DB version.
-        app('fireflyconfig')->set('db_version', (int)config('firefly.db_version'));
+        app('fireflyconfig')->set('db_version', (int) config('firefly.db_version'));
         // index will set FF3 version.
-        app('fireflyconfig')->set('ff3_version', (string)config('firefly.version'));
+        app('fireflyconfig')->set('ff3_version', (string) config('firefly.version'));
 
         return 0;
     }

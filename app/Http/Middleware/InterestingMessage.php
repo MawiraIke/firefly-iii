@@ -1,7 +1,7 @@
 <?php
 /**
  * InterestingMessage.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -38,15 +38,14 @@ class InterestingMessage
     /**
      * Flashes the user an interesting message if the URL parameters warrant it.
      *
-     * @param Request  $request
-     * @param \Closure $next
+     * @param Request $request
+     * @param Closure $next
      *
      * @return mixed
      *
      */
     public function handle(Request $request, Closure $next)
     {
-        //Log::debug(sprintf('Interesting Message middleware for URI %s', $request->url()));
         if ($this->testing()) {
             return $next($request);
         }
@@ -85,7 +84,7 @@ class InterestingMessage
 
         // send message about newly created transaction group.
         /** @var TransactionGroup $group */
-        $group = auth()->user()->transactionGroups()->with(['transactionJournals', 'transactionJournals.transactionType'])->find((int)$transactionGroupId);
+        $group = auth()->user()->transactionGroups()->with(['transactionJournals', 'transactionJournals.transactionType'])->find((int) $transactionGroupId);
 
         if (null === $group) {
             return;
@@ -101,12 +100,12 @@ class InterestingMessage
         $title = $count > 1 ? $group->title : $journal->description;
         if ('created' === $message) {
             session()->flash('success_uri', route('transactions.show', [$transactionGroupId]));
-            session()->flash('success', (string)trans('firefly.stored_journal', ['description' => $title]));
+            session()->flash('success', (string) trans('firefly.stored_journal', ['description' => $title]));
         }
         if ('updated' === $message) {
             $type = strtolower($journal->transactionType->type);
             session()->flash('success_uri', route('transactions.show', [$transactionGroupId]));
-            session()->flash('success', (string)trans(sprintf('firefly.updated_%s', $type), ['description' => $title]));
+            session()->flash('success', (string) trans(sprintf('firefly.updated_%s', $type), ['description' => $title]));
         }
     }
 

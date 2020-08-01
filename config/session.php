@@ -1,7 +1,7 @@
 <?php
 /**
  * session.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -21,7 +21,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'driver'          => env('SESSION_DRIVER', 'file'),
     'lifetime'        => 120,
@@ -35,7 +34,7 @@ return [
     'cookie'          => 'firefly_session',
     'path'            => env('COOKIE_PATH', '/'),
     'domain'          => env('COOKIE_DOMAIN', null),
-    'secure'          => env('COOKIE_SECURE', false),
+    'secure'          => env('COOKIE_SECURE', null),
     'http_only'       => true,
     'same_site'       => null,
 ];

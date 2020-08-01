@@ -2,7 +2,7 @@
 
 /**
  * demo.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -33,6 +33,5 @@ return [
     'currencies-index'       => 'Firefly III mendukung banyak mata uang. Meski default ke Euro itu bisa diatur ke US Dollar dan banyak mata uang lainnya. Seperti yang bisa Anda lihat, sejumlah kecil mata uang telah disertakan namun Anda dapat menambahkannya sendiri jika menginginkannya. Mengubah mata uang default tidak akan mengubah mata uang dari transaksi yang ada namun: Firefly III mendukung penggunaan beberapa mata uang pada saat bersamaan.',
     'transactions-index'     => 'Biaya ini, deposito dan transfer tidak terlalu imajinatif. Mereka telah dihasilkan secara otomatis.',
     'piggy-banks-index'      => 'Seperti yang bisa Anda lihat, ada tiga celengan. Gunakan tombol plus dan minus untuk mempengaruhi jumlah uang di setiap celengan. Klik nama celengan untuk melihat administrasi masing-masing celengan.',
-    'import-index'           => 'Semua file CSV dapat diimpor ke Firefly III. Data dari bunq dan Spectre pun bisa diimpor kesini. Sedangkan data dari provider keuangan dan bank akan di implementasikan di waktu mendatang. Sebagai demo-user tentu saja Anda dapat melihat contoh datanya. Beberapa transaksi demo akan dibuat secara otomatis untuk menunjukkan bagaimana alur proses kerjanya.',
-    'profile-index'          => 'Keep in mind that the demo site resets every four hours. Your access may be revoked at any time. This happens automatically and is not a bug.',
+    'profile-index'          => 'Mohon diingat bahwa situs demo ini diatur ulang setiap 4 jam. Akses Anda bisa ditolak kapan saja. Ini berjalan secara otomatis dan bukanlah merupakan sebuah kesalahan.',
 ];

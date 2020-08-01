@@ -2,7 +2,7 @@
 
 /**
  * breadcrumbs.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -39,21 +39,27 @@ return [
     'reports'                => 'Laporan',
     'search_result'          => 'Hasil pencarian untuk ":query"',
     'withdrawal_list'        => 'Pengeluaran',
-    'Withdrawal_list'        => 'Expenses',
+    'Withdrawal_list'        => 'Pengeluaran',
     'deposit_list'           => 'Pendapatan, pemasukan, dan deposit',
     'transfer_list'          => 'Transfer',
     'transfers_list'         => 'Transfer',
-    'reconciliation_list'    => 'Rekonsiliasi',
+    'reconciliation_list'    => 'Penyesuaian',
     'create_withdrawal'      => 'Buat penarikan baru',
     'create_deposit'         => 'Buat deposit baru',
     'create_transfer'        => 'Buat transfer baru',
-    'create_new_transaction' => 'Create a new transaction',
+    'create_new_transaction' => 'Buat transaksi baru',
     'edit_journal'           => 'Edit transaksi ":description"',
     'edit_reconciliation'    => 'Edit ":description"',
     'delete_journal'         => 'Hapus transaksi ":description"',
+    'delete_group'           => 'Hapus transaksi ":description"',
     'tags'                   => 'Label',
     'createTag'              => 'Buat label baru',
     'edit_tag'               => 'Edit label ":tag"',
     'delete_tag'             => 'Hapus label ":tag"',
     'delete_journal_link'    => 'Hapus tautan antar transaksi',
+    'telemetry_index'        => 'Pengukur jarak',
+    'telemetry_view'         => 'Melihat data',
+    'edit_object_group'      => 'Edit group ":title"',
+    'delete_object_group'    => 'Delete group ":title"',
+    'logout_others'          => 'Logout other sessions'
 ];

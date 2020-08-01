@@ -1,7 +1,7 @@
 <?php
 /**
  * AvailableBudgetControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -46,6 +46,7 @@ class AvailableBudgetControllerTest extends TestCase
     {
         parent::setUp();
         Passport::actingAs($this->user());
+        $this->mockDefaultConfiguration();
         Log::info(sprintf('Now in %s.', get_class($this)));
     }
 

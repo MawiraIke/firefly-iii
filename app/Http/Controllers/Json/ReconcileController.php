@@ -1,7 +1,7 @@
 <?php
 /**
  * ReconcileController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,7 +22,6 @@
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers\Json;
-
 
 use Carbon\Carbon;
 use FireflyIII\Helpers\Collector\GroupCollectorInterface;
@@ -56,6 +55,7 @@ class ReconcileController extends Controller
 
     /**
      * ReconcileController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -66,7 +66,7 @@ class ReconcileController extends Controller
         $this->middleware(
             function ($request, $next) {
                 app('view')->share('mainTitleIcon', 'fa-credit-card');
-                app('view')->share('title', (string)trans('firefly.accounts'));
+                app('view')->share('title', (string) trans('firefly.accounts'));
                 $this->repository    = app(JournalRepositoryInterface::class);
                 $this->accountRepos  = app(AccountRepositoryInterface::class);
                 $this->currencyRepos = app(CurrencyRepositoryInterface::class);
@@ -81,8 +81,8 @@ class ReconcileController extends Controller
      *
      * @param Request $request
      * @param Account $account
-     * @param Carbon $start
-     * @param Carbon $end
+     * @param Carbon  $start
+     * @param Carbon  $end
      *
      * @return JsonResponse
      */
@@ -93,6 +93,11 @@ class ReconcileController extends Controller
         $accountCurrency = $this->accountRepos->getAccountCurrency($account) ?? app('amount')->getDefaultCurrency();
         $amount          = '0';
         $clearedAmount   = '0';
+
+        if ($end->lt($start)) {
+            [$start, $end] = [$end, $start];
+        }
+
         $route           = route('accounts.reconcile.submit', [$account->id, $start->format('Ymd'), $end->format('Ymd')]);
         $selectedIds     = $request->get('journals') ?? [];
         $clearedJournals = [];
@@ -136,11 +141,22 @@ class ReconcileController extends Controller
 
         try {
             $view = view(
-                'accounts.reconcile.overview', compact(
-                                                 'account', 'start', 'diffCompare', 'difference', 'end', 'clearedAmount',
-                                                 'startBalance', 'endBalance', 'amount',
-                                                 'route', 'countCleared', 'reconSum', 'selectedIds'
-                                             )
+                'accounts.reconcile.overview',
+                compact(
+                    'account',
+                    'start',
+                    'diffCompare',
+                    'difference',
+                    'end',
+                    'clearedAmount',
+                    'startBalance',
+                    'endBalance',
+                    'amount',
+                    'route',
+                    'countCleared',
+                    'reconSum',
+                    'selectedIds'
+                )
             )->render();
             // @codeCoverageIgnoreStart
         } catch (Throwable $e) {
@@ -163,14 +179,17 @@ class ReconcileController extends Controller
      * Returns a list of transactions in a modal.
      *
      * @param Account $account
-     * @param Carbon $start
-     * @param Carbon $end
+     * @param Carbon  $start
+     * @param Carbon  $end
      *
      * @return mixed
      *
      */
     public function transactions(Account $account, Carbon $start, Carbon $end)
     {
+        if ($end->lt($start)) {
+            [$end, $start] = [$start, $end];
+        }
         $startDate = clone $start;
         $startDate->subDay();
 
@@ -223,8 +242,10 @@ class ReconcileController extends Controller
         }
 
         try {
-            $html = view('accounts.reconcile.transactions',
-                         compact('account', 'journals', 'currency', 'start', 'end', 'selectionStart', 'selectionEnd'))->render();
+            $html = view(
+                'accounts.reconcile.transactions',
+                compact('account', 'journals', 'currency', 'start', 'end', 'selectionStart', 'selectionEnd')
+            )->render();
             // @codeCoverageIgnoreStart
         } catch (Throwable $e) {
             Log::debug(sprintf('Could not render: %s', $e->getMessage()));
@@ -237,10 +258,11 @@ class ReconcileController extends Controller
     }
 
     /**
-     * @param Account $account
+     * @param Account             $account
      * @param TransactionCurrency $currency
-     * @param array $journal
-     * @param string $amount
+     * @param array               $journal
+     * @param string              $amount
+     *
      * @return string
      */
     private function processJournal(Account $account, TransactionCurrency $currency, array $journal, string $amount): string

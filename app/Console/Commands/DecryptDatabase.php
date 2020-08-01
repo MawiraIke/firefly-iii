@@ -2,7 +2,7 @@
 
 /**
  * DecryptDatabase.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -30,6 +30,7 @@ use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Preference;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Encryption\DecryptException;
+use JsonException;
 use Log;
 
 /**
@@ -54,8 +55,8 @@ class DecryptDatabase extends Command
     /**
      * Execute the console command.
      *
-     * @return int
      * @throws FireflyException
+     * @return int
      */
     public function handle(): int
     {
@@ -92,11 +93,15 @@ class DecryptDatabase extends Command
                     // A separate routine for preferences:
                     if ('preferences' === $table) {
                         // try to json_decrypt the value.
-                        $value = json_decode($value, true) ?? $value;
+                        try {
+                            $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR) ?? $value;
+                        } catch(JsonException $e) {
+                            Log::error($e->getMessage());
+                        }
                         Log::debug(sprintf('Decrypted field "%s" "%s" to "%s" in table "%s" (row #%d)', $field, $original, print_r($value, true), $table, $id));
 
                         /** @var Preference $object */
-                        $object = Preference::find((int)$id);
+                        $object = Preference::find((int) $id);
                         if (null !== $object) {
                             $object->data = $value;
                             $object->save();
@@ -131,7 +136,7 @@ class DecryptDatabase extends Command
         $configName = sprintf('is_decrypted_%s', $table);
         $configVar  = app('fireflyconfig')->get($configName, false);
         if (null !== $configVar) {
-            return (bool)$configVar->data;
+            return (bool) $configVar->data;
         }
 
         return false;
@@ -142,8 +147,9 @@ class DecryptDatabase extends Command
      * Tries to decrypt data. Will only throw an exception when the MAC is invalid.
      *
      * @param $value
-     * @return string
+     *
      * @throws FireflyException
+     * @return string
      */
     private function tryDecrypt($value)
     {
@@ -153,7 +159,6 @@ class DecryptDatabase extends Command
             if ('The MAC is invalid.' === $e->getMessage()) {
                 throw new FireflyException($e->getMessage()); // @codeCoverageIgnore
             }
-            Log::debug(sprintf('Could not decrypt. %s', $e->getMessage()));
         }
 
         return $value;

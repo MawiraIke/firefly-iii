@@ -2,7 +2,7 @@
 
 /**
  * Cron.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -27,9 +27,12 @@ namespace FireflyIII\Console\Commands\Tools;
 use Carbon\Carbon;
 use Exception;
 use FireflyIII\Exceptions\FireflyException;
+use FireflyIII\Support\Cronjobs\AutoBudgetCronjob;
 use FireflyIII\Support\Cronjobs\RecurringCronjob;
+use FireflyIII\Support\Cronjobs\TelemetryCronjob;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
+use Log;
 
 /**
  * Class Cron
@@ -56,45 +59,137 @@ class Cron extends Command
 
     /**
      * @return int
-     * @throws Exception
      */
     public function handle(): int
     {
         $date = null;
         try {
             $date = new Carbon($this->option('date'));
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException|Exception $e) {
             $this->error(sprintf('"%s" is not a valid date', $this->option('date')));
             $e->getMessage();
         }
+        $force = (bool) $this->option('force');
 
+        /*
+         * Fire recurring transaction cron job.
+         */
+        try {
+            $this->recurringCronJob($force, $date);
+        } catch (FireflyException $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            $this->error($e->getMessage());
+        }
 
+        /*
+         * Fire auto-budget cron job:
+         */
+        try {
+            $this->autoBudgetCronJob($force, $date);
+        } catch (FireflyException $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            $this->error($e->getMessage());
+        }
+
+        /*
+         * Fire telemetry cron job
+         */
+        try {
+            $this->telemetryCronJob($force, $date);
+        } catch (FireflyException $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            $this->error($e->getMessage());
+        }
+
+        $this->info('More feedback on the cron jobs can be found in the log files.');
+
+        app('telemetry')->feature('system.command.executed', $this->signature);
+        return 0;
+    }
+
+    /**
+     * @param bool        $force
+     * @param Carbon|null $date
+     *
+     * @throws FireflyException
+     * @throws Exception
+     */
+    private function autoBudgetCronJob(bool $force, ?Carbon $date): void
+    {
+        $autoBudget = new AutoBudgetCronjob;
+        $autoBudget->setForce($force);
+        // set date in cron job:
+        if (null !== $date) {
+            $autoBudget->setDate($date);
+        }
+
+        $result = $autoBudget->fire();
+
+        if (false === $result) {
+            $this->line('The auto budget cron job did not fire.');
+        }
+        if (true === $result) {
+            $this->line('The auto budget cron job fired successfully.');
+        }
+
+    }
+
+    /**
+     * @param bool        $force
+     * @param Carbon|null $date
+     *
+     * @throws FireflyException
+     */
+    private function recurringCronJob(bool $force, ?Carbon $date): void
+    {
         $recurring = new RecurringCronjob;
-        $recurring->setForce($this->option('force'));
+        $recurring->setForce($force);
 
         // set date in cron job:
         if (null !== $date) {
             $recurring->setDate($date);
         }
 
-        try {
-            $result = $recurring->fire();
-        } catch (FireflyException $e) {
-            $this->error($e->getMessage());
+        $result = $recurring->fire();
 
-            return 0;
-        }
         if (false === $result) {
             $this->line('The recurring transaction cron job did not fire.');
         }
         if (true === $result) {
             $this->line('The recurring transaction cron job fired successfully.');
         }
-
-        $this->info('More feedback on the cron jobs can be found in the log files.');
-
-        return 0;
     }
 
+    /**
+     * @param bool        $force
+     * @param Carbon|null $date
+     */
+    private function telemetryCronJob(bool $force, ?Carbon $date): void
+    {
+        if (false === config('firefly.send_telemetry') || false === config('firefly.feature_flags.telemetry')) {
+            // if not configured to do anything with telemetry, do nothing.
+            return;
+        }
+        $telemetry = new TelemetryCronJob;
+        $telemetry->setForce($force);
+
+        // set date in cron job:
+        if (null !== $date) {
+            $telemetry->setDate($date);
+        }
+
+        $result = $telemetry->fire();
+
+        if (false === $result) {
+            $this->line('The telemetry cron job did not fire.');
+        }
+        if (true === $result) {
+            $this->line('The telemetry cron job fired successfully.');
+        }
+
+    }
 
 }

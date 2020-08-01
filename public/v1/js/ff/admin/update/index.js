@@ -1,6 +1,6 @@
 /*
  * index.js
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,18 +25,4 @@ $(function () {
 
     // Enable update button.
 
-    $('#update').click(checkUpdate);
 });
-
-function checkUpdate() {
-
-    // do post update check:
-    $.post(updateCheckUri).done(function (data) {
-        alert(data.result);
-    }).fail(function () {
-        alert('Error while checking.');
-    });
-
-
-    return false;
-}

@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -45,8 +45,8 @@ return [
     'at_least_one_repetition'        => 'Legalább egy ismétlés szükséges.',
     'require_repeat_until'           => 'Legalább egy ismétlésszám vagy egy végdátum (repeat_until) kötelező. Csak az egyik.',
     'require_currency_info'          => 'Ennek a mezőnek a tartalma érvénytelen pénznem információ nélkül.',
-    'not_transfer_account'           => 'This account is not an account that can be used for transfers.',
-    'require_currency_amount'        => 'The content of this field is invalid without foreign amount information.',
+    'not_transfer_account'           => 'Ez a fiók nem használható fel tranzakciókhoz.',
+    'require_currency_amount'        => 'Ennek a mezőnek a tartalma érvénytelen devizanem információ nélkül.',
     'equal_description'              => 'A tranzakció leírása nem egyezhet meg a globális leírással.',
     'file_invalid_mime'              => '":name" fájl ":mime" típusú ami nem lehet új feltöltés.',
     'file_too_large'                 => '":name" fájl túl nagy.',
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => 'A szabályban legalább egy műveletnek lennie kell.',
     'base64'                         => 'Ez nem érvényes base64 kódolású adat.',
     'model_id_invalid'               => 'A megadott azonosító érvénytelennek tűnik ehhez a modellhez.',
-    'more'                           => ':attribute nagyobb kell legyen nullánál.',
     'less'                           => ':attribute kisebbnek kell lennie 10,000,000-nél',
     'active_url'                     => ':attribute nem egy érvényes URL.',
     'after'                          => ':attribute egy :date utáni dátum kell legyen.',
@@ -121,19 +120,21 @@ return [
     'string'                         => ':attribute egy karakterlánc kell legyen.',
     'url'                            => ':attribute attribútum formátuma érvénytelen.',
     'timezone'                       => ':attribute érvényes zóna kell legyen.',
-    '2fa_code'                    => ':attribute mező érvénytelen.',
-    'dimensions'                  => ':attribute attribútum képfelbontása érvénytelen.',
-    'distinct'                    => ':attribute mezőben duplikált érték van.',
-    'file'                        => ':attribute egy fájl kell legyen.',
-    'in_array'                    => ':attribute nem létezik itt: :other.',
-    'present'                     => ':attribute mezőnek jelen kell lennie.',
-    'amount_zero'                 => 'A teljes mennyiség nem lehet nulla.',
-    'current_target_amount'       => 'The current amount must be less than the target amount.',
-    'unique_piggy_bank_for_user'  => 'A malacpersely nevének egyedinek kell lennie.',
-    'secure_password'             => 'Ez nem biztonságos jelszó. Kérlek próbáld meg újra. További információért lásd: https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => 'Érvénytelen ismétléstípus az ismétlődő tranzakciókhoz.',
-    'valid_recurrence_rep_moment' => 'Érvénytelen ismétlési időpont ehhez az ismétléstípushoz.',
-    'invalid_account_info'        => 'Érvénytelen számlainformáció.',
+    '2fa_code'                       => ':attribute mező érvénytelen.',
+    'dimensions'                     => ':attribute attribútum képfelbontása érvénytelen.',
+    'distinct'                       => ':attribute mezőben duplikált érték van.',
+    'file'                           => ':attribute egy fájl kell legyen.',
+    'in_array'                       => ':attribute nem létezik itt: :other.',
+    'present'                        => ':attribute mezőnek jelen kell lennie.',
+    'amount_zero'                    => 'A teljes mennyiség nem lehet nulla.',
+    'current_target_amount'          => 'A megadott értéknek kevesebbnek kell lennie, mint a célérték.',
+    'unique_piggy_bank_for_user'     => 'A malacpersely nevének egyedinek kell lennie.',
+    'unique_object_group'            => 'The group name must be unique',
+
+    'secure_password'                => 'Ez nem biztonságos jelszó. Kérlek próbáld meg újra. További információért lásd: https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => 'Érvénytelen ismétléstípus az ismétlődő tranzakciókhoz.',
+    'valid_recurrence_rep_moment'    => 'Érvénytelen ismétlési időpont ehhez az ismétléstípushoz.',
+    'invalid_account_info'           => 'Érvénytelen számlainformáció.',
     'attributes'                     => [
         'email'                   => 'email cím',
         'description'             => 'leírás',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => 'Nem található érvényes forrásszámla ":id" azonosító vagy ":name" név keresésekor.',
     'deposit_dest_need_data'   => 'Egy érvényes célszámla azonosító és/vagy egy érvényes célszámla név kell a folytatáshoz.',
     'deposit_dest_bad_data'    => 'Nem található érvényes célszámla ":id" azonosító vagy ":name" név keresésekor.',
-    'deposit_dest_wrong_type' => 'The submitted destination account is not of the right type.',
+    'deposit_dest_wrong_type'  => 'A beküldött célfiók nem megfelelő típusú.',
 
     'transfer_source_need_data' => 'Egy érvényes forrásszámla azonosító és/vagy egy érvényes forrásszámla név kell a folytatáshoz.',
     'transfer_source_bad_data'  => 'Nem található érvényes forrásszámla ":id" azonosító vagy ":name" név keresésekor.',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'Egy érvényes célszámla azonosító és/vagy egy érvényes célszámla név kell a folytatáshoz.',
     'ob_dest_bad_data'    => 'Nem található érvényes célszámla ":id" azonosító vagy ":name" név keresésekor.',
 
-    'generic_invalid_source' => 'You can\'t use this account as the source account.',
-    'generic_invalid_destination' => 'You can\'t use this account as the destination account.',
+    'generic_invalid_source'      => 'Nem használhatod ezt a fiókot forrásfiókként.',
+    'generic_invalid_destination' => 'Nem használhatod ezt a fiókot célfiókként.',
+
+    'gte.numeric' => ':attribute attribútumnak :value értéknél nagyobbnak vagy vele egyenlőnek kell lennie.',
+    'gt.numeric'  => 'The :attribute must be greater than :value.',
+    'gte.file'    => ':attribute attribútumnak :value kilobájtnál nagyobb vagy egyenlőnek kell lennie.',
+    'gte.string'  => ':attribute attribútumnak :value karakternél nagyobb vagy egyenlőnek kell lennie.',
+    'gte.array'   => 'A(z) :attribute legalább :value elemet kell, hogy tartalmazzon.',
+
+    'amount_required_for_auto_budget' => 'Az összeg kötelező.',
+    'auto_budget_amount_positive'     => 'Az értéknek nagyobbnak kell lennie nullánál.',
+    'auto_budget_period_mandatory' => 'Az auto költségvetési periódus kötelező mező.',
 ];

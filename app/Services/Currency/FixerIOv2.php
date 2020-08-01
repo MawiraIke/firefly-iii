@@ -1,7 +1,7 @@
 <?php
 /**
  * FixerIOv2.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -128,7 +128,7 @@ class FixerIOv2 implements ExchangeRateInterface
     /**
      * @param User $user
      *
-     * @return mixed|void
+     * @return void
      */
     public function setUser(User $user)
     {

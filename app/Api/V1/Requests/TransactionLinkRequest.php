@@ -1,7 +1,7 @@
 <?php
 /**
  * TransactionLinkRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -110,8 +110,8 @@ class TransactionLinkRequest extends Request
         $journalRepos->setUser($user);
 
         $data      = $validator->getData();
-        $inwardId  = (int)($data['inward_id'] ?? 0);
-        $outwardId = (int)($data['outward_id'] ?? 0);
+        $inwardId  = (int) ($data['inward_id'] ?? 0);
+        $outwardId = (int) ($data['outward_id'] ?? 0);
         $inward    = $journalRepos->findNull($inwardId);
         $outward   = $journalRepos->findNull($outwardId);
 

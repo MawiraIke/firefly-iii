@@ -2,7 +2,7 @@
 
 /**
  * UserStoreRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -69,14 +69,13 @@ class UserStoreRequest extends Request
         if (null !== $this->get('blocked')) {
             $blocked = $this->boolean('blocked');
         }
-        $data = [
+
+        return [
             'email'        => $this->string('email'),
             'blocked'      => $blocked,
             'blocked_code' => $this->string('blocked_code'),
             'role'         => $this->string('role'),
         ];
-
-        return $data;
     }
 
     /**

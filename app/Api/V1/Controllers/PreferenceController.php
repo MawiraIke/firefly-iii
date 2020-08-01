@@ -1,7 +1,7 @@
 <?php
 /**
  * PreferenceController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -147,10 +147,10 @@ class PreferenceController extends Controller
                 $newValue = explode(',', $data['data']);
                 break;
             case 'listPageSize':
-                $newValue = (int)$data['data'];
+                $newValue = (int) $data['data'];
                 break;
             case 'customFiscalYear':
-                $newValue = 1 === (int)$data['data'];
+                $newValue = 1 === (int) $data['data'];
                 break;
         }
         $result = app('preferences')->set($preference->name, $newValue);

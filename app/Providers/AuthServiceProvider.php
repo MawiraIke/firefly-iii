@@ -1,7 +1,7 @@
 <?php
 /**
  * AuthServiceProvider.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,8 +22,12 @@ declare(strict_types=1);
 
 namespace FireflyIII\Providers;
 
+use FireflyIII\Support\Authentication\RemoteUserGuard;
+use FireflyIII\Support\Authentication\RemoteUserProvider;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Passport;
+use Log;
 
 /**
  * @codeCoverageIgnore
@@ -38,16 +42,34 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies
         = [
-            'FireflyIII\Model' => 'FireflyIII\Policies\ModelPolicy',
+            // 'FireflyIII\Model' => 'FireflyIII\Policies\ModelPolicy',
         ];
 
     /**
      * Register any authentication / authorization services.
+     *
+     * @return void
      */
     public function boot(): void
     {
+        Auth::provider(
+            'remote_user_provider', function ($app, array $config) {
+            return new RemoteUserProvider($app, $config);
+        }
+        );
+
+        Auth::extend(
+            'remote_user_guard', static function ($app, string $name, array $config) {
+            return new RemoteUserGuard(Auth::createUserProvider($config['provider']), $app);
+        }
+        );
+
         $this->registerPolicies();
+
+
         Passport::routes();
         Passport::tokensExpireIn(now()->addDays(14));
+
+
     }
 }

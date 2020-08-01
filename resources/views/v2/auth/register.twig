@@ -1,78 +1,116 @@
 {% extends "./layout/auth" %}
 {% block content %}
-    <div class="page-single">
-        <div class="container">
-            <div class="row">
-                <div class="col col-login mx-auto">
-                    <div class="text-center mb-6">
-                        <img src="v2/assets/images/firefly-iii-48.png" class="h-6" alt="Firefly III v{{ FF_VERSION }}" title="Firefly III v{{ FF_VERSION }}">
-                    </div>
+    {# alerts here #}
 
-                    {# ERRORS FOR REGISTER STUFF #}
-                    {% if errors.all|length > 0 %}
-                        <div class="alert alert-danger" role="alert">
-                            {% if errors.all|length == 1 %}
-                                <strong>{{ 'flash_error'|_ }}</strong> {{ errors.first() }}
-                            {% else %}
-                                <strong>{{ 'flash_error'|_ }}</strong>
-                                <ul>
-                                    {% for message in errors.all %}
-                                        <li>{{ message }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </div>
-                    {% endif %}
+    {% if errors|length > 0 %}
 
-                    <form class="card" action="{{ route('register') }}" method="post">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <div class="card-body p-6">
-                            <div class="card-title">{{ 'register_new_account'|_ }}</div>
-                            <div class="form-group">
-                                <label class="form-label">{{ trans('form.email') }}</label>
-                                <input autocomplete="email" type="email" name="email" class="{% if errors.has('email') %}is-invalid{% endif %} form-control" placeholder="{{ trans('form.email') }}" value="{{ email }}" required>
-                                {% if errors.has('email') %}
-                                    <div class="invalid-feedback">
-                                        {{ errors.get('email')[0] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">{{ trans('form.password') }}</label>
-                                <input type="password" autocomplete="password" class="{% if errors.has('password') %}is-invalid{% endif %} form-control" name="password" placeholder="{{ trans('form.password') }}" required>
-                                {% if errors.has('password') %}
-                                    <div class="invalid-feedback">
-                                        {{ errors.get('password')[0] }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">{{ trans('form.password_confirmation') }}</label>
-                                <input type="password" autocomplete="password" name="{% if errors.has('password_confirmation') %}is-invalid{% endif %} password_confirmation" class="form-control" placeholder="{{ trans('form.password_confirmation') }}" required>
-                                {% if errors.has('password_confirmation') %}
-                                    <div class="invalid-feedback">
-                                        {{ errors.get('password_confirmation')[0] }}
-                                    </div>
-                                {% endif %}
-                            </div>
 
-                            <div class="form-group">
-                                <label class="custom-control custom-checkbox">
-                                    <input type="checkbox" name="verify_password" value="1" checked class="custom-control-input" />
-                                    <span class="custom-control-label"><a href="#" data-toggle="modal" data-target="#pwModal">{{ trans('form.verify_password') }}</a></span>
-                                </label>
-                            </div>
-
-                            <div class="form-footer">
-                                <button type="submit" class="btn btn-primary btn-block">{{ 'button_register'|_ }}</button>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="text-center text-muted">
-                        <a href="{{ route('login') }}">{{ 'want_to_login'|_ }}</a><br>
-                    </div>
-                </div>
+        <div class="row">
+            <div class="alert alert-info alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-info"></i> {{ 'problems_with_input'|_ }}</h5>
+                <ul class="list-unstyled">
+                    {% for error in errors.all %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
+
+    {% endif %}
+
+
+
+
+    {# default header #}
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="v2/images/firefly-iii-logo.png" alt="Firefly III" width="40"/>
+            <a href="{{ route('index') }}"><b>Firefly</b>III</a>
+        </div>
+
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">{{ 'register_new_account'|_ }}</p>
+
+                <form action="{{ route('register') }}" method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                    <div class="input-group mb-3">
+                        <input type="email" required autocomplete="email" name="email" value="{{ email }}" class="form-control"
+                               placeholder="{{ trans('form.email') }}"/>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" required autocomplete="new-password" class="form-control"
+                               placeholder="{{ trans('form.password') }}"/>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="password" name="password_confirmation" required autocomplete="new-password" class="form-control"
+                               placeholder="{{ trans('form.password_confirmation') }}"/>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input id="remember" checked type="checkbox" name="remember" {% if remember %}checked="checked"{% endif %} value="1">
+                                <label for="remember">
+                                    {{ trans('form.verify_password') }}
+                                </label>
+
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">{{ 'button_register'|_ }}</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <ul class="list-unstyled small">
+                                <li>
+                                    <a data-toggle="modal" data-target="#passwordModal" href="#passwordModal">
+                                        What is "verify password security"?
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ URL.to('/login') }}">{{ 'want_to_login'|_ }}</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('password.reset.request') }}">{{ 'forgot_my_password'|_ }}</a>
+                                </li>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <!-- /.login-card-body -->
+        </div>
     </div>
+
+    {% include 'partials.auth.password-modal' %}
+
+    <!-- /.login-box -->
+{% endblock %}
+{% block scripts %}
+    <script src="v2/js/manifest.js" nonce="{{ JS_NONCE }}"></script>
+    <script src="v2/js/vendor.js" nonce="{{ JS_NONCE }}"></script>
+    <script src="v2/js/register.js" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}

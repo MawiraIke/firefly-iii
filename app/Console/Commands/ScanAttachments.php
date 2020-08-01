@@ -1,7 +1,7 @@
 <?php
 /**
  * ScanAttachments.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -63,8 +63,7 @@ class ScanAttachments extends Command
         $disk        = Storage::disk('upload');
         /** @var Attachment $attachment */
         foreach ($attachments as $attachment) {
-            $fileName         = $attachment->fileName();
-            $decryptedContent = '';
+            $fileName = $attachment->fileName();
             try {
                 $encryptedContent = $disk->get($fileName);
             } catch (FileNotFoundException $e) {
@@ -87,6 +86,7 @@ class ScanAttachments extends Command
             $this->line(sprintf('Fixed attachment #%d', $attachment->id));
         }
 
+        app('telemetry')->feature('system.command.executed', $this->signature);
         return 0;
     }
 }

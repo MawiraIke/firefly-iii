@@ -1,7 +1,7 @@
 <?php
 /**
  * PreferencesController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,10 +22,16 @@ declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers;
 
+use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
 use FireflyIII\Models\Preference;
 use FireflyIII\Repositories\Account\AccountRepositoryInterface;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
+use Illuminate\View\View;
+use JsonException;
 
 /**
  * Class PreferencesController.
@@ -34,6 +40,7 @@ class PreferencesController extends Controller
 {
     /**
      * PreferencesController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -42,7 +49,7 @@ class PreferencesController extends Controller
 
         $this->middleware(
             function ($request, $next) {
-                app('view')->share('title', (string)trans('firefly.preferences'));
+                app('view')->share('title', (string) trans('firefly.preferences'));
                 app('view')->share('mainTitleIcon', 'fa-gear');
 
                 return $next($request);
@@ -55,23 +62,56 @@ class PreferencesController extends Controller
      *
      * @param AccountRepositoryInterface $repository
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function index(AccountRepositoryInterface $repository)
     {
-        $accounts      = $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET]);
+        $accounts = $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET, AccountType::LOAN, AccountType::DEBT, AccountType::MORTGAGE]);
+        $isDocker = env('IS_DOCKER', false);
+        
+        // group accounts
+        $groupedAccounts = [];
+        /** @var Account $account */
+        foreach ($accounts as $account) {
+            $type = $account->accountType->type;
+            $role = sprintf('opt_group_%s', $repository->getMetaValue($account, 'account_role'));
+
+            if (in_array($type, [AccountType::MORTGAGE, AccountType::DEBT, AccountType::LOAN], true)) {
+                $role = sprintf('opt_group_l_%s', $type);
+            }
+
+            if ('' === $role || 'opt_group_' === $role) {
+                $role = 'opt_group_defaultAsset';
+            }
+            $groupedAccounts[trans(sprintf('firefly.%s', $role))][$account->id] = $account->name;
+        }
+        ksort($groupedAccounts);
+
         $accountIds    = $accounts->pluck('id')->toArray();
         $viewRangePref = app('preferences')->get('viewRange', '1M');
-        /** @noinspection NullPointerExceptionInspection */
+
         $viewRange          = $viewRangePref->data;
         $frontPageAccounts  = app('preferences')->get('frontPageAccounts', $accountIds);
-        $language           = app('preferences')->get('language', config('firefly.default_language', 'en_US'))->data;
+        $language           = app('steam')->getLanguage();
+        $languages          = config('firefly.languages');
+        $locale             = app('preferences')->get('locale', config('firefly.default_locale', 'equal'))->data;
         $listPageSize       = app('preferences')->get('listPageSize', 50)->data;
         $customFiscalYear   = app('preferences')->get('customFiscalYear', 0)->data;
         $fiscalYearStartStr = app('preferences')->get('fiscalYearStart', '01-01')->data;
         $fiscalYearStart    = date('Y') . '-' . $fiscalYearStartStr;
         $tjOptionalFields   = app('preferences')->get('transaction_journal_optional_fields', [])->data;
 
+        ksort($languages);
+
+        // list of locales also has "equal" which makes it equal to whatever the language is.
+
+        try {
+            $locales = json_decode(file_get_contents(resource_path(sprintf('lang/%s/locales.json', $language))), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            Log::error($e->getMessage());
+            $locales = [];
+        }
+        $locales = ['equal' => (string) trans('firefly.equal_to_language')] + $locales;
         // an important fallback is that the frontPageAccount array gets refilled automatically
         // when it turns up empty.
         if (0 === count($frontPageAccounts->data)) {
@@ -82,8 +122,12 @@ class PreferencesController extends Controller
             'preferences.index',
             compact(
                 'language',
-                'accounts',
+                'groupedAccounts',
+                'isDocker',
                 'frontPageAccounts',
+                'languages',
+                'locales',
+                'locale',
                 'tjOptionalFields',
                 'viewRange',
                 'customFiscalYear',
@@ -98,7 +142,7 @@ class PreferencesController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse|Redirector
      *
      */
     public function postIndex(Request $request)
@@ -107,7 +151,7 @@ class PreferencesController extends Controller
         $frontPageAccounts = [];
         if (is_array($request->get('frontPageAccounts')) && count($request->get('frontPageAccounts')) > 0) {
             foreach ($request->get('frontPageAccounts') as $id) {
-                $frontPageAccounts[] = (int)$id;
+                $frontPageAccounts[] = (int) $id;
             }
             app('preferences')->set('frontPageAccounts', $frontPageAccounts);
         }
@@ -120,14 +164,14 @@ class PreferencesController extends Controller
         session()->forget('range');
 
         // custom fiscal year
-        $customFiscalYear = 1 === (int)$request->get('customFiscalYear');
-        $fiscalYearStart  = date('m-d', strtotime((string)$request->get('fiscalYearStart')));
+        $customFiscalYear = 1 === (int) $request->get('customFiscalYear');
+        $fiscalYearStart  = date('m-d', strtotime((string) $request->get('fiscalYearStart')));
         app('preferences')->set('customFiscalYear', $customFiscalYear);
         app('preferences')->set('fiscalYearStart', $fiscalYearStart);
 
         // save page size:
         app('preferences')->set('listPageSize', 50);
-        $listPageSize = (int)$request->get('listPageSize');
+        $listPageSize = (int) $request->get('listPageSize');
         if ($listPageSize > 0 && $listPageSize < 1337) {
             app('preferences')->set('listPageSize', $listPageSize);
         }
@@ -135,12 +179,19 @@ class PreferencesController extends Controller
         // language:
         /** @var Preference $currentLang */
         $currentLang = app('preferences')->get('language', 'en_US');
-        $lang = $request->get('language');
+        $lang        = $request->get('language');
         if (array_key_exists($lang, config('firefly.languages'))) {
             app('preferences')->set('language', $lang);
         }
         if ($currentLang->data !== $lang) {
             session()->flash('info', 'All translations are supplied by volunteers. There might be errors and mistakes. I appreciate your feedback.');
+        }
+
+        // same for locale:
+        if (!auth()->user()->hasRole('demo')) {
+            /** @var Preference $currentLocale */
+            $locale = $request->get('locale');
+            app('preferences')->set('locale', $locale);
         }
 
         // optional fields for transactions:
@@ -158,8 +209,13 @@ class PreferencesController extends Controller
         ];
         app('preferences')->set('transaction_journal_optional_fields', $optionalTj);
 
-        session()->flash('success', (string)trans('firefly.saved_preferences'));
+        session()->flash('success', (string) trans('firefly.saved_preferences'));
         app('preferences')->mark();
+
+        // telemetry: user language preference + default language.
+        app('telemetry')->feature('config.firefly.default_language', config('firefly.default_language', 'en_US'));
+        app('telemetry')->feature('user.preferences.language', app('steam')->getLanguage());
+        app('telemetry')->feature('user.preferences.locale', app('steam')->getLocale());
 
         return redirect(route('preferences.index'));
     }

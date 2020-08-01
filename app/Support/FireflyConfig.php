@@ -1,7 +1,7 @@
 <?php
 /**
  * FireflyConfig.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,7 +24,9 @@ namespace FireflyIII\Support;
 
 use Cache;
 use Exception;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Configuration;
+use Illuminate\Database\QueryException;
 use Log;
 
 /**
@@ -66,9 +68,10 @@ class FireflyConfig
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param null   $default
      *
-     * @return \FireflyIII\Models\Configuration|null
+     * @throws FireflyException
+     * @return Configuration|null
      */
     public function get(string $name, $default = null): ?Configuration
     {
@@ -80,7 +83,14 @@ class FireflyConfig
             return Cache::get($fullName);
         }
 
-        $config = Configuration::where('name', $name)->first(['id', 'name', 'data']);
+        try {
+            /** @var Configuration $config */
+            $config = Configuration::where('name', $name)->first(['id', 'name', 'data']);
+        } catch (QueryException|Exception $e) {
+            //Log::error(sprintf('Query exception while polling for config var: %s', $e->getMessage()));
+            //Log::error($e->getTraceAsString());
+            throw new FireflyException(sprintf('Could not poll the database: %s', $e->getMessage()));
+        }
 
         if ($config) {
             Cache::forever($fullName, $config);
@@ -136,7 +146,8 @@ class FireflyConfig
 
     /**
      * @param string $name
-     * @param        $value
+     * @param $value
+     * @param int|string|true $value
      *
      * @return Configuration
      */
@@ -147,7 +158,15 @@ class FireflyConfig
         }
         Log::debug('Set new value for ', ['name' => $name]);
         /** @var Configuration $config */
-        $config = Configuration::whereName($name)->first();
+        try {
+            $config = Configuration::whereName($name)->first();
+        } catch (QueryException|Exception $e) {
+            $item       = new Configuration;
+            $item->name = $name;
+            $item->data = $value;
+
+            return $item;
+        }
         if (null === $config) {
             Log::debug('Does not exist yet ', ['name' => $name]);
             /** @var Configuration $item */

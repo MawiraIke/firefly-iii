@@ -1,7 +1,7 @@
 <?php
 /**
  * JavascriptController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers;
 
+use Carbon\Carbon;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
 use FireflyIII\Models\TransactionCurrency;
@@ -44,7 +45,7 @@ class JavascriptController extends Controller
      * @param AccountRepositoryInterface  $repository
      * @param CurrencyRepositoryInterface $currencyRepository
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function accounts(AccountRepositoryInterface $repository, CurrencyRepositoryInterface $currencyRepository): Response
     {
@@ -60,7 +61,7 @@ class JavascriptController extends Controller
         /** @var Account $account */
         foreach ($accounts as $account) {
             $accountId = $account->id;
-            $currency  = (int)$repository->getMetaValue($account, 'currency_id');
+            $currency  = (int) $repository->getMetaValue($account, 'currency_id');
             /** @noinspection NullPointerExceptionInspection */
             $currency                     = 0 === $currency ? $default->id : $currency;
             $entry                        = ['preferredCurrency' => $currency, 'name' => $account->name];
@@ -96,21 +97,45 @@ class JavascriptController extends Controller
     }
 
     /**
+     * Bit of a hack but OK.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function variablesV2(Request $request): Response
+    {
+        /** @var Carbon $start */
+        $start = clone session('start', Carbon::now()->startOfMonth());
+        /** @var Carbon $end */
+        $end = clone session('end', Carbon::now()->endOfMonth());
+
+        $data = [
+            'start' => $start->format('Y-m-d'),
+            'end'   => $end->format('Y-m-d'),
+        ];
+
+        return response()
+            ->view('javascript.variables', $data)
+            ->header('Content-Type', 'text/javascript');
+    }
+
+    /**
      * Show some common variables to be used in scripts.
      *
      * @param Request                     $request
      * @param AccountRepositoryInterface  $repository
      * @param CurrencyRepositoryInterface $currencyRepository
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function variables(Request $request, AccountRepositoryInterface $repository, CurrencyRepositoryInterface $currencyRepository): Response
     {
-        $account    = $repository->findNull((int)$request->get('account'));
+        $account    = $repository->findNull((int) $request->get('account'));
         $currencyId = 0;
         if (null !== $account) {
             // TODO we can use getAccountCurrency() instead
-            $currencyId = (int)$repository->getMetaValue($account, 'currency_id');
+            $currencyId = (int) $repository->getMetaValue($account, 'currency_id');
         }
         /** @var TransactionCurrency $currency */
         $currency = $currencyRepository->findNull($currencyId);
@@ -119,15 +144,14 @@ class JavascriptController extends Controller
             $currency = app('amount')->getDefaultCurrency();
         }
 
-        $localeconv                = localeconv();
+        $localeconv                = app('amount')->getLocaleInfo();
         $accounting                = app('amount')->getJsConfig($localeconv);
-        $localeconv                = localeconv();
         $localeconv['frac_digits'] = $currency->decimal_places;
         $pref                      = app('preferences')->get('language', config('firefly.default_language', 'en_US'));
         /** @noinspection NullPointerExceptionInspection */
         $lang      = $pref->data;
         $dateRange = $this->getDateRangeConfig();
-        $uid       = substr(hash('sha256', auth()->user()->id . auth()->user()->email), 0, 12);
+        $uid       = substr(hash('sha256', sprintf('%s-%s-%s', (string) config('app.key'), auth()->user()->id, auth()->user()->email)), 0, 12);
 
         $data = [
             'currencyCode'    => $currency->code,

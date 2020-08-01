@@ -1,7 +1,7 @@
 <?php
 /**
  * CategoryTransformer.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -96,7 +96,7 @@ class CategoryTransformer extends AbstractTransformer
     {
         $return = [];
         foreach ($array as $data) {
-            $data['sum'] = round($data['sum'], (int)$data['currency_decimal_places']);
+            $data['sum'] = number_format((float) $data['sum'], (int) $data['currency_decimal_places'], '.', '');
             $return[]    = $data;
         }
 

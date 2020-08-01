@@ -1,7 +1,7 @@
 <?php
 /**
  * DoubleReportController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,7 +22,6 @@
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers\Chart;
-
 
 use Carbon\Carbon;
 use FireflyIII\Generator\Chart\Basic\GeneratorInterface;
@@ -196,7 +195,9 @@ class DoubleReportController extends Controller
 
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.spent_in_specific_double', ['account' => $name]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.spent_in_specific_double', ['account' => $name]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -210,7 +211,6 @@ class DoubleReportController extends Controller
                 $chartData[$spentKey]['entries'][$key] = $chartData[$spentKey]['entries'][$key] ?? '0';
                 $chartData[$spentKey]['entries'][$key] = bcadd($chartData[$spentKey]['entries'][$key], $amount);
             }
-
         }
         // loop income.
         foreach ($earned as $currency) {
@@ -220,7 +220,9 @@ class DoubleReportController extends Controller
 
             $chartData[$earnedKey] = $chartData[$earnedKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.earned_in_specific_double', ['account' => $name]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.earned_in_specific_double', ['account' => $name]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -240,7 +242,6 @@ class DoubleReportController extends Controller
 
         return response()->json($data);
     }
-
 
 
     /**
@@ -275,7 +276,6 @@ class DoubleReportController extends Controller
                         ];
                     $amount                   = app('steam')->positive($journal['amount']);
                     $result[$title]['amount'] = bcadd($result[$title]['amount'], $amount);
-
                 }
                 // loop each tag:
                 /** @var array $tag */
@@ -334,7 +334,6 @@ class DoubleReportController extends Controller
                         ];
                     $amount                   = app('steam')->positive($journal['amount']);
                     $result[$title]['amount'] = bcadd($result[$title]['amount'], $amount);
-
                 }
                 // loop each tag:
                 /** @var array $tag */
@@ -364,21 +363,21 @@ class DoubleReportController extends Controller
     /**
      * TODO this method is double.
      *
-     * @param Collection $accounts
-     * @param int        $id
-     * @param string     $name
-     * @param string     $iban
+     * @param Collection  $accounts
+     * @param int         $id
+     * @param string      $name
+     * @param null|string $iban
      *
      * @return string
      */
-    private function getCounterpartName(Collection $accounts, int $id, string $name, string $iban): string
+    private function getCounterpartName(Collection $accounts, int $id, string $name, ?string $iban): string
     {
         /** @var Account $account */
         foreach ($accounts as $account) {
             if ($account->name === $name && $account->id !== $id) {
                 return $account->name;
             }
-            if ($account->iban === $iban && $account->id !== $id) {
+            if (null !== $account->iban && $account->iban === $iban && $account->id !== $id) {
                 return $account->iban;
             }
         }
@@ -410,6 +409,4 @@ class DoubleReportController extends Controller
 
         return $return;
     }
-
-
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * app.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -19,11 +19,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 declare(strict_types=1);
 
-use FireflyIII\Providers\ImportServiceProvider;
-
+use FireflyIII\Support\Facades\Telemetry;
 
 return [
     'name'            => envNonEmpty('APP_NAME', 'Firefly III'),
@@ -31,7 +29,7 @@ return [
     'debug'           => env('APP_DEBUG', false),
     'url'             => envNonEmpty('APP_URL', 'http://localhost'),
     'timezone'        => envNonEmpty('TZ', 'UTC'),
-    'locale'          => 'en_US',
+    'locale'          => envNonEmpty('DEFAULT_LANGUAGE', 'en_US'),
     'fallback_locale' => 'en_US',
     'key'             => env('APP_KEY'),
     'cipher'          => 'AES-256-CBC',
@@ -77,9 +75,8 @@ return [
         FireflyIII\Providers\RouteServiceProvider::class,
 
         // own stuff:
-//        TwigBridge\ServiceProvider::class,
         PragmaRX\Google2FALaravel\ServiceProvider::class,
-
+        TwigBridge\ServiceProvider::class,
 
         /*
          * More service providers.
@@ -99,7 +96,6 @@ return [
         FireflyIII\Providers\TagServiceProvider::class,
         FireflyIII\Providers\AdminServiceProvider::class,
         FireflyIII\Providers\RecurringServiceProvider::class,
-        ImportServiceProvider::class,
     ],
     'aliases'         => [
         'App'           => Illuminate\Support\Facades\App::class,
@@ -135,7 +131,6 @@ return [
         'URL'           => Illuminate\Support\Facades\URL::class,
         'Validator'     => Illuminate\Support\Facades\Validator::class,
         'View'          => Illuminate\Support\Facades\View::class,
-        'Twig'          => TwigBridge\Facade\Twig::class,
         'Form'          => Collective\Html\FormFacade::class,
         'Html'          => Collective\Html\HtmlFacade::class,
         'Preferences'   => \FireflyIII\Support\Facades\Preferences::class,
@@ -148,8 +143,28 @@ return [
         'AccountForm'   => \FireflyIII\Support\Facades\AccountForm::class,
         'PiggyBankForm' => \FireflyIII\Support\Facades\PiggyBankForm::class,
         'RuleForm'      => \FireflyIII\Support\Facades\RuleForm::class,
+        'Telemetry'     => Telemetry::class,
         'Google2FA'     => PragmaRX\Google2FALaravel\Facade::class,
+        'Twig'          => TwigBridge\Facade\Twig::class,
 
+        'Arr' => Illuminate\Support\Arr::class,
+        'Http' => Illuminate\Support\Facades\Http::class,
+        'Str' => Illuminate\Support\Str::class,
     ],
+
+    'asset_url' => env('ASSET_URL', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Faker Locale
+    |--------------------------------------------------------------------------
+    |
+    | This locale will be used by the Faker PHP library when generating fake
+    | data for your database seeds. For example, this will be used to get
+    | localized telephone numbers, street address information and more.
+    |
+    */
+
+    'faker_locale' => 'en_US',
 
 ];

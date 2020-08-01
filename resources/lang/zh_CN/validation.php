@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => '规则必须至少有一个动作。',
     'base64'                         => '这不是有效的 base64 编码资料。',
     'model_id_invalid'               => '指定的 ID 对于此模型似乎无效。',
-    'more'                           => ':attribute 必须大于零。',
     'less'                           => ':attribute 必须小于 10,000,000。',
     'active_url'                     => ':attribute 不是有效的URL。',
     'after'                          => ':attribute 必须是一个在 :date 之后的日期。',
@@ -121,19 +120,21 @@ return [
     'string'                         => ':attribute 必须是字串。',
     'url'                            => ':attribute 格式无效。',
     'timezone'                       => ':attribute 必须是有效的区域。',
-    '2fa_code'                    => ':attribute 栏位是无效的。',
-    'dimensions'                  => ':attribute 具有无效图片尺寸。',
-    'distinct'                    => ':attribute 栏位有重复值。',
-    'file'                        => ':attribute 必须是档案。',
-    'in_array'                    => ':attribute 栏位不存在于 :other。',
-    'present'                     => ':attribute 栏位必须存在。',
-    'amount_zero'                 => '总金额不能为零。',
-    'current_target_amount'       => 'The current amount must be less than the target amount.',
-    'unique_piggy_bank_for_user'  => '存钱罐的名称必须是独一无二的。',
-    'secure_password'             => '这不是一个安全的密码，请重试一次。如需更多讯息，请访问 https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => '对定期重复交易是无效的重复类型。',
-    'valid_recurrence_rep_moment' => '对此重复类型是无效的重复时刻。',
-    'invalid_account_info'        => '无效的帐户资讯。',
+    '2fa_code'                       => ':attribute 栏位是无效的。',
+    'dimensions'                     => ':attribute 具有无效图片尺寸。',
+    'distinct'                       => ':attribute 栏位有重复值。',
+    'file'                           => ':attribute 必须是档案。',
+    'in_array'                       => ':attribute 栏位不存在于 :other。',
+    'present'                        => ':attribute 栏位必须存在。',
+    'amount_zero'                    => '总金额不能为零。',
+    'current_target_amount'          => 'The current amount must be less than the target amount.',
+    'unique_piggy_bank_for_user'     => '存钱罐的名称必须是独一无二的。',
+    'unique_object_group'            => 'The group name must be unique',
+
+    'secure_password'                => '这不是一个安全的密码，请重试一次。如需更多讯息，请访问 https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => '对定期重复交易是无效的重复类型。',
+    'valid_recurrence_rep_moment'    => '对此重复类型是无效的重复时刻。',
+    'invalid_account_info'           => '无效的帐户资讯。',
     'attributes'                     => [
         'email'                   => '电子邮件地址',
         'description'             => '描述',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => '搜索 ID":id"或名称":name"时找不到有效的来源帐户。',
     'deposit_dest_need_data'   => '需要一个有效的目标账户ID和/或目标账户名称才能继续。',
     'deposit_dest_bad_data'    => '搜索 ID":id"或名称":name"时找不到有效的目标帐户。',
-    'deposit_dest_wrong_type' => '提交的目标帐户不是正确的类型。',
+    'deposit_dest_wrong_type'  => '提交的目标帐户不是正确的类型。',
 
     'transfer_source_need_data' => '需要一个有效的来源账户ID和/或来源账户名称才能继续。',
     'transfer_source_bad_data'  => '搜索 ID":id"或名称":name"时找不到有效的来源帐户。',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'Need to get a valid destination account ID and/or valid destination account name to continue.',
     'ob_dest_bad_data'    => 'Could not find a valid destination account when searching for ID ":id" or name ":name".',
 
-    'generic_invalid_source' => 'You can\'t use this account as the source account.',
+    'generic_invalid_source'      => 'You can\'t use this account as the source account.',
     'generic_invalid_destination' => 'You can\'t use this account as the destination account.',
+
+    'gte.numeric' => ':attribute 必须大于或等于 :value.',
+    'gt.numeric'  => 'The :attribute must be greater than :value.',
+    'gte.file'    => ':attribute 必须大于或等于 :value Kb',
+    'gte.string'  => ':attribute 必须大于或等于 :value 字符。',
+    'gte.array'   => ':attribute 必须具有 :value 项或更多',
+
+    'amount_required_for_auto_budget' => 'The amount is required.',
+    'auto_budget_amount_positive'     => 'The amount must be more than zero.',
+    'auto_budget_period_mandatory' => 'The auto budget period is a mandatory field.',
 ];

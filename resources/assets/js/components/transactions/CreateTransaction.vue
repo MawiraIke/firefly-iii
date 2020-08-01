@@ -1,6 +1,6 @@
 <!--
   - CreateTransaction.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -40,24 +40,6 @@
                 </div>
             </div>
         </div>
-        <div class="row" v-if="transactions.length > 1">
-            <div class="col-lg-6">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">
-                            {{ $t('firefly.split_transaction_title')}}
-                        </h3>
-                    </div>
-                    <div class="box-body">
-                        <group-description
-                                :error="group_title_errors"
-                                v-model="group_title"
-                        ></group-description>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div>
             <div class="row" v-for="(transaction, index) in transactions">
                 <div class="col-lg-12">
@@ -105,7 +87,7 @@
                                             v-on:select:account="selectedDestinationAccount(index, $event)"
                                             :error="transaction.errors.destination_account"
                                     ></account-select>
-                                    <standard-date
+                                    <standard-date v-if="0===index"
                                             v-model="transaction.date"
                                             :index="index"
                                             :error="transaction.errors.date"
@@ -168,14 +150,31 @@
                             </div>
                         </div>
                         <div class="box-footer" v-if="transactions.length-1 === index">
-                            <button class="split_add_btn btn btn-primary" type="button" @click="addTransactionToArray">{{ $t('firefly.add_another_split') }}</button>
+                            <button class="split_add_btn btn btn-default" type="button" @click="addTransactionToArray">{{ $t('firefly.add_another_split') }}</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row" v-if="transactions.length > 1">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            {{ $t('firefly.split_transaction_title')}}
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <group-description
+                                :error="group_title_errors"
+                                v-model="group_title"
+                        ></group-description>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">
@@ -188,6 +187,8 @@
                                 <input v-model="createAnother" name="create_another" type="checkbox">
                                 {{ $t('firefly.create_another') }}
                             </label>
+                        </div>
+                        <div class="checkbox">
                             <label v-bind:class="{ 'text-muted': this.createAnother === false}">
                                 <input v-model="resetFormAfter" :disabled="this.createAnother === false"
                                        name="reset_form" type="checkbox">
@@ -213,11 +214,57 @@
         components: {},
         mounted() {
             this.addTransactionToArray();
-        },
-        ready() {
-
+            document.onreadystatechange = () => {
+                if (document.readyState === "complete") {
+                    this.prefillSourceAccount();
+                    this.prefillDestinationAccount();
+                }
+            }
         },
         methods: {
+            prefillSourceAccount() {
+                if (0 === window.sourceId) {
+                    return;
+                }
+                this.getAccount(window.sourceId, 'source_account');
+            },
+            prefillDestinationAccount() {
+                if (0 === destinationId) {
+                    return;
+                }
+                this.getAccount(window.destinationId, 'destination_account');
+            },
+            getAccount(accountId, slot) {
+                const uri = './api/v1/accounts/' + accountId + '?_token=' + document.head.querySelector('meta[name="csrf-token"]').content;
+                axios.get(uri).then(response => {
+                    let model = response.data.data.attributes;
+                    model.type = this.fullAccountType(model.type, model.liability_type);
+                    model.id = parseInt(response.data.data.id);
+                    if ('source_account' === slot) {
+                        this.selectedSourceAccount(0, model);
+                    }
+                    if('destination_account' === slot) {
+                        this.selectedDestinationAccount(0, model);
+                    }
+                }).catch(error => {
+                    console.warn('Could  not auto fill account');
+                    console.warn(error);
+                });
+
+            },
+            fullAccountType: function (shortType, liabilityType) {
+                let searchType = shortType;
+                if ('liabilities' === shortType) {
+                    searchType = liabilityType;
+                }
+                let arr = {
+                    'asset': 'Asset account',
+                    'loan': 'Loan',
+                    'debt': 'Debt',
+                    'mortgage': 'Mortgage'
+                };
+                return arr[searchType] ?? searchType;
+            },
             convertData: function () {
                 // console.log('Now in convertData()');
                 let data = {
@@ -238,12 +285,13 @@
                 // the presence of a source or destination account
                 firstSource = this.transactions[0].source_account.type;
                 firstDestination = this.transactions[0].destination_account.type;
+                // console.log('Type of first source is  ' + firstSource);
 
-                if ('invalid' === transactionType && ['Asset account', 'Loan', 'Debt', 'Mortgage'].includes(firstSource)) {
+                if ('invalid' === transactionType && ['asset', 'Asset account', 'Loan', 'Debt', 'Mortgage'].includes(firstSource)) {
                     transactionType = 'withdrawal';
                 }
 
-                if ('invalid' === transactionType && ['Asset account', 'Loan', 'Debt', 'Mortgage'].includes(firstDestination)) {
+                if ('invalid' === transactionType && ['asset', 'Asset account', 'Loan', 'Debt', 'Mortgage'].includes(firstDestination)) {
                     transactionType = 'deposit';
                 }
 
@@ -252,6 +300,12 @@
                         data.transactions.push(this.convertDataRow(this.transactions[key], key, transactionType));
                     }
                 }
+
+                // overrule group title in case its empty:
+                if(''===data.group_title && data.transactions.length > 1) {
+                    data.group_title = data.transactions[0].description;
+                }
+
                 return data;
             },
             convertDataRow(row, index, transactionType) {
@@ -325,6 +379,11 @@
                 if (0 === sourceId) {
                     sourceId = null;
                 }
+                // parse amount if has exactly one comma:
+                // solves issues with some locales.
+                if (1 === (row.amount.match(/\,/g) || []).length) {
+                    row.amount = row.amount.replace(',', '.');
+                }
 
                 currentArray =
                     {
@@ -377,7 +436,7 @@
                 const uri = './api/v1/transactions?_token=' + document.head.querySelector('meta[name="csrf-token"]').content;
                 const data = this.convertData();
 
-                let button = $(e.currentTarget);
+                let button = $('#submitButton');
                 button.prop("disabled", true);
 
                 axios.post(uri, data).then(response => {
@@ -385,16 +444,19 @@
                     // this method will ultimately send the user on (or not).
                     if (0 === this.collectAttachmentData(response)) {
                         // console.log('Will now go to redirectUser()');
-                        this.redirectUser(response.data.data.id, button, response.data.data);
+                        this.redirectUser(response.data.data.id, response.data.data);
                     }
                 }).catch(error => {
                     // give user errors things back.
                     // something something render errors.
+
                     console.error('Error in transaction submission.');
                     console.error(error);
                     this.parseErrors(error.response.data);
+
                     // something.
-                    button.prop("disabled", false);
+                    console.log('enable button again.')
+                    button.removeAttr('disabled');
                 });
 
                 if (e) {
@@ -406,7 +468,7 @@
                 div.innerText = unsafeText;
                 return div.innerHTML;
             },
-            redirectUser(groupId, button, transactionData) {
+            redirectUser(groupId, transactionData) {
                 // console.log('In redirectUser()');
                 // console.log(transactionData);
                 let title = null === transactionData.attributes.group_title ? transactionData.attributes.transactions[0].description : transactionData.attributes.group_title;
@@ -414,7 +476,7 @@
                 // if count is 0, send user onwards.
                 if (this.createAnother) {
                     // do message:
-                    this.success_message = '<a href="transactions/show/' + groupId + '">Transaction #' + groupId + ' ("' + this.escapeHTML(title) + '")</a> has been stored.';
+                    this.success_message = this.$t('firefly.transaction_stored_link', { ID: groupId, title: title });
                     this.error_message = '';
                     if (this.resetFormAfter) {
                         // also clear form.
@@ -427,9 +489,9 @@
                     // clear errors:
                     this.setDefaultErrors();
 
-                    if (button) {
-                        button.prop("disabled", false);
-                    }
+                    console.log('enable button again.')
+                    let button = $('#submitButton');
+                    button.removeAttr('disabled');
                 } else {
                     // console.log('Will redirect to previous URL. (' + previousUri + ')');
                     window.location.href = window.previousUri + '?transaction_group_id=' + groupId + '&message=created';
@@ -505,8 +567,8 @@
                         const uri = './api/v1/attachments';
                         const data = {
                             filename: fileData[key].name,
-                            model: 'TransactionJournal',
-                            model_id: fileData[key].journal,
+                            attachable_type: 'TransactionJournal',
+                            attachable_id: fileData[key].journal,
                         };
                         axios.post(uri, data)
                             .then(response => {
@@ -520,7 +582,7 @@
                                         if (uploads === count) {
                                             // finally we can redirect the user onwards.
                                             // console.log('FINAL UPLOAD');
-                                            this.redirectUser(groupId, null, transactionData);
+                                            this.redirectUser(groupId, transactionData);
                                         }
                                         // console.log('Upload complete!');
                                         return true;
@@ -532,12 +594,23 @@
                                     if (uploads === count) {
                                         // finally we can redirect the user onwards.
                                         // console.log('FINAL UPLOAD');
-                                        this.redirectUser(groupId, null, transactionData);
+                                        this.redirectUser(groupId, transactionData);
                                     }
                                     // console.log('Upload complete!');
                                     return false;
                                 });
-                            });
+                            }).catch(error => {
+                            console.error('Could not create upload.');
+                            console.error(error);
+                            uploads++;
+                            if (uploads === count) {
+                                // finally we can redirect the user onwards.
+                                // console.log('FINAL UPLOAD');
+                                this.redirectUser(groupId, transactionData);
+                            }
+                            // console.log('Upload complete!');
+                            return false;
+                        });
                     }
                 }
 
@@ -579,10 +652,10 @@
             parseErrors: function (errors) {
                 this.setDefaultErrors();
                 this.error_message = "";
-                if (errors.message.length > 0) {
-                    this.error_message = this.$t('firefly.errors_submission');
+                if (typeof errors.errors === 'undefined') {
+                    this.error_message = errors.message;
                 } else {
-                    this.error_message = '';
+                    this.error_message = this.$t('firefly.errors_submission');
                 }
                 let transactionIndex;
                 let fieldName;
@@ -756,11 +829,13 @@
             },
 
             selectedSourceAccount: function (index, model) {
-                // console.log('Now in selectedSourceAccount()');
+                console.log('Now in selectedSourceAccount()');
                 if (typeof model === 'string') {
+                    //console.log('model is string.')
                     // cant change types, only name.
                     this.transactions[index].source_account.name = model;
                 } else {
+                    //console.log('model is NOT string.')
                     this.transactions[index].source_account = {
                         id: model.id,
                         name: model.name,
@@ -770,12 +845,14 @@
                         currency_code: model.currency_code,
                         currency_decimal_places: model.currency_decimal_places,
                         allowed_types: this.transactions[index].source_account.allowed_types,
-                        default_allowed_types: ['Asset account','Revenue account','Loan','Debt','Mortgage']
+                        default_allowed_types: ['Asset account', 'Revenue account', 'Loan', 'Debt', 'Mortgage']
                     };
 
                     // force types on destination selector.
                     this.transactions[index].destination_account.allowed_types = window.allowedOpposingTypes.source[model.type];
                 }
+                //console.log('Transactions:');
+                //console.log(this.transactions);
             },
             selectedDestinationAccount: function (index, model) {
                 // console.log('Now in selectedDestinationAccount()');

@@ -1,7 +1,7 @@
 <?php
 /**
  * RecurringCronjob.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -34,38 +34,6 @@ use Log;
  */
 class RecurringCronjob extends AbstractCronjob
 {
-    /** @var bool */
-    private $force;
-
-    /** @var Carbon */
-    private $date;
-
-    /**
-     * RecurringCronjob constructor.
-     * @throws \Exception
-     */
-    public function __construct()
-    {
-        $this->force = false;
-        $this->date  = new Carbon;
-    }
-
-    /**
-     * @param bool $force
-     */
-    public function setForce(bool $force): void
-    {
-        $this->force = $force;
-    }
-
-    /**
-     * @param Carbon $date
-     */
-    public function setDate(Carbon $date): void
-    {
-        $this->date = $date;
-    }
-
     /**
      * @return bool
      * @throws FireflyException
@@ -118,6 +86,7 @@ class RecurringCronjob extends AbstractCronjob
         $job->setForce($this->force);
         $job->handle();
         app('fireflyconfig')->set('last_rt_job', (int)$this->date->format('U'));
+        Log::info(sprintf('Marked the last time this job has run as "%s" (%d)',$this->date->format('Y-m-d H:i:s'),(int)$this->date->format('U')));
         Log::info('Done with recurring cron job task.');
     }
 }

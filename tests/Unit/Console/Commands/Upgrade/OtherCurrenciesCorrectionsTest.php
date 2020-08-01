@@ -1,7 +1,7 @@
 <?php
 /**
  * OtherCurrenciesCorrectionsTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -81,13 +81,14 @@ class OtherCurrenciesCorrectionsTest extends TestCase
 
         // account repos
         $accountRepos->shouldReceive('setUser')->atLeast()->once();
-        $accountRepos->shouldReceive('getMetaValue')->atLeast()->once()
-                     ->withArgs([Mockery::any(), 'currency_id'])->andReturn('1');
+        $accountRepos->shouldReceive('getAccountCurrency')->atLeast()->once()->andReturn($euro);
+        #$accountRepos->shouldReceive('getMetaValue')->atLeast()->once()
+        #             ->withArgs([Mockery::any(), 'currency_id'])->andReturn('1');
 
         // collect currency
         $currencyRepos->shouldReceive('setUser')->atLeast()->once();
-        $currencyRepos->shouldReceive('findNull')->atLeast()->once()
-                      ->withArgs([1])->andReturn($euro);
+        #$currencyRepos->shouldReceive('findNull')->atLeast()->once()
+        #              ->withArgs([1])->andReturn($euro);
 
         // configuration
         $false       = new Configuration;
@@ -157,13 +158,12 @@ class OtherCurrenciesCorrectionsTest extends TestCase
 
         // account repos
         $accountRepos->shouldReceive('setUser')->atLeast()->once();
-        $accountRepos->shouldReceive('getMetaValue')->atLeast()->once()
-                     ->withArgs([Mockery::any(), 'currency_id'])->andReturn('1');
+        $accountRepos->shouldReceive('getAccountCurrency')->atLeast()->once()->andReturn($euro);
 
         // collect currency
         $currencyRepos->shouldReceive('setUser')->atLeast()->once();
-        $currencyRepos->shouldReceive('findNull')->atLeast()->once()
-                      ->withArgs([1])->andReturn($euro);
+        #$currencyRepos->shouldReceive('findNull')->atLeast()->once()
+        #              ->withArgs([1])->andReturn($euro);
 
         // configuration
         $false       = new Configuration;
@@ -242,13 +242,13 @@ class OtherCurrenciesCorrectionsTest extends TestCase
 
         // account repos
         $accountRepos->shouldReceive('setUser')->atLeast()->once();
-        $accountRepos->shouldReceive('getMetaValue')->atLeast()->once()
-                     ->withArgs([Mockery::any(), 'currency_id'])->andReturn('1');
-
+        #$accountRepos->shouldReceive('getMetaValue')->atLeast()->once()
+        #             ->withArgs([Mockery::any(), 'currency_id'])->andReturn('1');
+        $accountRepos->shouldReceive('getAccountCurrency')->atLeast()->once()->andReturn($euro);
         // collect currency
         $currencyRepos->shouldReceive('setUser')->atLeast()->once();
-        $currencyRepos->shouldReceive('findNull')->atLeast()->once()
-                      ->withArgs([1])->andReturn($euro);
+        #$currencyRepos->shouldReceive('findNull')->atLeast()->once()
+        #              ->withArgs([1])->andReturn($euro);
 
         // configuration
         $false       = new Configuration;

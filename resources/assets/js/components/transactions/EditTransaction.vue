@@ -1,6 +1,6 @@
 <!--
   - EditTransaction.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -41,24 +41,6 @@
                 </div>
             </div>
         </div>
-        <div class="row" v-if="transactions.length > 1">
-            <div class="col-lg-6">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">
-                            {{ $t('firefly.split_transaction_title')}}
-                        </h3>
-                    </div>
-                    <div class="box-body">
-                        <group-description
-                                :error="group_title_errors"
-                                v-model="group_title"
-                        ></group-description>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div>
             <div class="row" v-for="(transaction, index) in transactions">
                 <div class="col-lg-12">
@@ -69,7 +51,7 @@
                                 <span v-if="transactions.length === 1">{{ $t('firefly.transaction_journal_information') }}</span>
                             </h3>
                             <div class="box-tools pull-right" v-if="transactions.length > 1" x>
-                                <button  type="button" v-on:click="deleteTransaction(index, $event)" class="btn btn-xs btn-danger"><i
+                                <button type="button" v-on:click="deleteTransaction(index, $event)" class="btn btn-xs btn-danger"><i
                                         class="fa fa-trash"></i></button>
                             </div>
                         </div>
@@ -77,9 +59,9 @@
                             <div class="row">
                                 <div class="col-lg-4">
                                     <transaction-description v-if="transactionType.toLowerCase() !== 'reconciliation'"
-                                            v-model="transaction.description"
-                                            :index="index"
-                                            :error="transaction.errors.description"
+                                                             v-model="transaction.description"
+                                                             :index="index"
+                                                             :error="transaction.errors.description"
                                     >
                                     </transaction-description>
                                     <account-select v-if="transactionType.toLowerCase() !== 'reconciliation'"
@@ -97,7 +79,7 @@
                                         <div class="col-sm-12">
                                             <p id="ffInput_source" class="form-control-static">
                                                 <em>
-                                                {{ $t('firefly.source_account_reconciliation') }}
+                                                    {{ $t('firefly.source_account_reconciliation') }}
                                                 </em>
                                             </p>
                                         </div>
@@ -117,7 +99,7 @@
                                         <div class="col-sm-12">
                                             <p id="ffInput_dest" class="form-control-static">
                                                 <em>
-                                                {{ $t('firefly.destination_account_reconciliation') }}
+                                                    {{ $t('firefly.destination_account_reconciliation') }}
                                                 </em>
                                             </p>
                                         </div>
@@ -148,13 +130,13 @@
                                             :transactionType="transactionType"
                                     ></amount>
                                     <foreign-amount v-if="transactionType.toLowerCase() !== 'reconciliation'"
-                                            :source="transaction.source_account"
-                                            :destination="transaction.destination_account"
-                                            v-model="transaction.foreign_amount"
-                                            :transactionType="transactionType"
-                                            :error="transaction.errors.foreign_amount"
-                                            :no_currency="$t('firefly.none_in_select_list')"
-                                            v-bind:title="$t('form.foreign_amount')"
+                                                    :source="transaction.source_account"
+                                                    :destination="transaction.destination_account"
+                                                    v-model="transaction.foreign_amount"
+                                                    :transactionType="transactionType"
+                                                    :error="transaction.errors.foreign_amount"
+                                                    :no_currency="$t('firefly.none_in_select_list')"
+                                                    v-bind:title="$t('form.foreign_amount')"
                                     ></foreign-amount>
                                 </div>
                                 <div class="col-lg-4">
@@ -170,6 +152,7 @@
                                             :error="transaction.errors.category"
                                     ></category>
                                     <tags
+                                            :transactionType="transactionType"
                                             :tags="transaction.tags"
                                             v-model="transaction.tags"
                                             :error="transaction.errors.tags"
@@ -182,14 +165,31 @@
                             </div>
                         </div>
                         <div class="box-footer" v-if="transactions.length-1 === index && transactionType.toLowerCase() !== 'reconciliation'">
-                            <button class="btn btn-primary" type="button" @click="addTransaction">{{ $t('firefly.add_another_split') }}</button>
+                            <button class="btn btn-default" type="button" @click="addTransaction">{{ $t('firefly.add_another_split') }}</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row" v-if="transactions.length > 1">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            {{ $t('firefly.split_transaction_title')}}
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <group-description
+                                :error="group_title_errors"
+                                v-model="group_title"
+                        ></group-description>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">
@@ -203,7 +203,7 @@
                                 {{ $t('firefly.after_update_create_another') }}
                             </label>
                         </div>
-                        <div class="checkbox" v-if="transactionType.toLowerCase() !== 'reconciliation'">
+                        <div class="checkbox" v-if="null !== transactionType && transactionType.toLowerCase() !== 'reconciliation'">
                             <label>
                                 <input v-model="storeAsNew" name="store_as_new" type="checkbox">
                                 {{ $t('firefly.store_as_new') }}
@@ -301,7 +301,9 @@
                 }
             },
             setTransactionType(type) {
-                this.transactionType = type;
+                if (null !== type) {
+                    this.transactionType = type;
+                }
             },
             deleteTransaction(index, event) {
                 event.preventDefault();
@@ -383,7 +385,7 @@
                 this.setTransactionType(transaction.type);
 
                 let newTags = [];
-                for(let key in transaction.tags) {
+                for (let key in transaction.tags) {
                     if (transaction.tags.hasOwnProperty(key) && /^0$|^[1-9]\d*$/.test(key) && key <= 4294967294) {
                         newTags.push({text: transaction.tags[key], tiClasses: []});
                     }
@@ -404,58 +406,58 @@
                                                budget_id: [],
                                                foreign_amount: [],
                                                category: [],
-                        piggy_bank: [],
-                        tags: [],
-                        // custom fields:
-                        custom_errors: {
-                            interest_date: [],
-                            book_date: [],
-                            process_date: [],
-                            due_date: [],
-                            payment_date: [],
-                            invoice_date: [],
-                            internal_reference: [],
-                            notes: [],
-                            attachments: [],
-                        },
-                    },
-                    budget: transaction.budget_id,
-                    tags: newTags,
-                    custom_fields: {
-                        interest_date: transaction.interest_date,
-                        book_date: transaction.book_date,
-                        process_date: transaction.process_date,
-                        due_date: transaction.due_date,
-                        payment_date: transaction.payment_date,
-                        invoice_date: transaction.invoice_date,
-                        internal_reference: transaction.internal_reference,
-                        notes: transaction.notes
-                    },
-                    foreign_amount: {
-                        amount: this.roundNumber(this.positiveAmount(transaction.foreign_amount), transaction.foreign_currency_decimal_places),
-                        currency_id: transaction.foreign_currency_id
-                    },
-                    source_account: {
-                        id: transaction.source_id,
-                        name: transaction.source_name,
-                        type: transaction.source_type,
-                        currency_id: transaction.currency_id,
-                        currency_name: transaction.currency_name,
-                        currency_code: transaction.currency_code,
-                        currency_decimal_places: transaction.currency_decimal_places,
-                        allowed_types: [transaction.source_type]
-                    },
-                    destination_account: {
-                        id: transaction.destination_id,
-                        name: transaction.destination_name,
-                        type: transaction.destination_type,
-                        currency_id: transaction.currency_id,
-                        currency_name: transaction.currency_name,
-                        currency_code: transaction.currency_code,
-                        currency_decimal_places: transaction.currency_decimal_places,
-                        allowed_types: [transaction.destination_type]
-                    }
-                });
+                                               piggy_bank: [],
+                                               tags: [],
+                                               // custom fields:
+                                               custom_errors: {
+                                                   interest_date: [],
+                                                   book_date: [],
+                                                   process_date: [],
+                                                   due_date: [],
+                                                   payment_date: [],
+                                                   invoice_date: [],
+                                                   internal_reference: [],
+                                                   notes: [],
+                                                   attachments: [],
+                                               },
+                                           },
+                                           budget: transaction.budget_id,
+                                           tags: newTags,
+                                           custom_fields: {
+                                               interest_date: transaction.interest_date,
+                                               book_date: transaction.book_date,
+                                               process_date: transaction.process_date,
+                                               due_date: transaction.due_date,
+                                               payment_date: transaction.payment_date,
+                                               invoice_date: transaction.invoice_date,
+                                               internal_reference: transaction.internal_reference,
+                                               notes: transaction.notes
+                                           },
+                                           foreign_amount: {
+                                               amount: this.roundNumber(this.positiveAmount(transaction.foreign_amount), transaction.foreign_currency_decimal_places),
+                                               currency_id: transaction.foreign_currency_id
+                                           },
+                                           source_account: {
+                                               id: transaction.source_id,
+                                               name: transaction.source_name,
+                                               type: transaction.source_type,
+                                               currency_id: transaction.currency_id,
+                                               currency_name: transaction.currency_name,
+                                               currency_code: transaction.currency_code,
+                                               currency_decimal_places: transaction.currency_decimal_places,
+                                               allowed_types: [transaction.source_type]
+                                           },
+                                           destination_account: {
+                                               id: transaction.destination_id,
+                                               name: transaction.destination_name,
+                                               type: transaction.destination_type,
+                                               currency_id: transaction.currency_id,
+                                               currency_name: transaction.currency_name,
+                                               currency_code: transaction.currency_code,
+                                               currency_decimal_places: transaction.currency_decimal_places,
+                                               allowed_types: [transaction.destination_type]
+                                           }
+                                       });
             },
             convertData: function () {
                 let data = {
@@ -564,6 +566,13 @@
                 if (0 === sourceId) {
                     sourceId = null;
                 }
+
+                // parse amount if has exactly one comma:
+                // solves issues with some locales.
+                if (1 === (String(row.amount).match(/\,/g) || []).length) {
+                    row.amount = String(row.amount).replace(',', '.');
+                }
+
                 currentArray =
                     {
                         transaction_journal_id: row.transaction_journal_id,
@@ -618,7 +627,7 @@
                 }
                 const data = this.convertData();
 
-                let button = $(e.currentTarget);
+                let button = $('#submitButton');
                 button.prop("disabled", true);
 
                 //axios.put(uri, data)
@@ -627,37 +636,32 @@
                           url: uri,
                           data: data,
                       }).then(response => {
-
-                        if (0 === this.collectAttachmentData(response)) {
-                            this.redirectUser(response.data.data.id, button);
-                        }
-                    }).catch(error => {
+                            if (0 === this.collectAttachmentData(response)) {
+                                this.redirectUser(response.data.data.id);
+                            }
+                }).catch(error => {
                     // give user errors things back.
                     // something something render errors.
                     this.parseErrors(error.response.data);
                     // something.
-                    button.prop("disabled", false);
                 });
                 if (e) {
                     e.preventDefault();
                 }
+                button.removeAttr('disabled');
             },
 
-            redirectUser(groupId, button) {
-                // console.log('In redirectUser()');
-                // if count is 0, send user onwards.
-
+            redirectUser(groupId) {
                 if (this.returnAfter) {
                     this.setDefaultErrors();
                     // do message if update or new:
                     if (this.storeAsNew) {
-                        this.success_message = '<a href="transactions/show/' + groupId + '">Transaction #' + groupId + '</a> has been created.';
+                        this.success_message = this.$t('firefly.transaction_new_stored_link', { ID: groupId });
                         this.error_message = '';
                     } else {
-                        this.success_message = '<a href="transactions/show/' + groupId + '">The transaction</a> has been updated.';
+                        this.success_message = this.$t('firefly.transaction_updated_link', { ID: groupId });
                         this.error_message = '';
                     }
-                    button.prop("disabled", false);
                 } else {
                     if (this.storeAsNew) {
                         window.location.href = window.previousUri + '?transaction_group_id=' + groupId + '&message=created';
@@ -739,8 +743,8 @@
                         const uri = './api/v1/attachments';
                         const data = {
                             filename: fileData[key].name,
-                            model: 'TransactionJournal',
-                            model_id: fileData[key].journal,
+                            attachable_type: 'TransactionJournal',
+                            attachable_id: fileData[key].journal,
                         };
                         axios.post(uri, data)
                             .then(response => {
@@ -754,22 +758,33 @@
                                         if (uploads === count) {
                                             // finally we can redirect the user onwards.
                                             // console.log('FINAL UPLOAD');
-                                            this.redirectUser(groupId);
+                                            this.redirectUser(groupId, null);
                                         }
                                         // console.log('Upload complete!');
                                         return true;
                                     }).catch(error => {
-                                        console.error('Could not upload file.');
-                                        console.error(error);
-                                        uploads++;
-                                        this.error_message = 'Could not upload attachment: ' + error;
+                                    console.error('Could not upload file.');
+                                    console.error(error);
+                                    uploads++;
+                                    this.error_message = 'Could not upload attachment: ' + error;
                                     if (uploads === count) {
-                                        this.redirectUser(groupId);
+                                        this.redirectUser(groupId, null);
                                     }
                                     // console.error(error);
                                     return false;
                                 });
-                            });
+                            }).catch(error => {
+                            console.error('Could not create upload.');
+                            console.error(error);
+                            uploads++;
+                            if (uploads === count) {
+                                // finally we can redirect the user onwards.
+                                // console.log('FINAL UPLOAD');
+                                this.redirectUser(groupId, null);
+                            }
+                            // console.log('Upload complete!');
+                            return false;
+                        });
                     }
                 }
 
@@ -778,74 +793,74 @@
 
             addTransaction: function (e) {
                 this.transactions.push({
-                    transaction_journal_id: 0,
-                    description: "",
-                    date: "",
-                    amount: "",
-                    category: "",
-                    piggy_bank: 0,
-                    errors: {
-                        source_account: [],
-                        destination_account: [],
-                        description: [],
-                        amount: [],
-                        date: [],
-                        budget_id: [],
-                        foreign_amount: [],
-                        category: [],
-                        piggy_bank: [],
-                        tags: [],
-                        // custom fields:
-                        custom_errors: {
-                            interest_date: [],
-                            book_date: [],
-                            process_date: [],
-                            due_date: [],
-                            payment_date: [],
-                            invoice_date: [],
-                            internal_reference: [],
-                            notes: [],
-                            attachments: [],
-                        },
-                    },
-                    budget: 0,
-                    tags: [],
-                    custom_fields: {
-                        "interest_date": "",
-                        "book_date": "",
-                        "process_date": "",
-                        "due_date": "",
-                        "payment_date": "",
-                        "invoice_date": "",
-                        "internal_reference": "",
-                        "notes": "",
-                        "attachments": []
-                    },
-                    foreign_amount: {
-                        amount: "",
-                        currency_id: 0
-                    },
-                    source_account: {
-                        id: 0,
-                        name: "",
-                        type: "",
-                        currency_id: 0,
-                        currency_name: '',
-                        currency_code: '',
-                        currency_decimal_places: 2,
-                        allowed_types: []
-                    },
-                    destination_account: {
-                        id: 0,
-                        name: "",
-                        type: "",
-                        currency_id: 0,
-                        currency_name: '',
-                        currency_code: '',
-                        currency_decimal_places: 2,
-                        allowed_types: []
-                    }
-                });
+                                           transaction_journal_id: 0,
+                                           description: "",
+                                           date: "",
+                                           amount: "",
+                                           category: "",
+                                           piggy_bank: 0,
+                                           errors: {
+                                               source_account: [],
+                                               destination_account: [],
+                                               description: [],
+                                               amount: [],
+                                               date: [],
+                                               budget_id: [],
+                                               foreign_amount: [],
+                                               category: [],
+                                               piggy_bank: [],
+                                               tags: [],
+                                               // custom fields:
+                                               custom_errors: {
+                                                   interest_date: [],
+                                                   book_date: [],
+                                                   process_date: [],
+                                                   due_date: [],
+                                                   payment_date: [],
+                                                   invoice_date: [],
+                                                   internal_reference: [],
+                                                   notes: [],
+                                                   attachments: [],
+                                               },
+                                           },
+                                           budget: 0,
+                                           tags: [],
+                                           custom_fields: {
+                                               "interest_date": "",
+                                               "book_date": "",
+                                               "process_date": "",
+                                               "due_date": "",
+                                               "payment_date": "",
+                                               "invoice_date": "",
+                                               "internal_reference": "",
+                                               "notes": "",
+                                               "attachments": []
+                                           },
+                                           foreign_amount: {
+                                               amount: "",
+                                               currency_id: 0
+                                           },
+                                           source_account: {
+                                               id: 0,
+                                               name: "",
+                                               type: "",
+                                               currency_id: 0,
+                                               currency_name: '',
+                                               currency_code: '',
+                                               currency_decimal_places: 2,
+                                               allowed_types: []
+                                           },
+                                           destination_account: {
+                                               id: 0,
+                                               name: "",
+                                               type: "",
+                                               currency_id: 0,
+                                               currency_name: '',
+                                               currency_code: '',
+                                               currency_decimal_places: 2,
+                                               allowed_types: []
+                                           }
+                                       });
                 if (e) {
                     e.preventDefault();
                 }

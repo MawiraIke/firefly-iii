@@ -1,7 +1,7 @@
 <?php
 /**
  * TransactionCalculation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -172,7 +172,7 @@ trait TransactionCalculation
      * @param Carbon $start
      * @param Carbon $end
      *
-     * @return Collection
+     * @return array
      */
     protected function getIncomeForTags(Collection $accounts, Collection $tags, Carbon $start, Carbon $end): array
     {

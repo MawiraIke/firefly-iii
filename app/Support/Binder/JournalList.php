@@ -1,7 +1,7 @@
 <?php
 /**
  * JournalList.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -36,7 +36,8 @@ class JournalList implements BinderInterface
      * @param string $value
      * @param Route  $route
      *
-     * @return mixed
+     * @return array
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public static function routeBinder(string $value, Route $route): array
@@ -47,7 +48,7 @@ class JournalList implements BinderInterface
             // get the journals by using the collector.
             /** @var GroupCollectorInterface $collector */
             $collector = app(GroupCollectorInterface::class);
-            $collector->setTypes([TransactionType::WITHDRAWAL, TransactionType::DEPOSIT, TransactionType::TRANSFER]);
+            $collector->setTypes([TransactionType::WITHDRAWAL, TransactionType::DEPOSIT, TransactionType::TRANSFER, TransactionType::RECONCILIATION]);
             $collector->withCategoryInformation()->withBudgetInformation()->withTagInformation()->withAccountInformation();
             $collector->setJournalIds($list);
             $result = $collector->getExtractedJournals();

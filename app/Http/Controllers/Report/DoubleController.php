@@ -1,7 +1,7 @@
 <?php
 /**
  * DoubleController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -100,8 +100,8 @@ class DoubleController extends Controller
                     ];
                 $result[$key]['transactions']++;
                 $result[$key]['sum']       = bcadd($journal['amount'], $result[$key]['sum']);
-                $result[$key]['avg']       = bcdiv($result[$key]['sum'], (string)$result[$key]['transactions']);
-                $result[$key]['avg_float'] = (float)$result[$key]['avg'];
+                $result[$key]['avg']       = bcdiv($result[$key]['sum'], (string) $result[$key]['transactions']);
+                $result[$key]['avg_float'] = (float) $result[$key]['avg'];
             }
         }
         // sort by amount_float
@@ -152,8 +152,8 @@ class DoubleController extends Controller
                     ];
                 $result[$key]['transactions']++;
                 $result[$key]['sum']       = bcadd($journal['amount'], $result[$key]['sum']);
-                $result[$key]['avg']       = bcdiv($result[$key]['sum'], (string)$result[$key]['transactions']);
-                $result[$key]['avg_float'] = (float)$result[$key]['avg'];
+                $result[$key]['avg']       = bcdiv($result[$key]['sum'], (string) $result[$key]['transactions']);
+                $result[$key]['avg_float'] = (float) $result[$key]['avg'];
             }
         }
         // sort by amount_float
@@ -410,7 +410,7 @@ class DoubleController extends Controller
                 $result[] = [
                     'description'              => $journal['description'],
                     'transaction_group_id'     => $journal['transaction_group_id'],
-                    'amount_float'             => (float)$journal['amount'],
+                    'amount_float'             => (float) $journal['amount'],
                     'amount'                   => $journal['amount'],
                     'date'                     => $journal['date']->formatLocalized($this->monthAndDayFormat),
                     'destination_account_name' => $journal['destination_account_name'],
@@ -459,7 +459,7 @@ class DoubleController extends Controller
                 $result[] = [
                     'description'              => $journal['description'],
                     'transaction_group_id'     => $journal['transaction_group_id'],
-                    'amount_float'             => (float)$journal['amount'],
+                    'amount_float'             => (float) $journal['amount'],
                     'amount'                   => $journal['amount'],
                     'date'                     => $journal['date']->formatLocalized($this->monthAndDayFormat),
                     'destination_account_name' => $journal['destination_account_name'],
@@ -489,305 +489,24 @@ class DoubleController extends Controller
         return $result;
     }
 
-
-    //
-    //
-    //    /**
-    //     * Generates the overview per budget.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $expense
-    //     * @param Carbon $start
-    //     * @param Carbon $end
-    //     *
-    //     * @return string
-    //     */
-    //    public function budget(Collection $accounts, Collection $expense, Carbon $start, Carbon $end): string
-    //    {
-    //        // Properties for cache:
-    //        $cache = new CacheProperties;
-    //        $cache->addProperty($start);
-    //        $cache->addProperty($end);
-    //        $cache->addProperty('expense-budget');
-    //        $cache->addProperty($accounts->pluck('id')->toArray());
-    //        $cache->addProperty($expense->pluck('id')->toArray());
-    //        if ($cache->has()) {
-    //            return $cache->get(); // @codeCoverageIgnore
-    //        }
-    //        $combined = $this->combineAccounts($expense);
-    //        $all      = new Collection;
-    //        foreach ($combined as $combi) {
-    //            $all = $all->merge($combi);
-    //        }
-    //        // now find spent / earned:
-    //        $spent = $this->spentByBudget($accounts, $all, $start, $end);
-    //        // join arrays somehow:
-    //        $together = [];
-    //        foreach ($spent as $categoryId => $spentInfo) {
-    //            if (!isset($together[$categoryId])) {
-    //                $together[$categoryId]['spent']       = $spentInfo;
-    //                $together[$categoryId]['budget']      = $spentInfo['name'];
-    //                $together[$categoryId]['grand_total'] = '0';
-    //            }
-    //            $together[$categoryId]['grand_total'] = bcadd($spentInfo['grand_total'], $together[$categoryId]['grand_total']);
-    //        }
-    //        try {
-    //            $result = view('reports.partials.exp-budgets', compact('together'))->render();
-    //            // @codeCoverageIgnoreStart
-    //        } catch (Throwable $e) {
-    //            Log::error(sprintf('Could not render category::budget: %s', $e->getMessage()));
-    //            $result = sprintf('An error prevented Firefly III from rendering: %s. Apologies.', $e->getMessage());
-    //        }
-    //        // @codeCoverageIgnoreEnd
-    //        $cache->store($result);
-    //
-    //        return $result;
-    //    }
-    //
-    //
-    //
-    //    /**
-    //     * Generates the overview per category (spent and earned).
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $expense
-    //     * @param Carbon $start
-    //     * @param Carbon $end
-    //     *
-    //     * @return string
-    //     */
-    //    public function category(Collection $accounts, Collection $expense, Carbon $start, Carbon $end): string
-    //    {
-    //        // Properties for cache:
-    //        $cache = new CacheProperties;
-    //        $cache->addProperty($start);
-    //        $cache->addProperty($end);
-    //        $cache->addProperty('expense-category');
-    //        $cache->addProperty($accounts->pluck('id')->toArray());
-    //        $cache->addProperty($expense->pluck('id')->toArray());
-    //        if ($cache->has()) {
-    //            return $cache->get(); // @codeCoverageIgnore
-    //        }
-    //        $combined = $this->combineAccounts($expense);
-    //        $all      = new Collection;
-    //        foreach ($combined as $combi) {
-    //            $all = $all->merge($combi);
-    //        }
-    //        // now find spent / earned:
-    //        $spent  = $this->spentByCategory($accounts, $all, $start, $end);
-    //        $earned = $this->earnedByCategory($accounts, $all, $start, $end);
-    //        // join arrays somehow:
-    //        $together = [];
-    //        foreach ($spent as $categoryId => $spentInfo) {
-    //            if (!isset($together[$categoryId])) {
-    //                $together[$categoryId]['spent']       = $spentInfo;
-    //                $together[$categoryId]['category']    = $spentInfo['name'];
-    //                $together[$categoryId]['grand_total'] = '0';
-    //            }
-    //            $together[$categoryId]['grand_total'] = bcadd($spentInfo['grand_total'], $together[$categoryId]['grand_total']);
-    //        }
-    //        foreach ($earned as $categoryId => $earnedInfo) {
-    //            if (!isset($together[$categoryId])) {
-    //                $together[$categoryId]['earned']      = $earnedInfo;
-    //                $together[$categoryId]['category']    = $earnedInfo['name'];
-    //                $together[$categoryId]['grand_total'] = '0';
-    //            }
-    //            $together[$categoryId]['grand_total'] = bcadd($earnedInfo['grand_total'], $together[$categoryId]['grand_total']);
-    //        }
-    //        try {
-    //            $result = view('reports.partials.exp-categories', compact('together'))->render();
-    //            // @codeCoverageIgnoreStart
-    //        } catch (Throwable $e) {
-    //            Log::error(sprintf('Could not render category::expenses: %s', $e->getMessage()));
-    //            $result = sprintf('An error prevented Firefly III from rendering: %s. Apologies.', $e->getMessage());
-    //        }
-    //        // @codeCoverageIgnoreEnd
-    //        $cache->store($result);
-    //
-    //        return $result;
-    //    }
-    //
-    //
-    //    /**
-    //     * Overview of spending.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $expense
-    //     * @param Carbon $start
-    //     * @param Carbon $end
-    //     *
-    //     * @return array|mixed|string
-    //     */
-    //    public function spent(Collection $accounts, Collection $expense, Carbon $start, Carbon $end)
-    //    {
-    //        // chart properties for cache:
-    //        $cache = new CacheProperties;
-    //        $cache->addProperty($start);
-    //        $cache->addProperty($end);
-    //        $cache->addProperty('expense-spent');
-    //        $cache->addProperty($accounts->pluck('id')->toArray());
-    //        $cache->addProperty($expense->pluck('id')->toArray());
-    //        if ($cache->has()) {
-    //            return $cache->get(); // @codeCoverageIgnore
-    //        }
-    //
-    //        $combined = $this->combineAccounts($expense);
-    //        $result   = [];
-    //
-    //        foreach ($combined as $name => $combi) {
-    //            /**
-    //             * @var string
-    //             * @var Collection $combi
-    //             */
-    //            $spent         = $this->spentInPeriod($accounts, $combi, $start, $end);
-    //            $earned        = $this->earnedInPeriod($accounts, $combi, $start, $end);
-    //            $result[$name] = [
-    //                'spent'  => $spent,
-    //                'earned' => $earned,
-    //            ];
-    //        }
-    //        try {
-    //            $result = view('reports.partials.exp-not-grouped', compact('result'))->render();
-    //            // @codeCoverageIgnoreStart
-    //        } catch (Throwable $e) {
-    //            Log::error(sprintf('Could not render category::expenses: %s', $e->getMessage()));
-    //            $result = sprintf('An error prevented Firefly III from rendering: %s. Apologies.', $e->getMessage());
-    //        }
-    //        // @codeCoverageIgnoreEnd
-    //        $cache->store($result);
-    //
-    //        return $result;
-    //        // for period, get spent and earned for each account (by name)
-    //    }
-    //
-    //
-    //    /**
-    //     * List of top expenses.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $expense
-    //     * @param Carbon $start
-    //     * @param Carbon $end
-    //     *
-    //     * @return string
-    //     */
-    //    public function topExpense(Collection $accounts, Collection $expense, Carbon $start, Carbon $end): string
-    //    {
-    //        // Properties for cache:
-    //        $cache = new CacheProperties;
-    //        $cache->addProperty($start);
-    //        $cache->addProperty($end);
-    //        $cache->addProperty('top-expense');
-    //        $cache->addProperty($accounts->pluck('id')->toArray());
-    //        $cache->addProperty($expense->pluck('id')->toArray());
-    //        if ($cache->has()) {
-    //            return $cache->get(); // @codeCoverageIgnore
-    //        }
-    //        $combined = $this->combineAccounts($expense);
-    //        $all      = new Collection;
-    //        foreach ($combined as $combi) {
-    //            $all = $all->merge($combi);
-    //        }
-    //        // get all expenses in period:
-    //        /** @var GroupCollectorInterface $collector */
-    //        $collector = app(GroupCollectorInterface::class);
-    //
-    //        $collector->setRange($start, $end)->setTypes([TransactionType::WITHDRAWAL])->setAccounts($accounts);
-    //        $collector->setAccounts($all)->withAccountInformation();
-    //        $sorted = $collector->getExtractedJournals();
-    //
-    //        usort($sorted, function ($a, $b) {
-    //            return $a['amount'] <=> $b['amount']; // @codeCoverageIgnore
-    //        });
-    //
-    //        try {
-    //            $result = view('reports.partials.top-transactions', compact('sorted'))->render();
-    //            // @codeCoverageIgnoreStart
-    //        } catch (Throwable $e) {
-    //            Log::error(sprintf('Could not render category::topExpense: %s', $e->getMessage()));
-    //            $result = sprintf('An error prevented Firefly III from rendering: %s. Apologies.', $e->getMessage());
-    //        }
-    //        // @codeCoverageIgnoreEnd
-    //        $cache->store($result);
-    //
-    //        return $result;
-    //    }
-    //
-    //    /**
-    //     * List of top income.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $expense
-    //     * @param Carbon $start
-    //     * @param Carbon $end
-    //     *
-    //     * @return mixed|string
-    //     */
-    //    public function topIncome(Collection $accounts, Collection $expense, Carbon $start, Carbon $end)
-    //    {
-    //        // Properties for cache:
-    //        $cache = new CacheProperties;
-    //        $cache->addProperty($start);
-    //        $cache->addProperty($end);
-    //        $cache->addProperty('top-income');
-    //        $cache->addProperty($accounts->pluck('id')->toArray());
-    //        $cache->addProperty($expense->pluck('id')->toArray());
-    //        if ($cache->has()) {
-    //            return $cache->get(); // @codeCoverageIgnore
-    //        }
-    //        $combined = $this->combineAccounts($expense);
-    //        $all      = new Collection;
-    //        foreach ($combined as $combi) {
-    //            $all = $all->merge($combi);
-    //        }
-    //        // get all expenses in period:
-    //
-    //        /** @var GroupCollectorInterface $collector */
-    //        $collector = app(GroupCollectorInterface::class);
-    //
-    //        $total = $accounts->merge($all);
-    //        $collector->setRange($start, $end)->setTypes([TransactionType::DEPOSIT])->setAccounts($total)->withAccountInformation();
-    //        $sorted = $collector->getExtractedJournals();
-    //
-    //        foreach (array_keys($sorted) as $key) {
-    //            $sorted[$key]['amount'] = bcmul($sorted[$key]['amount'], '-1');
-    //        }
-    //
-    //        usort($sorted, function ($a, $b) {
-    //            return $a['amount'] <=> $b['amount']; // @codeCoverageIgnore
-    //        });
-    //
-    //        try {
-    //            $result = view('reports.partials.top-transactions', compact('sorted'))->render();
-    //            // @codeCoverageIgnoreStart
-    //        } catch (Throwable $e) {
-    //            Log::error(sprintf('Could not render category::topIncome: %s', $e->getMessage()));
-    //            $result = sprintf('An error prevented Firefly III from rendering: %s. Apologies.', $e->getMessage());
-    //        }
-    //        // @codeCoverageIgnoreEnd
-    //        $cache->store($result);
-    //
-    //        return $result;
-    //    }
-
     /**
      * TODO this method is double.
      *
-     * @param Collection $accounts
-     * @param int        $id
-     * @param string     $name
-     * @param string     $iban
+     * @param Collection  $accounts
+     * @param int         $id
+     * @param string      $name
+     * @param string|null $iban
      *
      * @return string
      */
-    private function getCounterpartName(Collection $accounts, int $id, string $name, string $iban): string
+    private function getCounterpartName(Collection $accounts, int $id, string $name, ?string $iban): string
     {
         /** @var Account $account */
         foreach ($accounts as $account) {
             if ($account->name === $name && $account->id !== $id) {
                 return $account->name;
             }
-            if ($account->iban === $iban && $account->id !== $id) {
+            if (null !== $account->iban && $account->iban === $iban && $account->id !== $id) {
                 return $account->iban;
             }
         }

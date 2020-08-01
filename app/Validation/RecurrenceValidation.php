@@ -1,7 +1,7 @@
 <?php
 /**
  * RecurrenceValidation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -48,7 +48,6 @@ trait RecurrenceValidation
      */
     public function valUpdateAccountInfo(Validator $validator): void
     {
-        //Log::debug('Now in validateAccountInformation()');
         $data = $validator->getData();
 
         $transactionType = $data['type'] ?? 'invalid';
@@ -65,7 +64,7 @@ trait RecurrenceValidation
             // validate source account.
             $sourceId    = isset($transaction['source_id']) ? (int)$transaction['source_id'] : null;
             $sourceName  = $transaction['source_name'] ?? null;
-            $validSource = $accountValidator->validateSource($sourceId, $sourceName);
+            $validSource = $accountValidator->validateSource($sourceId, $sourceName, null);
 
             // do something with result:
             if (false === $validSource) {
@@ -77,7 +76,7 @@ trait RecurrenceValidation
             // validate destination account
             $destinationId    = isset($transaction['destination_id']) ? (int)$transaction['destination_id'] : null;
             $destinationName  = $transaction['destination_name'] ?? null;
-            $validDestination = $accountValidator->validateDestination($destinationId, $destinationName);
+            $validDestination = $accountValidator->validateDestination($destinationId, $destinationName, null);
             // do something with result:
             if (false === $validDestination) {
                 $validator->errors()->add(sprintf('transactions.%d.destination_id', $index), $accountValidator->destError);

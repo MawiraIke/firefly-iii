@@ -1,7 +1,7 @@
 <?php
 /**
  * ReportHelper.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -43,6 +43,7 @@ class ReportHelper implements ReportHelperInterface
 
     /**
      * ReportHelper constructor.
+     *
      * @param BudgetRepositoryInterface $budgetRepository
      */
     public function __construct(BudgetRepositoryInterface $budgetRepository)
@@ -62,8 +63,8 @@ class ReportHelper implements ReportHelperInterface
      *
      * Excludes bills which have not had a payment on the mentioned accounts.
      *
-     * @param Carbon $start
-     * @param Carbon $end
+     * @param Carbon     $start
+     * @param Carbon     $end
      * @param Collection $accounts
      *
      * @return array

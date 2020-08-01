@@ -1,7 +1,7 @@
 <?php
 /**
  * AttachmentController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace FireflyIII\Api\V1\Controllers;
 
+use FireflyIII\Api\V1\Middleware\ApiDemoUser;
 use FireflyIII\Api\V1\Requests\AttachmentStoreRequest;
 use FireflyIII\Api\V1\Requests\AttachmentUpdateRequest;
 use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Helpers\Attachments\AttachmentHelperInterface;
+use FireflyIII\Http\Middleware\IsDemoUser;
 use FireflyIII\Models\Attachment;
 use FireflyIII\Repositories\Attachment\AttachmentRepositoryInterface;
 use FireflyIII\Transformers\AttachmentTransformer;
@@ -58,12 +60,14 @@ class AttachmentController extends Controller
     public function __construct()
     {
         parent::__construct();
+        $this->middleware(ApiDemoUser::class)->except(['delete', 'download', 'show', 'index']);
         $this->middleware(
             function ($request, $next) {
                 /** @var User $user */
                 $user             = auth()->user();
                 $this->repository = app(AttachmentRepositoryInterface::class);
                 $this->repository->setUser($user);
+
 
                 return $next($request);
             }
@@ -92,8 +96,8 @@ class AttachmentController extends Controller
      * @param Attachment $attachment
      *
      * @codeCoverageIgnore
-     * @return LaravelResponse
      * @throws   FireflyException
+     * @return LaravelResponse
      */
     public function download(Attachment $attachment): LaravelResponse
     {
@@ -108,7 +112,7 @@ class AttachmentController extends Controller
             if ('' === $content) {
                 throw new FireflyException('200002: File is empty (zero bytes).');
             }
-            $quoted  = sprintf('"%s"', addcslashes(basename($attachment->filename), '"\\'));
+            $quoted = sprintf('"%s"', addcslashes(basename($attachment->filename), '"\\'));
 
             /** @var LaravelResponse $response */
             $response = response($content);
@@ -139,7 +143,7 @@ class AttachmentController extends Controller
         $manager = $this->getManager();
 
         // types to get, page size:
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
 
         // get list of accounts. Count it and split it.
         $collection  = $this->repository->get();
@@ -184,8 +188,8 @@ class AttachmentController extends Controller
      *
      * @param AttachmentStoreRequest $request
      *
-     * @return JsonResponse
      * @throws FireflyException
+     * @return JsonResponse
      */
     public function store(AttachmentStoreRequest $request): JsonResponse
     {

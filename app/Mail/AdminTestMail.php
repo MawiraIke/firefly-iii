@@ -1,7 +1,7 @@
 <?php
 /**
  * AdminTestMail.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -62,6 +62,6 @@ class AdminTestMail extends Mailable
     public function build(): self
     {
         return $this->view('emails.admin-test-html')->text('emails.admin-test-text')
-                    ->subject('A test message from your Firefly III installation');
+                    ->subject((string) trans('email.admin_test_subject'));
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * AvailableBudgetController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -83,9 +83,9 @@ class AvailableBudgetController extends Controller
                 $spent = $spentInfo['amount'];
             }
         }
-        $left = bcadd($availableBudget->amount, (string)$spent);
+        $left = bcadd($availableBudget->amount, (string) $spent);
         // left less than zero? Set to zero.
-        if (bccomp($left, '0') === -1) {
+        if (-1 === bccomp($left, '0')) {
             $left = '0';
         }
 

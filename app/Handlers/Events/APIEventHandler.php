@@ -1,7 +1,7 @@
 <?php
 /**
  * APIEventHandler.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -49,7 +49,7 @@ class APIEventHandler
     {
         /** @var UserRepositoryInterface $repository */
         $repository = app(UserRepositoryInterface::class);
-        $user       = $repository->findNull((int)$event->userId);
+        $user       = $repository->findNull((int) $event->userId);
         if (null !== $user) {
             $email     = $user->email;
             $ipAddress = Request::ip();

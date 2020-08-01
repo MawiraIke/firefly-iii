@@ -30,8 +30,10 @@
                     <canvas id="budgets-chart" style="width:100%;height:400px;" height="400" width="100%"></canvas>
                 </div>
                 <div class="box-footer">
-                    <a href="{{ route('budgets.index') }}" class="btn btn-default button-sm"><i
-                                class="fa fa-tasks"></i> {{ 'go_to_budgets'|_ }}</a>
+                    <a href="{{ route('budgets.index') }}" class="btn btn-default button-sm">
+                        <i class="fa fa-pie-chart"></i>
+                        <span>{{ 'go_to_budgets'|_ }}</span>
+                    </a>
                 </div>
             </div>
             {# CATEGORIES #}
@@ -44,8 +46,10 @@
                     <canvas id="categories-chart" style="width:100%;height:400px;" height="400" width="100%"></canvas>
                 </div>
                 <div class="box-footer">
-                    <a href="{{ route('categories.index') }}" class="btn btn-default button-sm"><i
-                                class="fa fa-bar-chart"></i> {{ 'go_to_categories'|_ }}</a>
+                    <a href="{{ route('categories.index') }}" class="btn btn-default button-sm">
+                        <i class="fa fa-bookmark"></i>
+                        <span>{{ 'go_to_categories'|_ }}</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -74,20 +78,30 @@
                         {% endif %}
 
                         <div class="box-footer clearfix">
-                            <div class="btn-group" role="group">
+                            <!-- Single button -->
+                            <div class="btn-group">
+                                <a type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ 'sidebar_frontpage_create'|_ }} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ route('transactions.create', ['withdrawal']) }}?source={{ data[1].id }}">{{ 'create_new_withdrawal'|_ }}</a></li>
+                                    <li><a href="{{ route('transactions.create', ['deposit']) }}?destination={{ data[1].id }}">{{ 'create_new_deposit'|_ }}</a></li>
+                                    <li><a href="{{ route('transactions.create', ['transfer']) }}?source={{ data[1].id }}">{{ 'create_new_transfer'|_ }}</a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                   href="{{ route('accounts.show', [data[1].id]) }}">{{ formatAmountByAccount(data[1], data[1]|balance, false) }}
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ route('accounts.show', [data[1].id]) }}">{{ 'show'|_ }}</a></li>
+                                    <li><a href="{{ route('accounts.reconcile', [data[1].id]) }}">{{ 'reconcile'|_ }}</a></li>
+                                    <li><a href="{{ route('accounts.edit', [data[1].id]) }}">{{ 'edit'|_ }}</a></li>
+                                    <li><a href="{{ route('accounts.delete', [data[1].id]) }}">{{ 'delete'|_ }}</a></li>
+                                </ul>
 
                             </div>
-
-                            <div class="btn-group" role="group" aria-label="...">
-
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('transactions.create', ['withdrawal']) }}" class="btn btn-success"><i
-                                                class="fa fa-plus fa-fw"></i> {{ 'create_new_transaction'|_ }}</a>
-                                </div>
-                                <a class="btn btn-default"
-                                   href="{{ route('accounts.show',data[1].id) }}">{{ formatAmountByAccount(data[1], data[1]|balance, false) }}</a>
-                            </div>
-
                         </div>
                     </div>
                 {% endfor %}
@@ -154,7 +168,7 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">
         var billCount = {{ billCount }};
         var accountFrontpageUri = '{{ route('chart.account.frontpage') }}';
         var accountRevenueUri = '{{ route('chart.account.revenue') }}';
@@ -167,11 +181,11 @@
         {% endif %}
     </script>
 
-    <script type="text/javascript" src="v1/js/lib/Chart.bundle.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/chartjs-plugin-annotation.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/charts.defaults.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/charts.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/index.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/js/lib/Chart.bundle.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/chartjs-plugin-annotation.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/charts.defaults.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/charts.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/index.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}
 {% block styles %}
 {% endblock %}

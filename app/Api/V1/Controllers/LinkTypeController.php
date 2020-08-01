@@ -1,7 +1,7 @@
 <?php
 /**
  * LinkTypeController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -79,9 +79,9 @@ class LinkTypeController extends Controller
      *
      * @param LinkType $linkType
      *
-     * @return JsonResponse
      * @throws FireflyException
      * @codeCoverageIgnore
+     * @return JsonResponse
      */
     public function delete(LinkType $linkType): JsonResponse
     {
@@ -103,7 +103,7 @@ class LinkTypeController extends Controller
     {
         // create some objects:
         $manager  = $this->getManager();
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
 
         // get list of accounts. Count it and split it.
         $collection = $this->repository->get();
@@ -151,8 +151,8 @@ class LinkTypeController extends Controller
      *
      * @param LinkTypeRequest $request
      *
-     * @return JsonResponse
      * @throws FireflyException
+     * @return JsonResponse
      */
     public function store(LinkTypeRequest $request): JsonResponse
     {
@@ -187,7 +187,7 @@ class LinkTypeController extends Controller
      */
     public function transactions(Request $request, LinkType $linkType): JsonResponse
     {
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
         $type     = $request->get('type') ?? 'default';
         $this->parameters->set('type', $type);
 
@@ -241,8 +241,8 @@ class LinkTypeController extends Controller
      * @param LinkTypeRequest $request
      * @param LinkType        $linkType
      *
-     * @return JsonResponse
      * @throws FireflyException
+     * @return JsonResponse
      */
     public function update(LinkTypeRequest $request, LinkType $linkType): JsonResponse
     {

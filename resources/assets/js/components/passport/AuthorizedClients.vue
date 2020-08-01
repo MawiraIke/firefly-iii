@@ -1,6 +1,6 @@
 <!--
   - AuthorizedClients.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -35,17 +35,18 @@
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">
-                        Authorized Applications
+                        {{ $t('firefly.profile_authorized_apps') }}
                     </h3>
                 </div>
                 <div class="box-body">
                     <!-- Authorized Tokens -->
                     <table class="table table-borderless m-b-none">
+                        <caption>{{ $t('firefly.profile_authorized_clients') }}</caption>
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Scopes</th>
-                            <th></th>
+                            <th scope="col">{{ $t('firefly.name') }}</th>
+                            <th scope="col">{{ $t('firefly.profile_scopes') }}</th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
 
@@ -66,7 +67,7 @@
                             <!-- Revoke Button -->
                             <td style="vertical-align: middle;">
                                 <a class="action-link btn btn-danger btn-xs" @click="revoke(token)">
-                                    Revoke
+                                    {{ $t('firefly.profile_revoke') }}
                                 </a>
                             </td>
                         </tr>

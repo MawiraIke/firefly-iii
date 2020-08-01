@@ -1,7 +1,7 @@
 <?php
 /**
  * BillServiceTrait.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -55,6 +55,7 @@ trait BillServiceTrait
 
         /** @var RuleAction $ruleAction */
         foreach ($set as $ruleAction) {
+            Log::debug(sprintf('Updated rule action #%d to search for new bill name "%s"', $ruleAction->id, $newName));
             $ruleAction->action_value = $newName;
             $ruleAction->save();
         }

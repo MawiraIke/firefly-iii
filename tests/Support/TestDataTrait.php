@@ -1,7 +1,7 @@
 <?php
 /**
  * TestDataTrait.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -422,11 +422,18 @@ trait TestDataTrait
                 'currency_symbol'         => $currency->symbol,
                 'currency_code'           => $currency->code,
                 'currency_decimal_places' => $currency->decimal_places,
-                'transaction_journals'    => [],
+                'categories'              => [
+                    0 => [
+                        'id'                   => 0,
+                        'name'                 => 'no cat',
+                        'transaction_journals' => [],
+                    ],
+                ],
             ];
+
             // add two random amounts:
             for ($i = 0; $i < 2; $i++) {
-                $data[$currency->id]['transaction_journals'][$i] = [
+                $data[$currency->id]['categories'][0]['transaction_journals'][$i] = [
                     'amount' => $amount,
                     'date'   => $date,
                 ];
@@ -464,11 +471,18 @@ trait TestDataTrait
                 'currency_symbol'         => $currency->symbol,
                 'currency_code'           => $currency->code,
                 'currency_decimal_places' => $currency->decimal_places,
-                'transaction_journals'    => [],
+                'categories'              => [
+                    0 => [
+                        'id'                   => 0,
+                        'name'                 => 'no cat',
+                        'transaction_journals' => [],
+                    ],
+                ],
             ];
+
             // add two random amounts:
             for ($i = 0; $i < 2; $i++) {
-                $data[$currency->id]['transaction_journals'][$i] = [
+                $data[$currency->id]['categories'][0]['transaction_journals'][$i] = [
                     'amount' => $amount,
                     'date'   => $date,
                 ];

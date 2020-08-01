@@ -1,7 +1,7 @@
 <?php
 /**
  * UpgradeFireflyInstructions.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Console\Commands;
 
+use FireflyIII\Support\System\GeneratesInstallationId;
 use Illuminate\Console\Command;
 
 /**
@@ -32,6 +33,8 @@ use Illuminate\Console\Command;
  */
 class UpgradeFireflyInstructions extends Command
 {
+    use GeneratesInstallationId;
+
     /**
      * The console command description.
      *
@@ -50,12 +53,21 @@ class UpgradeFireflyInstructions extends Command
      */
     public function handle(): int
     {
-        if ('update' === (string)$this->argument('task')) {
+        $this->generateInstallationId();
+        if ('update' === (string) $this->argument('task')) {
             $this->updateInstructions();
         }
-        if ('install' === (string)$this->argument('task')) {
+        if ('install' === (string) $this->argument('task')) {
             $this->installInstructions();
         }
+
+        // collect system telemetry
+        $isDocker = true === env('IS_DOCKER', false) ? 'true' : 'false';
+        app('telemetry')->feature('system.php.version', PHP_VERSION);
+        app('telemetry')->feature('system.os.version', PHP_OS);
+        app('telemetry')->feature('system.database.driver', env('DB_CONNECTION', '(unknown)'));
+        app('telemetry')->feature('system.os.is_docker', $isDocker);
+        app('telemetry')->feature('system.command.executed', $this->signature);
 
         return 0;
     }
@@ -101,6 +113,8 @@ class UpgradeFireflyInstructions extends Command
                 $text = $config[$compare];
             }
         }
+
+
         $this->showLine();
         $this->boxed('');
         if (null === $text) {
@@ -147,6 +161,7 @@ class UpgradeFireflyInstructions extends Command
                 $text = $config[$compare];
             }
         }
+
         $this->showLine();
         $this->boxed('');
         if (null === $text) {

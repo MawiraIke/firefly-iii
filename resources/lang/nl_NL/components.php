@@ -2,7 +2,7 @@
 
 /**
  * components.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,9 +24,6 @@ declare(strict_types=1);
 
 return [
     // profile
-    'personal_access_tokens' => 'Persoonlijke toegangstokens',
 
     // bills:
-    'not_expected_period'    => 'Niet verwacht deze periode',
-    'not_or_not_yet'         => '(nog) niet',
 ];

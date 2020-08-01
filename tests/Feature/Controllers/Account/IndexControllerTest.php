@@ -1,7 +1,7 @@
 <?php
 /**
  * IndexControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -72,8 +72,13 @@ class IndexControllerTest extends TestCase
         // mock hasRole for user repository:
         $userRepos->shouldReceive('hasRole')->withArgs([Mockery::any(), 'owner'])->andReturn(true)->atLeast()->once();
 
-        $repository->shouldReceive('getAccountsByType')->andReturn(new Collection([$account]));
+        $repository->shouldReceive('getActiveAccountsByType')->andReturn(new Collection([$account]));
+        $repository->shouldReceive('getInactiveAccountsByType')->andReturn(new Collection);
+
         $repository->shouldReceive('getAccountCurrency')->atLeast()->once()->andReturn($euro);
+        $repository->shouldReceive('getLocation')->atLeast()->once()->andReturnNull();
+        //
+
         Steam::shouldReceive('balancesByAccounts')->andReturn([$account->id => '100']);
         Steam::shouldReceive('getLastActivities')->andReturn([]);
 

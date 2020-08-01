@@ -1,7 +1,7 @@
 <?php
 /**
  * CategoryControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -49,6 +49,7 @@ class CategoryControllerTest extends TestCase
     {
         parent::setUp();
         Passport::actingAs($this->user());
+        $this->mockDefaultConfiguration();
         Log::info(sprintf('Now in %s.', get_class($this)));
     }
 
@@ -68,10 +69,10 @@ class CategoryControllerTest extends TestCase
         $opsRepos->shouldReceive('setUser')->atLeast()->once();
 
         $opsRepos->shouldReceive('listExpenses')->atLeast()->once()->andReturn($this->categoryListExpenses());
-        $opsRepos->shouldReceive('listIncome')->atLeast()->once()->andReturn($this->categoryListIncome());
+        //$opsRepos->shouldReceive('listIncome')->atLeast()->once()->andReturn($this->categoryListIncome());
 
         $noCatRepos->shouldReceive('listExpenses')->atLeast()->once()->andReturn($this->noCategoryListExpenses());
-        $noCatRepos->shouldReceive('listIncome')->atLeast()->once()->andReturn($this->noCategoryListIncome());
+        //$noCatRepos->shouldReceive('listIncome')->atLeast()->once()->andReturn($this->noCategoryListIncome());
 
 
         $parameters = [

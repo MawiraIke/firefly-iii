@@ -1,7 +1,7 @@
 <?php
 /**
  * CacheProperties.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -50,6 +50,7 @@ class CacheProperties
 
     /**
      * @param $property
+     * @param Collection|\Carbon\Carbon|\FireflyIII\Models\Category|array|int|string $property
      */
     public function addProperty($property): void
     {
@@ -87,6 +88,7 @@ class CacheProperties
 
     /**
      * @param $data
+     * @param (array|mixed)[]|Collection|\Carbon\Carbon|string $data
      */
     public function store($data): void
     {
@@ -99,8 +101,8 @@ class CacheProperties
     {
         $content = '';
         foreach ($this->properties as $property) {
-            $content .= json_encode($property);
+            $content .= json_encode($property, JSON_THROW_ON_ERROR, 512);
         }
-        $this->hash = substr(sha1($content), 0, 16);
+        $this->hash = substr(hash('sha256', $content), 0, 16);
     }
 }

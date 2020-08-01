@@ -1,7 +1,7 @@
 <?php
 /**
  * FireflyValidator.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,6 +24,7 @@ namespace FireflyIII\Validation;
 
 use Config;
 use DB;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountMeta;
 use FireflyIII\Models\AccountType;
@@ -34,11 +35,13 @@ use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Repositories\Bill\BillRepositoryInterface;
 use FireflyIII\Repositories\Budget\BudgetRepositoryInterface;
 use FireflyIII\Services\Password\Verifier;
+use FireflyIII\Support\ParseDateString;
 use FireflyIII\TransactionRules\Triggers\TriggerInterface;
 use FireflyIII\User;
 use Google2FA;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Validator;
+use Log;
 
 /**
  * Class FireflyValidator.
@@ -333,6 +336,20 @@ class FireflyValidator extends Validator
             return 1 === $count;
         }
 
+        // if the type is date, the simply try to parse it and throw error when it's bad.
+        if (in_array($triggerType, ['date_is'], true)) {
+            /** @var ParseDateString $parser */
+            $parser = app(ParseDateString::class);
+            try {
+                $parser->parseDate($value);
+            } catch (FireflyException $e) {
+
+                Log::error($e->getMessage());
+
+                return false;
+            }
+        }
+
         // and finally a "will match everything check":
         $classes = app('config')->get('firefly.rule-triggers');
         /** @var TriggerInterface $class */
@@ -375,20 +392,24 @@ class FireflyValidator extends Validator
      */
     public function validateUniqueAccountForUser($attribute, $value, $parameters): bool
     {
-        // because a user does not have to be logged in (tests and what-not).
 
+        // because a user does not have to be logged in (tests and what-not).
         if (!auth()->check()) {
             return $this->validateAccountAnonymously();
         }
-        if (isset($this->data['what'])) {
-            return $this->validateByAccountTypeString($value, $parameters, $this->data['what']);
+        if (isset($this->data['objectType'])) {
+
+            return $this->validateByAccountTypeString($value, $parameters, $this->data['objectType']);
         }
         if (isset($this->data['type'])) {
             return $this->validateByAccountTypeString($value, $parameters, $this->data['type']);
         }
-
         if (isset($this->data['account_type_id'])) {
             return $this->validateByAccountTypeId($value, $parameters);
+        }
+        $parameterId = $parameters[0] ?? null;
+        if (null !== $parameterId) {
+            return $this->validateByParameterId((int)$parameterId, $value);
         }
         if (isset($this->data['id'])) {
             return $this->validateByAccountId($value);
@@ -484,6 +505,30 @@ class FireflyValidator extends Validator
      *
      * @return bool
      */
+    public function validateUniqueObjectGroup($attribute, $value, $parameters): bool
+    {
+        $exclude = $parameters[0] ?? null;
+        $query   = DB::table('object_groups')
+                     ->whereNull('object_groups.deleted_at')
+                     ->where('object_groups.user_id', auth()->user()->id)
+                     ->where('object_groups.title', $value);
+        if (null !== $exclude) {
+            $query->where('object_groups.id', '!=', (int) $exclude);
+        }
+
+        return 0 === $query->count();
+    }
+
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @param $parameters
+     *
+     *                   TODO this method does not need a for loop
+     *
+     * @return bool
+     */
     public function validateUniquePiggyBankForUser($attribute, $value, $parameters): bool
     {
         $exclude = $parameters[0] ?? null;
@@ -545,16 +590,33 @@ class FireflyValidator extends Validator
         $ignore = $existingAccount->id;
 
         /** @var Collection $set */
-        $set = auth()->user()->accounts()->where('account_type_id', $type->id)->where('id', '!=', $ignore)->get();
-        // TODO no longer need to loop like this
-        /** @var Account $entry */
-        foreach ($set as $entry) {
-            if ($entry->name === $value) {
-                return false;
-            }
-        }
+        $entry = auth()->user()->accounts()->where('account_type_id', $type->id)->where('id', '!=', $ignore)
+                       ->where('name', $value)
+                       ->first();
 
-        return true;
+        return null === $entry;
+    }
+
+
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
+    private function validateByParameterId(int $accountId, $value): bool
+    {
+        /** @var Account $existingAccount */
+        $existingAccount = Account::find($accountId);
+
+        $type   = $existingAccount->accountType;
+        $ignore = $existingAccount->id;
+
+        /** @var Collection $set */
+        $entry = auth()->user()->accounts()->where('account_type_id', $type->id)->where('id', '!=', $ignore)
+                       ->where('name', $value)
+                       ->first();
+
+        return null === $entry;
     }
 
     /**

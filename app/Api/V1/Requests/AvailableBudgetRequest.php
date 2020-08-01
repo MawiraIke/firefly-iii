@@ -1,7 +1,7 @@
 <?php
 /**
  * AvailableBudgetRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -64,15 +64,13 @@ class AvailableBudgetRequest extends Request
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'currency_id'   => 'numeric|exists:transaction_currencies,id',
             'currency_code' => 'min:3|max:3|exists:transaction_currencies,code',
-            'amount'        => 'required|numeric|more:0',
+            'amount'        => 'required|numeric|gt:0',
             'start'         => 'required|date|before:end',
             'end'           => 'required|date|after:start',
         ];
-
-        return $rules;
     }
 
 

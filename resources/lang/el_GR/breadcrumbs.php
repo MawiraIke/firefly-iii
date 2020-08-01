@@ -2,7 +2,7 @@
 
 /**
  * breadcrumbs.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -27,23 +27,23 @@ return [
     'edit_currency'          => 'Επεξεργασία νομίσματος ":name"',
     'delete_currency'        => 'Διαγραφή νομίσματος ":name"',
     'newPiggyBank'           => 'Δημιουργία ενός νέου κουμπαρά',
-    'edit_piggyBank'         => 'Επεξεργασαία κουμπαρά ":name"',
+    'edit_piggyBank'         => 'Επεξεργασία κουμπαρά ":name"',
     'preferences'            => 'Προτιμήσεις',
     'profile'                => 'Προφίλ',
     'changePassword'         => 'Αλλάξτε τον κωδικό σας',
     'change_email'           => 'Αλλάξτε τη διεύθυνση του email σας',
-    'bills'                  => 'Λογαριασμοί',
-    'newBill'                => 'Νέος λογαριασμός',
-    'edit_bill'              => 'Επεξεργασία λογαριασμού ":name"',
-    'delete_bill'            => 'Διαγραφή λογαριασμόυ ":name"',
+    'bills'                  => 'Πάγια έξοδα',
+    'newBill'                => 'Νέο πάγιο έξοδο',
+    'edit_bill'              => 'Επεξεργασία πάγιου έξοδου ":name"',
+    'delete_bill'            => 'Διαγραφή πάγιου έξοδου ":name"',
     'reports'                => 'Αναφορές',
     'search_result'          => 'Αποτελέσματα αναζήτησης για ":query"',
-    'withdrawal_list'        => 'Έξοδα',
-    'Withdrawal_list'        => 'Έξοδα',
-    'deposit_list'           => 'Έσοδα, εισόδημα και καταθέσεις',
+    'withdrawal_list'        => 'Δαπάνες',
+    'Withdrawal_list'        => 'Δαπάνες',
+    'deposit_list'           => 'Έσοδα και καταθέσεις',
     'transfer_list'          => 'Μεταφορές',
     'transfers_list'         => 'Μεταφορές',
-    'reconciliation_list'    => 'Συμφωνίες',
+    'reconciliation_list'    => 'Συνδιαλλαγές',
     'create_withdrawal'      => 'Δημιουργία νέας ανάληψης',
     'create_deposit'         => 'Δημιουργία νέας κατάθεσης',
     'create_transfer'        => 'Δημιουργία νέας μεταφοράς',
@@ -51,9 +51,15 @@ return [
     'edit_journal'           => 'Επεξεργασία συναλλαγής ":description"',
     'edit_reconciliation'    => 'Επεξεργασία ":description"',
     'delete_journal'         => 'Διαγραφή συναλλαγής ":description"',
+    'delete_group'           => 'Διαγραφή συναλλαγής ":description"',
     'tags'                   => 'Ετικέτες',
     'createTag'              => 'Δημιουργία νέας ετικέτας',
     'edit_tag'               => 'Επεξεργασία ετικέτας ":tag"',
     'delete_tag'             => 'Διαγραφή ετικέτας ":tag"',
     'delete_journal_link'    => 'Διαγραφή συνδέσμου μεταξύ των συναλλαγών',
+    'telemetry_index'        => 'Τηλεμετρία',
+    'telemetry_view'         => 'Προβολή τηλεμετρίας',
+    'edit_object_group'      => 'Επεξεργασία ομάδας ":title"',
+    'delete_object_group'    => 'Διαγραφή ομάδας ":title"',
+    'logout_others'          => 'Αποσυνδέσετε τις άλλες συνεδρίες'
 ];

@@ -1,7 +1,7 @@
 <?php
 /**
  * CorrectDatabase.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -30,6 +30,7 @@ use Schema;
 
 /**
  * Class CorrectDatabase
+ *
  * @codeCoverageIgnore
  */
 class CorrectDatabase extends Command
@@ -72,7 +73,8 @@ class CorrectDatabase extends Command
             'firefly-iii:rename-meta-fields',
             'firefly-iii:fix-ob-currencies',
             'firefly-iii:fix-long-descriptions',
-            'firefly-iii:restore-oauth-keys'
+            'firefly-iii:fix-recurring-transactions',
+            'firefly-iii:restore-oauth-keys',
         ];
         foreach ($commands as $command) {
             $this->line(sprintf('Now executing %s', $command));

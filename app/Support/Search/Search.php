@@ -1,7 +1,7 @@
 <?php
 /**
  * Search.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -102,7 +102,7 @@ class Search implements SearchInterface
     {
         $string = implode(' ', $this->words);
         if ('' === $string) {
-            return \is_string($this->originalQuery) ? $this->originalQuery : '';
+            return is_string($this->originalQuery) ? $this->originalQuery : '';
         }
 
         return $string;
@@ -123,7 +123,7 @@ class Search implements SearchInterface
     {
         $filteredQuery       = app('steam')->cleanString($query);
         $this->originalQuery = $filteredQuery;
-        $pattern             = '/[[:alpha:]_]*:"?[\P{C}_-]*"?/ui';
+        $pattern             = '/[[:alpha:]_]*:(".*"|[\P{Zs}_-]*)/ui';
         $matches             = [];
         preg_match_all($pattern, $filteredQuery, $matches);
 
@@ -132,6 +132,11 @@ class Search implements SearchInterface
             $filteredQuery = str_replace($match, '', $filteredQuery);
         }
         $filteredQuery = trim(str_replace(['"', "'"], '', $filteredQuery));
+
+        // str replace some stuff:
+        $search        = ['%', '=', '/', '<', '>', '(', ')', ';'];
+        $filteredQuery = str_replace($search, ' ', $filteredQuery);
+
         if ('' !== $filteredQuery) {
             $this->words = array_map('trim', explode(' ', $filteredQuery));
         }
@@ -298,6 +303,12 @@ class Search implements SearchInterface
                     $updatedAt = new Carbon($modifier['value']);
                     $collector->setUpdatedAt($updatedAt);
                     break;
+                case 'external_id':
+                    $collector->setExternalId($modifier['value']);
+                    break;
+                case 'internal_reference':
+                    $collector->setInternalReference($modifier['value']);
+                    break;
             }
         }
         $collector->setAccounts($totalAccounts);
@@ -312,7 +323,7 @@ class Search implements SearchInterface
     {
         $parts = explode(':', $string);
         if (2 === count($parts) && '' !== trim((string)$parts[1]) && '' !== trim((string)$parts[0])) {
-            $type  = trim((string)$parts[0]);
+            $type  = strtolower(trim((string)$parts[0]));
             $value = trim((string)$parts[1]);
             $value = trim(trim($value, '"\''));
             if (in_array($type, $this->validModifiers, true)) {

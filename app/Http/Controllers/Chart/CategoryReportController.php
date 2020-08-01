@@ -1,7 +1,7 @@
 <?php
 /**
  * CategoryReportController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -63,61 +63,6 @@ class CategoryReportController extends Controller
             }
         );
     }
-
-    //
-    //    /**
-    //     * Chart for expenses grouped by expense account.
-    //     *
-    //     * TODO this chart is not multi-currency aware.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $categories
-    //     * @param Carbon     $start
-    //     * @param Carbon     $end
-    //     * @param string     $others
-    //     *
-    //     * @return JsonResponse
-    //     */
-    //    public function accountExpense(Collection $accounts, Collection $categories, Carbon $start, Carbon $end, string $others): JsonResponse
-    //    {
-    //        /** @var MetaPieChartInterface $helper */
-    //        $helper = app(MetaPieChartInterface::class);
-    //        $helper->setAccounts($accounts)->setCategories($categories)->setStart($start)->setEnd($end)->setCollectOtherObjects(1 === (int)$others);
-    //
-    //        $chartData = $helper->generate('expense', 'account');
-    //        $data      = $this->generator->pieChart($chartData);
-    //
-    //        return response()->json($data);
-    //    }
-
-    //
-    //    /**
-    //     * Chart for income grouped by revenue account.
-    //     *
-    //     * TODO this chart is not multi-currency aware.
-    //     *
-    //     * @param Collection $accounts
-    //     * @param Collection $categories
-    //     * @param Carbon     $start
-    //     * @param Carbon     $end
-    //     * @param string     $others
-    //     *
-    //     * @return JsonResponse
-    //     */
-    //    public function accountIncome(Collection $accounts, Collection $categories, Carbon $start, Carbon $end, string $others): JsonResponse
-    //    {
-    //        /** @var MetaPieChartInterface $helper */
-    //        $helper = app(MetaPieChartInterface::class);
-    //        $helper->setAccounts($accounts);
-    //        $helper->setCategories($categories);
-    //        $helper->setStart($start);
-    //        $helper->setEnd($end);
-    //        $helper->setCollectOtherObjects(1 === (int)$others);
-    //        $chartData = $helper->generate('income', 'account');
-    //        $data      = $this->generator->pieChart($chartData);
-    //
-    //        return response()->json($data);
-    //    }
 
     /**
      * @param Collection $accounts
@@ -316,7 +261,9 @@ class CategoryReportController extends Controller
             $spentKey             = sprintf('%d-spent', $currency['currency_id']);
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.spent_in_specific_category', ['category' => $category->name]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.spent_in_specific_category', ['category' => $category->name]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -340,7 +287,9 @@ class CategoryReportController extends Controller
             $spentKey             = sprintf('%d-earned', $currency['currency_id']);
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.earned_in_specific_category', ['category' => $category->name]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.earned_in_specific_category', ['category' => $category->name]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -457,5 +406,4 @@ class CategoryReportController extends Controller
 
         return $return;
     }
-
 }

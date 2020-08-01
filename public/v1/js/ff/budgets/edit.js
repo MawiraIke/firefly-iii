@@ -1,6 +1,6 @@
 /*
  * edit.js
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -21,4 +21,22 @@
 $(function () {
     "use strict";
     $(".content-wrapper form input[type='text']:enabled:visible:first").first().focus();
+
+    $('#ffInput_auto_budget_type').change(updateAutoBudget);
+
+    function updateAutoBudget() {
+        var value = parseInt($('#ffInput_auto_budget_type').val());
+        if (0 === value) {
+            $('#ffInput_auto_budget_currency_id').prop('disabled', true);
+            $('#ffInput_auto_budget_amount').prop('disabled', true);
+            $('#ffInput_auto_budget_period').prop('disabled', true);
+            return;
+        }
+        $('#ffInput_auto_budget_currency_id').prop('disabled', false);
+        $('#ffInput_auto_budget_amount').prop('disabled', false);
+        $('#ffInput_auto_budget_period').prop('disabled', false);
+    }
+
+    updateAutoBudget();
+
 });

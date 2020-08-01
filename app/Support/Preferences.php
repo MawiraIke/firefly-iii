@@ -1,7 +1,7 @@
 <?php
 /**
  * Preferences.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,7 +26,6 @@ use Cache;
 use Exception;
 use FireflyIII\Models\Preference;
 use FireflyIII\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Log;
 use Session;
@@ -142,7 +141,7 @@ class Preferences
     }
 
     /**
-     * @param \FireflyIII\User|Authenticatable $user
+     * @param User $user
      * @param string           $name
      * @param null|string      $default
      *
@@ -200,7 +199,7 @@ class Preferences
             $lastActivity = implode(',', $lastActivity);
         }
 
-        return md5($lastActivity);
+        return hash('sha256', $lastActivity);
     }
 
     /**

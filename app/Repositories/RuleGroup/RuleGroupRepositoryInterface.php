@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleGroupRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -32,12 +32,17 @@ use Illuminate\Support\Collection;
 interface RuleGroupRepositoryInterface
 {
     /**
+     * Delete everything.
+     */
+    public function destroyAll(): void;
+
+    /**
      * @return int
      */
     public function count(): int;
 
     /**
-     * @param RuleGroup $ruleGroup
+     * @param RuleGroup      $ruleGroup
      * @param RuleGroup|null $moveTo
      *
      * @return bool

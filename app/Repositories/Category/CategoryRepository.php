@@ -1,7 +1,7 @@
 <?php
 /**
  * CategoryRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use DB;
 use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Factory\CategoryFactory;
+use FireflyIII\Models\Attachment;
 use FireflyIII\Models\Category;
 use FireflyIII\Models\RecurrenceTransactionMeta;
 use FireflyIII\Models\RuleAction;
@@ -34,6 +35,7 @@ use FireflyIII\Services\Internal\Update\CategoryUpdateService;
 use FireflyIII\User;
 use Illuminate\Support\Collection;
 use Log;
+use Storage;
 
 /**
  * Class CategoryRepository.
@@ -179,7 +181,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function getCategories(): Collection
     {
         /** @var Collection $set */
-        $set = $this->user->categories()->orderBy('name', 'ASC')->get();
+        $set = $this->user->categories()->with(['attachments'])->orderBy('name', 'ASC')->get();
 
         return $set;
     }
@@ -267,6 +269,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         /** @var CategoryUpdateService $service */
         $service = app(CategoryUpdateService::class);
+        $service->setUser($this->user);
 
         return $service->update($category, $data);
     }
@@ -372,5 +375,28 @@ class CategoryRepository implements CategoryRepositoryInterface
             RuleAction::where('action_type', 'set_category')->where('action_value', $category->name)->delete();
             $category->delete();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttachments(Category $category): Collection
+    {
+        $set = $category->attachments()->get();
+
+        /** @var Storage $disk */
+        $disk = Storage::disk('upload');
+
+        $set = $set->each(
+            static function (Attachment $attachment) use ($disk) {
+                $notes                   = $attachment->notes()->first();
+                $attachment->file_exists = $disk->exists($attachment->fileName());
+                $attachment->notes       = $notes ? $notes->text : '';
+
+                return $attachment;
+            }
+        );
+
+        return $set;
     }
 }

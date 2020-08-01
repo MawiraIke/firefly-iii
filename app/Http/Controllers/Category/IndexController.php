@@ -1,7 +1,7 @@
 <?php
 /**
  * IndexController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -27,9 +27,11 @@ namespace FireflyIII\Http\Controllers\Category;
 use FireflyIII\Http\Controllers\Controller;
 use FireflyIII\Models\Category;
 use FireflyIII\Repositories\Category\CategoryRepositoryInterface;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
 /**
  * Class IndexController
@@ -41,6 +43,7 @@ class IndexController extends Controller
 
     /**
      * CategoryController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -49,8 +52,8 @@ class IndexController extends Controller
 
         $this->middleware(
             function ($request, $next) {
-                app('view')->share('title', (string)trans('firefly.categories'));
-                app('view')->share('mainTitleIcon', 'fa-bar-chart');
+                app('view')->share('title', (string) trans('firefly.categories'));
+                app('view')->share('mainTitleIcon', 'fa-bookmark');
                 $this->repository = app(CategoryRepositoryInterface::class);
 
                 return $next($request);
@@ -59,18 +62,17 @@ class IndexController extends Controller
     }
 
 
-
     /**
      * Show all categories.
      *
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function index(Request $request)
     {
-        $page       = 0 === (int)$request->get('page') ? 1 : (int)$request->get('page');
-        $pageSize   = (int)app('preferences')->get('listPageSize', 50)->data;
+        $page       = 0 === (int) $request->get('page') ? 1 : (int) $request->get('page');
+        $pageSize   = (int) app('preferences')->get('listPageSize', 50)->data;
         $collection = $this->repository->getCategories();
         $total      = $collection->count();
         $collection = $collection->slice(($page - 1) * $pageSize, $pageSize);

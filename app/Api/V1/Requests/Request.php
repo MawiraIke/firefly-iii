@@ -2,7 +2,7 @@
 
 /**
  * Request.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -35,48 +35,35 @@ use FireflyIII\Http\Requests\Request as FireflyIIIRequest;
 class Request extends FireflyIIIRequest
 {
     /**
+     * @param array $transaction
+     *
      * @return array
      */
-    public function getAllAccountData(): array
+    protected function getSingleRecurrenceData(array $transaction): array
     {
-        $active          = true;
-        $includeNetWorth = true;
-        if (null !== $this->get('active')) {
-            $active = $this->boolean('active');
-        }
-        if (null !== $this->get('include_net_worth')) {
-            $includeNetWorth = $this->boolean('include_net_worth');
-        }
+        return [
+            'amount'                => $transaction['amount'],
+            'currency_id'           => isset($transaction['currency_id']) ? (int) $transaction['currency_id'] : null,
+            'currency_code'         => $transaction['currency_code'] ?? null,
+            'foreign_amount'        => $transaction['foreign_amount'] ?? null,
+            'foreign_currency_id'   => isset($transaction['foreign_currency_id']) ? (int) $transaction['foreign_currency_id'] : null,
+            'foreign_currency_code' => $transaction['foreign_currency_code'] ?? null,
+            'source_id'             => isset($transaction['source_id']) ? (int) $transaction['source_id'] : null,
+            'source_name'           => isset($transaction['source_name']) ? (string) $transaction['source_name'] : null,
+            'destination_id'        => isset($transaction['destination_id']) ? (int) $transaction['destination_id'] : null,
+            'destination_name'      => isset($transaction['destination_name']) ? (string) $transaction['destination_name'] : null,
+            'description'           => $transaction['description'],
+            'type'                  => $this->string('type'),
 
-        $data = [
-            'name'                    => $this->string('name'),
-            'active'                  => $active,
-            'include_net_worth'       => $includeNetWorth,
-            'account_type'            => $this->string('type'),
-            'account_type_id'         => null,
-            'currency_id'             => $this->integer('currency_id'),
-            'currency_code'           => $this->string('currency_code'),
-            'virtual_balance'         => $this->string('virtual_balance'),
-            'iban'                    => $this->string('iban'),
-            'BIC'                     => $this->string('bic'),
-            'account_number'          => $this->string('account_number'),
-            'account_role'            => $this->string('account_role'),
-            'opening_balance'         => $this->string('opening_balance'),
-            'opening_balance_date'    => $this->date('opening_balance_date'),
-            'cc_type'                 => $this->string('credit_card_type'),
-            'cc_Monthly_payment_date' => $this->string('monthly_payment_date'),
-            'notes'                   => $this->nlString('notes'),
-            'interest'                => $this->string('interest'),
-            'interest_period'         => $this->string('interest_period'),
+            // new and updated fields:
+            'piggy_bank_id'         => isset($transaction['piggy_bank_id']) ? (int) $transaction['piggy_bank_id'] : null,
+            'piggy_bank_name'       => $transaction['piggy_bank_name'] ?? null,
+            'tags'                  => $transaction['tags'] ?? [],
+            'budget_id'             => isset($transaction['budget_id']) ? (int) $transaction['budget_id'] : null,
+            'budget_name'           => $transaction['budget_name'] ?? null,
+            'category_id'           => isset($transaction['category_id']) ? (int) $transaction['category_id'] : null,
+            'category_name'         => $transaction['category_name'] ?? null,
         ];
-
-        if ('liability' === $data['account_type']) {
-            $data['opening_balance']      = bcmul($this->string('liability_amount'), '-1');
-            $data['opening_balance_date'] = $this->date('liability_start_date');
-            $data['account_type']         = $this->string('liability_type');
-            $data['account_type_id']      = null;
-        }
-
-        return $data;
     }
+
 }

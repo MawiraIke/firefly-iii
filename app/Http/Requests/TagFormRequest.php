@@ -1,7 +1,7 @@
 <?php
 /**
  * TagFormRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Http\Requests;
 
+use FireflyIII\Models\Location;
 use FireflyIII\Models\Tag;
 
 /**
@@ -47,26 +48,14 @@ class TagFormRequest extends Request
      */
     public function collectTagData(): array
     {
-        $latitude  = null;
-        $longitude = null;
-        $zoomLevel = null;
-
-        if ('true' === $this->get('tag_position_has_tag')) {
-            $latitude  = $this->string('tag_position_latitude');
-            $longitude = $this->string('tag_position_longitude');
-            $zoomLevel = $this->integer('tag_position_zoomlevel');
-        }
-
         $data = [
             'tag'         => $this->string('tag'),
             'date'        => $this->date('date'),
             'description' => $this->string('description'),
-            'latitude'    => $latitude,
-            'longitude'   => $longitude,
-            'zoom_level'  => $zoomLevel,
         ];
 
-        return $data;
+        return $this->appendLocationData($data, 'location');
+
     }
 
     /**
@@ -86,14 +75,13 @@ class TagFormRequest extends Request
             $tagRule = 'required|min:1|uniqueObjectForUser:tags,tag,' . $tag->id;
         }
 
-        return [
+        $rules = [
             'tag'         => $tagRule,
             'id'          => $idRule,
             'description' => 'min:1|nullable',
             'date'        => 'date|nullable',
-            'latitude'    => 'numeric|min:-90|max:90|nullable',
-            'longitude'   => 'numeric|min:-180|max:180|nullable',
-            'zoom_level'  => 'numeric|min:0|max:80|nullable',
         ];
+
+        return Location::requestRules($rules);
     }
 }

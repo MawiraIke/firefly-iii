@@ -1,7 +1,7 @@
 <?php
 /**
  * NoBudgetRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -151,7 +151,7 @@ class NoBudgetRepository implements NoBudgetRepositoryInterface
                 'currency_name'           => $currency['name'],
                 'currency_symbol'         => $currency['symbol'],
                 'currency_decimal_places' => $currency['decimal_places'],
-                'amount'                  => $spent,
+                'amount'                  => number_format((float)$spent,$currency['decimal_places'], '.',''),
             ];
         }
 

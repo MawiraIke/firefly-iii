@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -40,11 +40,27 @@ interface RuleRepositoryInterface
     public function count(): int;
 
     /**
+     * @param Rule      $rule
+     * @param RuleGroup $ruleGroup
+     * @param int       $order
+     *
+     * @return Rule
+     */
+    public function moveRule(Rule $rule, RuleGroup $ruleGroup, int $order): Rule;
+
+    /**
      * @param Rule $rule
      *
      * @return bool
      */
     public function destroy(Rule $rule): bool;
+
+    /**
+     * @param Rule $rule
+     *
+     * @return Rule
+     */
+    public function duplicate(Rule $rule): Rule;
 
     /**
      * @param int $ruleId
@@ -64,13 +80,6 @@ interface RuleRepositoryInterface
      * @return RuleGroup
      */
     public function getFirstRuleGroup(): RuleGroup;
-
-    /**
-     * Get the rules for a user tailored to the import process.
-     *
-     * @return Collection
-     */
-    public function getForImport(): Collection;
 
     /**
      * @param RuleGroup $ruleGroup

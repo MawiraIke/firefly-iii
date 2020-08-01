@@ -1,7 +1,7 @@
 <?php
 /**
  * IsAdmin.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -36,9 +36,9 @@ class IsAdmin
     /**
      * Handle an incoming request. Must be admin.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     * @param string|null              $guard
+     * @param Request     $request
+     * @param Closure     $next
+     * @param string|null $guard
      *
      * @return mixed
      */

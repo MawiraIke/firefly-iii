@@ -1,7 +1,7 @@
 <?php
 /**
  * RequestInformation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -120,19 +120,6 @@ trait RequestInformation
     }
 
     /**
-     * Get user's language.
-     *
-     * @return string
-     */
-    protected function getLanguage(): string // get preference
-    {
-        /** @var string $language */
-        $language = app('preferences')->get('language', config('firefly.default_language', 'en_US'))->data;
-
-        return $language;
-    }
-
-    /**
      * Get a list of triggers.
      *
      * @param TestRuleFormRequest $request
@@ -179,7 +166,6 @@ trait RequestInformation
         // both must be array and either must be > 0
         if (count($intro) > 0 || count($specialIntro) > 0) {
             $shownDemo = app('preferences')->get($key, false)->data;
-            //Log::debug(sprintf('Check if user has already seen intro with key "%s". Result is %s', $key, var_export($shownDemo, true)));
         }
         if (!is_bool($shownDemo)) {
             $shownDemo = true; // @codeCoverageIgnore
@@ -300,7 +286,7 @@ trait RequestInformation
             $data,
             [
                 'email'    => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6|secure_password|confirmed',
+                'password' => 'required|string|min:16|secure_password|confirmed',
             ]
         );
     }

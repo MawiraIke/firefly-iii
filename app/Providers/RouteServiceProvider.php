@@ -1,7 +1,7 @@
 <?php
 /**
  * RouteServiceProvider.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -31,6 +31,14 @@ use Illuminate\Support\Facades\Route;
  */
 class RouteServiceProvider extends ServiceProvider
 {
+    /**
+     * The path to the "home" route for your application.
+     *
+     * @var string
+     */
+    public const    HOME = '/';
+
+
     /**
      * This namespace is applied to your controller routes.
      *

@@ -1,7 +1,8 @@
 <?php
+
 /**
  * AccountController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -19,8 +20,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace FireflyIII\Api\V1\Controllers\Search;
+declare(strict_types=1);
 
+namespace FireflyIII\Api\V1\Controllers\Search;
 
 use FireflyIII\Api\V1\Controllers\Controller;
 use FireflyIII\Support\Http\Api\AccountFilter;
@@ -32,6 +34,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection as FractalCollection;
+use Log;
 
 /**
  * Class AccountController
@@ -40,8 +43,7 @@ class AccountController extends Controller
 {
     use AccountFilter;
 
-    /** @var array */
-    private $validFields;
+    private array $validFields;
 
     public function __construct()
     {
@@ -62,6 +64,7 @@ class AccountController extends Controller
      */
     public function search(Request $request)
     {
+        Log::debug('Now in account search()');
         $manager = $this->getManager();
         $query   = $request->get('query');
         $field   = $request->get('field');
@@ -70,6 +73,8 @@ class AccountController extends Controller
             return response(null, 422);
         }
         $types = $this->mapAccountTypes($type);
+        Log::debug(sprintf('Going to search for "%s" in types', $query), $types);
+
         /** @var AccountSearch $search */
         $search = app(AccountSearch::class);
         $search->setUser(auth()->user());
@@ -78,6 +83,8 @@ class AccountController extends Controller
         $search->setQuery($query);
 
         $accounts = $search->search();
+
+        Log::debug(sprintf('Found %d accounts', $accounts->count()));
 
         /** @var AccountTransformer $transformer */
         $transformer = app(AccountTransformer::class);
@@ -91,5 +98,4 @@ class AccountController extends Controller
 
         return response()->json($manager->createData($resource)->toArray())->header('Content-Type', 'application/vnd.api+json');
     }
-
 }

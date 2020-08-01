@@ -1,6 +1,6 @@
 <!--
   - StandardDate.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -20,18 +20,32 @@
 
 <template>
     <div class="form-group" v-bind:class="{ 'has-error': hasError()}">
+        <div class="col-sm-12 text-sm">
+            {{ $t('firefly.date') }}
+        </div>
         <div class="col-sm-12">
-            <input
-                    type="date"
-                    class="form-control"
-                    name="date[]"
-                    v-bind:title="$t('firefly.date')"
-                    ref="date"
-                    autocomplete="off"
-                    :disabled="index > 0"
-                    v-bind:placeholder="$t('firefly.date')"
-                    :value="value" @input="handleInput"
-            >
+            <div class="input-group">
+                <input
+                        type="date"
+                        class="form-control"
+                        name="date[]"
+                        v-bind:title="$t('firefly.date')"
+                        ref="date"
+                        autocomplete="off"
+
+                        :disabled="index > 0"
+                        v-bind:placeholder="$t('firefly.date')"
+                        :value="value" @input="handleInput"
+                >
+                <span class="input-group-btn">
+            <button
+                    tabIndex="-1"
+                    v-on:click="clearDate"
+                    class="btn btn-default"
+                    type="button"><i class="fa fa-trash-o"></i></button>
+        </span>
+            </div>
+
             <ul class="list-unstyled" v-for="error in this.error">
                 <li class="text-danger">{{ error }}</li>
             </ul>
@@ -49,7 +63,15 @@
             },
             handleInput(e) {
                 this.$emit('input', this.$refs.date.value);
-            }
+            },
+            clearDate: function () {
+                //props.value = '';
+                this.name = '';
+                this.$refs.date.value = '';
+                this.$emit('input', this.$refs.date.value);
+                // some event?
+                this.$emit('clear:date')
+            },
         }
     }
 </script>

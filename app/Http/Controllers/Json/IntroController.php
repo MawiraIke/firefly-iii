@@ -1,7 +1,7 @@
 <?php
 /**
  * IntroController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -115,7 +115,7 @@ class IntroController
         app('preferences')->set($key, false);
         app('preferences')->mark();
 
-        return response()->json(['message' => (string)trans('firefly.intro_boxes_after_refresh')]);
+        return response()->json(['message' => (string) trans('firefly.intro_boxes_after_refresh')]);
     }
 
     /**

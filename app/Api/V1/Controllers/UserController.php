@@ -2,7 +2,7 @@
 
 /**
  * UserController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -70,9 +70,9 @@ class UserController extends Controller
      *
      * @param User $user
      *
-     * @return JsonResponse
      * @throws FireflyException
      * @codeCoverageIgnore
+     * @return JsonResponse
      */
     public function delete(User $user): JsonResponse
     {
@@ -95,7 +95,7 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         // user preferences
-        $pageSize = (int)app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
+        $pageSize = (int) app('preferences')->getForUser(auth()->user(), 'listPageSize', 50)->data;
         $manager  = $this->getManager();
 
         // build collection

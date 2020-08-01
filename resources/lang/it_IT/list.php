@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Tipo',
     'lastActivity'            => 'Ultima attività',
     'balanceDiff'             => 'Differenze saldi',
-    'matchesOn'               => 'Abbinato con',
     'other_meta_data'         => 'Altri meta dati',
     'account_type'            => 'Tipo conto',
     'created_at'              => 'Creato il',
     'account'                 => 'Conto',
     'matchingAmount'          => 'Importo',
-    'split_number'            => 'Divisione #',
     'destination'             => 'Destinazione',
     'source'                  => 'Origine',
     'next_expected_match'     => 'Prossimo abbinamento previsto',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Si ripete',
     'description'             => 'Descrizione',
     'amount'                  => 'Importo',
-    'internal_reference'      => 'Riferimento interno',
     'date'                    => 'Data',
     'interest_date'           => 'Data interessi',
     'book_date'               => 'Data contabile',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Data scadenza',
     'payment_date'            => 'Data pagamento',
     'invoice_date'            => 'Data fatturazione',
-    'interal_reference'       => 'Riferimento interno',
+    'internal_reference'      => 'Riferimento interno',
     'notes'                   => 'Note',
     'from'                    => 'Da',
     'piggy_bank'              => 'Salvadanaio',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Numero di allegati',
     'bills_count'             => 'Numero di bollette',
     'categories_count'        => 'Numero di categorie',
-    'import_jobs_count'       => 'Numero delle operazioni di importazione',
     'budget_count'            => 'Numero di budget',
     'rule_and_groups_count'   => 'Numero di regole e gruppi di regole',
     'tags_count'              => 'Numero di etichette',
@@ -105,11 +101,8 @@ return [
     'sum_withdrawals'         => 'Somma dei prelievi',
     'sum_deposits'            => 'Somma versamenti',
     'sum_transfers'           => 'Somma dei trasferimenti',
-    'sum_reconciliations'     => 'Sum of reconciliations',
+    'sum_reconciliations'     => 'Somma delle riconciliazioni',
     'reconcile'               => 'Riconcilia',
-    'account_on_spectre'      => 'Conto (Spectre)',
-    'account_on_ynab'         => 'Conto (YNAB)',
-    'do_import'               => 'Importo da questo conto',
     'sepa_ct_id'              => 'Identificativo End-To-End SEPA',
     'sepa_ct_op'              => 'Identificativo SEPA Conto Controparte',
     'sepa_db'                 => 'Identificativo Mandato SEPA',

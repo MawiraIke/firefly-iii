@@ -1,7 +1,7 @@
 <?php
 /**
  * ShowControllerTest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -196,6 +196,7 @@ class ShowControllerTest extends TestCase
         $collector->shouldReceive('withBudgetInformation')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('withCategoryInformation')->andReturnSelf()->atLeast()->once();
         $collector->shouldReceive('getPaginatedGroups')->andReturn(new LengthAwarePaginator([], 0, 10))->atLeast()->once();
+        $collector->shouldReceive('withAccountInformation')->andReturnSelf()->atLeast()->once();
 
         $blRepos->shouldReceive('getBudgetLimits')->andReturn(new Collection([$budgetLimit]))->atLeast()->once();
         $opsRepos->shouldReceive('spentInPeriod')->andReturn('-1')->atLeast()->once();

@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -36,18 +36,18 @@ return [
     'file_attached'                  => 'Fichier ":name" téléchargé avec succès.',
     'must_exist'                     => 'L\'ID dans le champ :attribute n\'existe pas dans la base de données.',
     'all_accounts_equal'             => 'Tous les comptes dans ce champ doivent être égaux.',
-    'group_title_mandatory'          => 'Un titre de groupe est obligatoire lorsqu\'il y a plus d\'une transaction.',
+    'group_title_mandatory'          => 'Un titre de groupe est obligatoire lorsqu\'il y a plus d\'une opération.',
     'transaction_types_equal'        => 'Toutes les ventilations doivent être de même type.',
-    'invalid_transaction_type'       => 'Type de transaction non valide.',
+    'invalid_transaction_type'       => 'Type d\'opération non valide.',
     'invalid_selection'              => 'Votre sélection est invalide.',
     'belongs_user'                   => 'Cette valeur n\'est pas valide pour ce champ.',
-    'at_least_one_transaction'       => 'Besoin d\'au moins une transaction.',
+    'at_least_one_transaction'       => 'Besoin d\'au moins une opération.',
     'at_least_one_repetition'        => 'Besoin d\'au moins une répétition.',
     'require_repeat_until'           => 'Besoin d’un certain nombre de répétitions ou d\'une date de fin (repeat_until). Pas les deux.',
     'require_currency_info'          => 'Le contenu de ce champ n\'est pas valide sans informations sur la devise.',
     'not_transfer_account'           => 'Ce compte n\'est pas un compte qui peut être utilisé pour les transferts.',
-    'require_currency_amount'        => 'Le contenu de ce champ est invalide sans informations sur le montant étranger.',
-    'equal_description'              => 'La description de la transaction ne doit pas être identique à la description globale.',
+    'require_currency_amount'        => 'Le contenu de ce champ est invalide sans informations sur le montant en devise étrangère.',
+    'equal_description'              => 'La description de l\'opération ne doit pas être identique à la description globale.',
     'file_invalid_mime'              => 'Le fichier ":name" est du type ":mime" ce qui n\'est pas accepté pour un nouvel envoi.',
     'file_too_large'                 => 'Le fichier ":name" est trop grand.',
     'belongs_to_user'                => 'La valeur de :attribute est inconnue.',
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => 'Une règle doit avoir au moins une action.',
     'base64'                         => 'Il ne s\'agit pas de données base64 valides.',
     'model_id_invalid'               => 'L’ID fournit ne semble pas valide pour ce modèle.',
-    'more'                           => ':attribute doit être supérieur à zéro.',
     'less'                           => ':attribute doit être inférieur à 10 000 000',
     'active_url'                     => 'Le champ :attribute n\'est pas une URL valide.',
     'after'                          => 'Le champ :attribute doit être une date postérieure à :date.',
@@ -121,19 +120,21 @@ return [
     'string'                         => 'Le champ :attribute doit être une chaîne de caractères.',
     'url'                            => 'Le format de l\'URL de :attribute n\'est pas valide.',
     'timezone'                       => 'Le champ :attribute doit être un fuseau horaire valide.',
-    '2fa_code'                    => 'Le champ :attribute est invalide.',
-    'dimensions'                  => 'Le :attribute possède des dimensions d’image non valides.',
-    'distinct'                    => ':attribute possède une valeur en double.',
-    'file'                        => 'Le :attribute doit être un fichier.',
-    'in_array'                    => 'Le champ :attribute n\'existe pas dans :other.',
-    'present'                     => 'Le champs :attribute doit être rempli.',
-    'amount_zero'                 => 'Le montant total ne peut pas être zéro.',
-    'current_target_amount'       => 'Le montant actuel doit être inférieur au montant cible.',
-    'unique_piggy_bank_for_user'  => 'Le nom de la tirelire doit être unique.',
-    'secure_password'             => 'Ce n\'est pas un mot de passe sécurisé. Veuillez essayez à nouveau. Pour plus d\'informations, visitez https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => 'Type de répétition non valide pour des opérations périodiques.',
-    'valid_recurrence_rep_moment' => 'Période de répétition non valide pour ce type de répétition.',
-    'invalid_account_info'        => 'Informations de compte non valides.',
+    '2fa_code'                       => 'Le champ :attribute est invalide.',
+    'dimensions'                     => 'Le :attribute possède des dimensions d’image non valides.',
+    'distinct'                       => ':attribute possède une valeur en double.',
+    'file'                           => 'Le :attribute doit être un fichier.',
+    'in_array'                       => 'Le champ :attribute n\'existe pas dans :other.',
+    'present'                        => 'Le champs :attribute doit être rempli.',
+    'amount_zero'                    => 'Le montant total ne peut pas être zéro.',
+    'current_target_amount'          => 'Le montant actuel doit être inférieur au montant cible.',
+    'unique_piggy_bank_for_user'     => 'Le nom de la tirelire doit être unique.',
+    'unique_object_group'            => 'Le nom du groupe doit être unique',
+
+    'secure_password'                => 'Ce n\'est pas un mot de passe sécurisé. Veuillez essayez à nouveau. Pour plus d\'informations, visitez https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => 'Type de répétition non valide pour des opérations périodiques.',
+    'valid_recurrence_rep_moment'    => 'Période de répétition non valide pour ce type de répétition.',
+    'invalid_account_info'           => 'Informations de compte non valides.',
     'attributes'                     => [
         'email'                   => 'adresse email',
         'description'             => 'description',
@@ -148,7 +149,7 @@ return [
         'amount_max'              => 'montant maximum',
         'title'                   => 'titre',
         'tag'                     => 'tag',
-        'transaction_description' => 'description de la transaction',
+        'transaction_description' => 'description de l\'opération',
         'rule-action-value.1'     => 'valeur d\'action de la règle #1',
         'rule-action-value.2'     => 'valeur d\'action de la règle #2',
         'rule-action-value.3'     => 'valeur d\'action de la règle #3',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => 'Impossible de trouver un compte source valide lors de la recherche de l\'ID ":id" ou du nom ":name".',
     'deposit_dest_need_data'   => 'Vous devez obtenir un ID de compte de destination valide et/ou un nom de compte de destination valide pour continuer.',
     'deposit_dest_bad_data'    => 'Impossible de trouver un compte de destination valide lors de la recherche de l\'ID ":id" ou du nom ":name".',
-    'deposit_dest_wrong_type' => 'Le compte de destination saisi n\'est pas du bon type.',
+    'deposit_dest_wrong_type'  => 'Le compte de destination saisi n\'est pas du bon type.',
 
     'transfer_source_need_data' => 'Vous devez obtenir un ID de compte source valide et/ou un nom de compte source valide pour continuer.',
     'transfer_source_bad_data'  => 'Impossible de trouver un compte source valide lors de la recherche de l\'ID ":id" ou du nom ":name".',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'Vous devez obtenir un ID de compte de destination valide et/ou un nom de compte de destination valide pour continuer.',
     'ob_dest_bad_data'    => 'Impossible de trouver un compte de destination valide lors de la recherche de l\'ID ":id" ou du nom ":name".',
 
-    'generic_invalid_source' => 'Vous ne pouvez pas utiliser ce compte comme compte source.',
+    'generic_invalid_source'      => 'Vous ne pouvez pas utiliser ce compte comme compte source.',
     'generic_invalid_destination' => 'Vous ne pouvez pas utiliser ce compte comme compte de destination.',
+
+    'gte.numeric' => 'La valeur de :attribute doit être supérieure ou égale à :value.',
+    'gt.numeric'  => 'Le champ :attribute doit être plus grand que :value.',
+    'gte.file'    => 'L\'attribut :attribute doit contenir au moins :value kilo-octets.',
+    'gte.string'  => 'Le texte :attribute doit contenir au moins :value caractères.',
+    'gte.array'   => 'L\'attribut :attribute doit avoir :value éléments ou plus.',
+
+    'amount_required_for_auto_budget' => 'Le montant est requis.',
+    'auto_budget_amount_positive'     => 'Le montant doit être supérieur à zéro.',
+    'auto_budget_period_mandatory' => 'La période du budget automatique est un champ obligatoire.',
 ];

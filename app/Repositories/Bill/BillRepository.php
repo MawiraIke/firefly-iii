@@ -1,7 +1,7 @@
 <?php
 /**
  * BillRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -26,11 +26,13 @@ use Carbon\Carbon;
 use DB;
 use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Factory\BillFactory;
+use FireflyIII\Models\Attachment;
 use FireflyIII\Models\Bill;
 use FireflyIII\Models\Note;
 use FireflyIII\Models\Transaction;
 use FireflyIII\Models\TransactionJournal;
 use FireflyIII\Repositories\Journal\JournalRepositoryInterface;
+use FireflyIII\Repositories\ObjectGroup\CreatesObjectGroups;
 use FireflyIII\Services\Internal\Destroy\BillDestroyService;
 use FireflyIII\Services\Internal\Update\BillUpdateService;
 use FireflyIII\Support\CacheProperties;
@@ -39,6 +41,7 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Log;
+use Storage;
 
 /**
  * Class BillRepository.
@@ -46,8 +49,8 @@ use Log;
  */
 class BillRepository implements BillRepositoryInterface
 {
-    /** @var User */
-    private $user;
+    use CreatesObjectGroups;
+    private User $user;
 
     /**
      * Constructor.
@@ -164,7 +167,22 @@ class BillRepository implements BillRepositoryInterface
      */
     public function getAttachments(Bill $bill): Collection
     {
-        return $bill->attachments()->get();
+        $set = $bill->attachments()->get();
+
+        /** @var Storage $disk */
+        $disk = Storage::disk('upload');
+
+        $set = $set->each(
+            static function (Attachment $attachment) use ($disk) {
+                $notes                   = $attachment->notes()->first();
+                $attachment->file_exists = $disk->exists($attachment->fileName());
+                $attachment->notes       = $notes ? $notes->text : '';
+
+                return $attachment;
+            }
+        );
+
+        return $set;
     }
 
     /**
@@ -173,7 +191,10 @@ class BillRepository implements BillRepositoryInterface
     public function getBills(): Collection
     {
         /** @var Collection $set */
-        return $this->user->bills()->orderBy('active', 'DESC')->orderBy('name', 'ASC')->get();
+        return $this->user->bills()
+                          ->orderBy('order', 'ASC')
+                          ->orderBy('active', 'DESC')
+                          ->orderBy('name', 'ASC')->get();
     }
 
     /**
@@ -411,6 +432,7 @@ class BillRepository implements BillRepositoryInterface
      */
     public function getPaidDatesInRange(Bill $bill, Carbon $start, Carbon $end): Collection
     {
+        Log::debug('Now in getPaidDatesInRange()');
         return $bill->transactionJournals()
                     ->before($end)->after($start)->get(
                 [
@@ -576,12 +598,9 @@ class BillRepository implements BillRepositoryInterface
         }
         // find the most recent date for this bill NOT in the future. Cache this date:
         $start = clone $bill->date;
-        //Log::debug('nextDateMatch: Start is ' . $start->format('Y-m-d'));
 
         while ($start < $date) {
-            //Log::debug(sprintf('$start (%s) < $date (%s)', $start->format('Y-m-d'), $date->format('Y-m-d')));
             $start = app('navigation')->addPeriod($start, $bill->repeat_freq, $bill->skip);
-            //Log::debug('Start is now ' . $start->format('Y-m-d'));
         }
 
         $end = app('navigation')->addPeriod($start, $bill->repeat_freq, $bill->skip);
@@ -695,5 +714,61 @@ class BillRepository implements BillRepositoryInterface
     public function unlinkAll(Bill $bill): void
     {
         $this->user->transactionJournals()->where('bill_id', $bill->id)->update(['bill_id' => null]);
+    }
+
+    /**
+     * Correct order of piggies in case of issues.
+     */
+    public function correctOrder(): void
+    {
+        $set     = $this->user->bills()->orderBy('order', 'ASC')->get();
+        $current = 1;
+        foreach ($set as $bill) {
+            if ((int) $bill->order !== $current) {
+                $bill->order = $current;
+                $bill->save();
+            }
+            $current++;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setObjectGroup(Bill $bill, string $objectGroupTitle): Bill
+    {
+        $objectGroup = $this->findOrCreateObjectGroup($objectGroupTitle);
+        if (null !== $objectGroup) {
+            $bill->objectGroups()->sync([$objectGroup->id]);
+        }
+
+        return $bill;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function removeObjectGroup(Bill $bill): Bill
+    {
+        $bill->objectGroups()->sync([]);
+
+        return $bill;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setOrder(Bill $bill, int $order): void
+    {
+        $bill->order = $order;
+        $bill->save();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function destroyAll(): void
+    {
+        $this->user->bills()->delete();
     }
 }

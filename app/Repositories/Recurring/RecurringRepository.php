@@ -1,7 +1,7 @@
 <?php
 /**
  * RecurringRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -282,7 +282,6 @@ class RecurringRepository implements RecurringRepositoryInterface
         /** @var RecurrenceMeta $meta */
         foreach ($transaction->recurrenceTransactionMeta as $meta) {
             if ('tags' === $meta->name && '' !== $meta->value) {
-                //$tags = explode(',', $meta->value);
                 $tags = json_decode($meta->value, true, 512, JSON_THROW_ON_ERROR);
             }
         }
@@ -535,6 +534,39 @@ class RecurringRepository implements RecurringRepositoryInterface
         // filter out all the weekend days:
         $occurrences = $this->filterWeekends($repetition, $occurrences);
 
+        // filter out everything if "repeat_until" is set.
+        $repeatUntil = $repetition->recurrence->repeat_until;
+        $occurrences = $this->filterMaxDate($repeatUntil, $occurrences);
+
         return $occurrences;
+    }
+
+    /**
+     * @param Carbon|null $max
+     * @param array       $occurrences
+     *
+     * @return array
+     */
+    private function filterMaxDate(?Carbon $max, array $occurrences): array
+    {
+        if (null === $max) {
+            return $occurrences;
+        }
+        $filtered = [];
+        foreach ($occurrences as $date) {
+            if ($date->lte($max)) {
+                $filtered[] = $date;
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function destroyAll(): void
+    {
+        $this->user->recurrences()->delete();
     }
 }

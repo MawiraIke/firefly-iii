@@ -2,7 +2,7 @@
 
 /**
  * config.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -32,7 +32,7 @@ return [
     'month_and_day_no_year'   => '%e %B',
     'date_time'               => '%e %B %Y o %T',
     'specific_day'            => '%e %B %Y',
-    'week_in_year'            => 'Tydzień %W, %Y',
+    'week_in_year'            => 'Tydzień %V, %G',
     'year'                    => '%Y',
     'half_year'               => '%B %Y',
     'month_js'                => 'MMMM YYYY',

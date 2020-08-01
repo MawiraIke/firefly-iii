@@ -1,6 +1,6 @@
 <!--
   - Category.vue
-  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  - Copyright (c) 2019 james@firefly-iii.org
   -
   - This file is part of Firefly III (https://github.com/firefly-iii).
   -
@@ -20,6 +20,9 @@
 
 <template>
     <div class="form-group" v-bind:class="{ 'has-error': hasError()}">
+        <div class="col-sm-12 text-sm">
+            {{ $t('firefly.category') }}
+        </div>
         <div class="col-sm-12">
             <div class="input-group">
                 <input
@@ -121,7 +124,7 @@
             handleEnter: function (e) {
                 // todo feels sloppy
                 if (e.keyCode === 13) {
-                    e.preventDefault();
+                    //e.preventDefault();
                 }
             }
         }

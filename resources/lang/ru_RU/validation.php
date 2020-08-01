@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => 'Правило должно иметь хотя бы одно действие.',
     'base64'                         => 'Это некорректный формат для данных, зашифрованных с помощью base64.',
     'model_id_invalid'               => 'Данный ID кажется недопустимым для этой модели.',
-    'more'                           => ':attribute должен быть больше нуля.',
     'less'                           => ':attribute должен быть меньше 10,000,000',
     'active_url'                     => ':attribute не является допустимым URL-адресом.',
     'after'                          => ':attribute должна быть позже :date.',
@@ -121,19 +120,21 @@ return [
     'string'                         => 'Значение :attribute должно быть строкой.',
     'url'                            => 'Неверный формат ввода :attribute.',
     'timezone'                       => ':attribute должен быть в допустимом диапазоне.',
-    '2fa_code'                    => ':attribute введен неверно.',
-    'dimensions'                  => 'Недопустимые размеры изображения :attribute.',
-    'distinct'                    => 'Поле :attribute содержит повторяющееся значение.',
-    'file'                        => ':attribute должен быть файлом.',
-    'in_array'                    => 'Поле :attribute не существует в :other.',
-    'present'                     => 'Поле :attribute должно быть заполнено.',
-    'amount_zero'                 => 'Сумма не может быть равна нулю.',
-    'current_target_amount'       => 'Текущая сумма должна быть меньше целевой суммы.',
-    'unique_piggy_bank_for_user'  => 'Название копилки должно быть уникальным.',
-    'secure_password'             => 'Это не безопасный пароль. Попробуйте еще раз. Подробнее можно узнать по ссылке https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => 'Недопустимый тип для повторяющихся транзакций.',
-    'valid_recurrence_rep_moment' => 'Неверный период повторения для данного типа повторений.',
-    'invalid_account_info'        => 'Неверные данные о счёте.',
+    '2fa_code'                       => ':attribute введен неверно.',
+    'dimensions'                     => 'Недопустимые размеры изображения :attribute.',
+    'distinct'                       => 'Поле :attribute содержит повторяющееся значение.',
+    'file'                           => ':attribute должен быть файлом.',
+    'in_array'                       => 'Поле :attribute не существует в :other.',
+    'present'                        => 'Поле :attribute должно быть заполнено.',
+    'amount_zero'                    => 'Сумма не может быть равна нулю.',
+    'current_target_amount'          => 'Текущая сумма должна быть меньше целевой суммы.',
+    'unique_piggy_bank_for_user'     => 'Название копилки должно быть уникальным.',
+    'unique_object_group'            => 'Название группы должно быть уникальным',
+
+    'secure_password'                => 'Это не безопасный пароль. Попробуйте еще раз. Подробнее можно узнать по ссылке https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => 'Недопустимый тип для повторяющихся транзакций.',
+    'valid_recurrence_rep_moment'    => 'Неверный период повторения для данного типа повторений.',
+    'invalid_account_info'           => 'Неверные данные о счёте.',
     'attributes'                     => [
         'email'                   => '"Адрес электронной почты"',
         'description'             => '"Описание"',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => 'Не удалось найти корректный счёт-источник при поиске ID ":id" или имени ":name".',
     'deposit_dest_need_data'   => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
     'deposit_dest_bad_data'    => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
-    'deposit_dest_wrong_type' => 'The submitted destination account is not of the right type.',
+    'deposit_dest_wrong_type'  => 'Сохраняемый счёт назначения - некорректный.',
 
     'transfer_source_need_data' => 'Для продолжения необходим действительный ID счёта-источника и/или действительное имя счёта.',
     'transfer_source_bad_data'  => 'Не удалось найти корректный счёт-источник при поиске ID ":id" или имени ":name".',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
     'ob_dest_bad_data'    => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
 
-    'generic_invalid_source' => 'Вы не можете использовать этот счёт в качестве счёта-источника.',
+    'generic_invalid_source'      => 'Вы не можете использовать этот счёт в качестве счёта-источника.',
     'generic_invalid_destination' => 'Вы не можете использовать этот счёт в качестве счёта назначения.',
+
+    'gte.numeric' => 'Значение :attribute должно быть больше или равно :value.',
+    'gt.numeric'  => 'Значение :attribute должно быть больше :value.',
+    'gte.file'    => 'Размер файла в поле :attribute должен быть больше или равен :value Килобайт(а).',
+    'gte.string'  => 'Значение :attribute должно быть больше или равно :value символам.',
+    'gte.array'   => 'Значения поля :attribute должно включать :value элементов или больше.',
+
+    'amount_required_for_auto_budget' => 'Нужно указать сумму.',
+    'auto_budget_amount_positive'     => 'Сумма должна быть больше 0.',
+    'auto_budget_period_mandatory' => 'Период авто-бюджета - это обязательно поле.',
 ];

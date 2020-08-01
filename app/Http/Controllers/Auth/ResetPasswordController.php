@@ -1,7 +1,7 @@
 <?php
 /**
  * ResetPasswordController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,9 +25,13 @@ namespace FireflyIII\Http\Controllers\Auth;
 
 use FireflyIII\Http\Controllers\Controller;
 use FireflyIII\User;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\View\View;
 
 /**
  * Class ResetPasswordController
@@ -61,10 +65,11 @@ class ResetPasswordController extends Controller
     /**
      * Reset the given user's password.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     *
+     * @return Factory|JsonResponse|RedirectResponse|View
      */
     public function reset(Request $request)
     {
@@ -78,7 +83,7 @@ class ResetPasswordController extends Controller
         $rules = [
             'token'    => 'required',
             'email'    => 'required|email',
-            'password' => 'required|confirmed|min:6|secure_password',
+            'password' => 'required|confirmed|min:16|secure_password',
         ];
 
         $this->validate($request, $rules, $this->validationErrorMessages());
@@ -87,9 +92,10 @@ class ResetPasswordController extends Controller
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
         $response = $this->broker()->reset(
-            $this->credentials($request), function ($user, $password) {
-            $this->resetPassword($user, $password);
-        }
+            $this->credentials($request),
+            function ($user, $password) {
+                $this->resetPassword($user, $password);
+            }
         );
 
         // If the password was successfully reset, we will redirect the user back to
@@ -105,10 +111,10 @@ class ResetPasswordController extends Controller
      *
      * If no token is present, display the link request form.
      *
-     * @param  Request     $request
-     * @param  string|null $token
+     * @param Request     $request
+     * @param string|null $token
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function showResetForm(Request $request, $token = null)
     {
@@ -123,7 +129,7 @@ class ResetPasswordController extends Controller
         $singleUserMode    = app('fireflyconfig')->get('single_user_mode', config('firefly.configuration.single_user_mode'))->data;
         $userCount         = User::count();
         $allowRegistration = true;
-        $pageTitle         = (string)trans('firefly.reset_pw_page_title');
+        $pageTitle         = (string) trans('firefly.reset_pw_page_title');
         if (true === $singleUserMode && $userCount > 0) {
             $allowRegistration = false;
         }

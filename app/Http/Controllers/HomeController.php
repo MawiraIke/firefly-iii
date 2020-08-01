@@ -1,7 +1,7 @@
 <?php
 /**
  * HomeController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -31,9 +31,13 @@ use FireflyIII\Models\AccountType;
 use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Repositories\Bill\BillRepositoryInterface;
 use FireflyIII\User;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 use Log;
 
 /**
@@ -43,6 +47,7 @@ class HomeController extends Controller
 {
     /**
      * HomeController constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct()
@@ -57,8 +62,9 @@ class HomeController extends Controller
      * Change index date range.
      *
      * @param Request $request
-     * @return JsonResponse
+     *
      * @throws Exception
+     * @return JsonResponse
      */
     public function dateRange(Request $request): JsonResponse
     {
@@ -72,7 +78,7 @@ class HomeController extends Controller
 
         // check if the label is "everything" or "Custom range" which will betray
         // a possible problem with the budgets.
-        if ($label === (string)trans('firefly.everything') || $label === (string)trans('firefly.customRange')) {
+        if ($label === (string) trans('firefly.everything') || $label === (string) trans('firefly.customRange')) {
             $isCustomRange = true;
             Log::debug('Range is now marked as "custom".');
         }
@@ -80,7 +86,7 @@ class HomeController extends Controller
         $diff = $start->diffInDays($end);
 
         if ($diff > 50) {
-            $request->session()->flash('warning', (string)trans('firefly.warning_much_data', ['days' => $diff]));
+            $request->session()->flash('warning', (string) trans('firefly.warning_much_data', ['days' => $diff]));
         }
 
         $request->session()->put('is_custom_range', $isCustomRange);
@@ -98,8 +104,9 @@ class HomeController extends Controller
      * Show index.
      *
      * @param AccountRepositoryInterface $repository
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     *
      * @throws Exception
+     * @return Factory|RedirectResponse|Redirector|View
      */
     public function index(AccountRepositoryInterface $repository)
     {
@@ -110,10 +117,11 @@ class HomeController extends Controller
         if (0 === $count) {
             return redirect(route('new-user.index'));
         }
-        $subTitle     = (string)trans('firefly.welcomeBack');
+        $subTitle     = (string) trans('firefly.welcome_back');
         $transactions = [];
         $frontPage    = app('preferences')->get(
-            'frontPageAccounts', $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET])->pluck('id')->toArray()
+            'frontPageAccounts',
+            $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET])->pluck('id')->toArray()
         );
         /** @var Carbon $start */
         $start = session('start', Carbon::now()->startOfMonth());
@@ -142,5 +150,4 @@ class HomeController extends Controller
 
         return view('index', compact('count', 'subTitle', 'transactions', 'billCount', 'start', 'end', 'today'));
     }
-
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * AccountRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -28,6 +28,8 @@ use FireflyIII\Factory\AccountFactory;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountMeta;
 use FireflyIII\Models\AccountType;
+use FireflyIII\Models\Attachment;
+use FireflyIII\Models\Location;
 use FireflyIII\Models\TransactionCurrency;
 use FireflyIII\Models\TransactionGroup;
 use FireflyIII\Models\TransactionJournal;
@@ -38,6 +40,7 @@ use FireflyIII\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Log;
+use Storage;
 
 /**
  * Class AccountRepository.
@@ -310,7 +313,7 @@ class AccountRepository implements AccountRepositoryInterface
         $query = $this->user->accounts()->with(
             ['accountmeta' => function (HasMany $query) {
                 $query->where('name', 'account_role');
-            }]
+            }, 'attachments']
         );
         if (count($types) > 0) {
             $query->accountTypeIn($types);
@@ -472,25 +475,34 @@ class AccountRepository implements AccountRepositoryInterface
         if (AccountType::ASSET !== $account->accountType->type) {
             throw new FireflyException(sprintf('%s is not an asset account.', $account->name));
         }
-        $name = $account->name . ' reconciliation';
-        /** @var AccountType $type */
-        $type     = AccountType::where('type', AccountType::RECONCILIATION)->first();
-        $accounts = $this->user->accounts()->where('account_type_id', $type->id)->get();
+        $currency = $this->getAccountCurrency($account) ?? app('amount')->getDefaultCurrency();
+        $name = trans('firefly.reconciliation_account_name', ['name' => $account->name, 'currency' => $currency->code]);
 
-        // TODO no longer need to loop like this
+        /** @var AccountType $type */
+        $type    = AccountType::where('type', AccountType::RECONCILIATION)->first();
+        $current = $this->user->accounts()->where('account_type_id', $type->id)
+                                          ->where('name', $name)
+                                          ->first();
 
         /** @var Account $current */
-        foreach ($accounts as $current) {
-            if ($current->name === $name) {
-                return $current;
-            }
+        if (null !== $current) {
+            return $current;
         }
+
+        $data = [
+            'account_type_id' => null,
+            'account_type'    => AccountType::RECONCILIATION,
+            'active'          => true,
+            'name'            => $name,
+            'currency_id'     => $currency->id,
+            'currency_code'   => $currency->code,
+        ];
+
         /** @var AccountFactory $factory */
         $factory = app(AccountFactory::class);
         $factory->setUser($account->user);
-        $account = $factory->findOrCreate($name, $type->type);
 
-        return $account;
+        return $factory->create($data);
     }
 
     /**
@@ -633,5 +645,52 @@ class AccountRepository implements AccountRepositoryInterface
         $query->orderBy('accounts.name', 'ASC');
 
         return $query->get(['accounts.*']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLocation(Account $account): ?Location
+    {
+        return $account->locations()->first();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttachments(Account $account): Collection
+    {
+        $set  = $account->attachments()->get();
+
+        /** @var Storage $disk */
+        $disk = Storage::disk('upload');
+
+        $set = $set->each(
+            static function (Attachment $attachment) use ($disk) {
+                $notes                   = $attachment->notes()->first();
+                $attachment->file_exists = $disk->exists($attachment->fileName());
+                $attachment->notes       = $notes ? $notes->text : '';
+
+                return $attachment;
+            }
+        );
+
+        return $set;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUsedCurrencies(Account $account): Collection
+    {
+        $info        = $account->transactions()->get(['transaction_currency_id', 'foreign_currency_id'])->toArray();
+        $currencyIds = [];
+        foreach ($info as $entry) {
+            $currencyIds[] = (int) $entry['transaction_currency_id'];
+            $currencyIds[] = (int) $entry['foreign_currency_id'];
+        }
+        $currencyIds = array_unique($currencyIds);
+
+        return TransactionCurrency::whereIn('id', $currencyIds)->get();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * MonthReportGenerator.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -76,7 +76,7 @@ class MonthReportGenerator implements ReportGeneratorInterface
 
         // render!
         try {
-            return view('reports.category.month', compact('accountIds', 'categoryIds', 'reportType',))
+            return view('reports.category.month', compact('accountIds', 'categoryIds', 'reportType', ))
                 ->with('start', $this->start)->with('end', $this->end)
                 ->with('categories', $this->categories)
                 ->with('accounts', $this->accounts)

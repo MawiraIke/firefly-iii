@@ -1,7 +1,7 @@
 <?php
 /**
  * PiggyBankRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -63,6 +63,7 @@ class PiggyBankRequest extends Request
             'startdate'      => $this->date('start_date'),
             'targetdate'     => $this->date('target_date'),
             'notes'          => $this->nlString('notes'),
+            'order'          => $this->integer('order'),
         ];
     }
 
@@ -90,7 +91,7 @@ class PiggyBankRequest extends Request
                 $piggyBank               = $this->route()->parameter('piggyBank');
                 $rules['name']           = 'between:1,255|uniquePiggyBankForUser:' . $piggyBank->id;
                 $rules['account_id']     = ['belongsToUser:accounts', new IsAssetAccountId];
-                $rules['target_amount']  = 'numeric|more:0';
+                $rules['target_amount']  = 'numeric|gt:0';
                 $rules['current_amount'] = ['numeric', new ZeroOrMore, new LessThanPiggyTarget];
                 break;
         }

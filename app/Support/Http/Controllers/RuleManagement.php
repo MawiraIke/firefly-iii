@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleManagement.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Support\Http\Controllers;
 
+use FireflyIII\Models\TransactionJournal;
 use FireflyIII\Repositories\Rule\RuleRepositoryInterface;
 use FireflyIII\Repositories\RuleGroup\RuleGroupRepositoryInterface;
 use Illuminate\Http\Request;

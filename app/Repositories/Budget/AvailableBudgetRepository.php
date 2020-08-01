@@ -1,7 +1,7 @@
 <?php
 /**
  * AvailableBudgetRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -289,5 +289,17 @@ class AvailableBudgetRepository implements AvailableBudgetRepositoryInterface
     public function destroyAll(): void
     {
         $this->user->availableBudgets()->delete();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByCurrencyDate(Carbon $start, Carbon $end, TransactionCurrency $currency): ?AvailableBudget
+    {
+        return $this->user
+            ->availableBudgets()
+            ->where('transaction_currency_id', $currency->id)
+            ->where('start_date', $start->format('Y-m-d 00:00:00'))
+            ->where('end_date', $end->format('Y-m-d 00:00:00'))->first();
     }
 }

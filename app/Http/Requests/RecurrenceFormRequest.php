@@ -1,7 +1,7 @@
 <?php
 /**
  * RecurrenceFormRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -53,9 +53,9 @@ class RecurrenceFormRequest extends Request
     /**
      * Get the data required by the controller.
      *
-     * @return array
      * @throws FireflyException
      *
+     * @return array
      */
     public function getAll(): array
     {
@@ -136,9 +136,9 @@ class RecurrenceFormRequest extends Request
     /**
      * The rules for this request.
      *
-     * @return array
      * @throws FireflyException
      *
+     * @return array
      */
     public function rules(): array
     {
@@ -160,7 +160,7 @@ class RecurrenceFormRequest extends Request
             'transaction_description' => 'required|between:1,255',
             'transaction_type'        => 'required|in:withdrawal,deposit,transfer',
             'transaction_currency_id' => 'required|exists:transaction_currencies,id',
-            'amount'                  => 'numeric|required|more:0|max:1000000000',
+            'amount'                  => 'numeric|required|gt:0|max:1000000000',
             // mandatory account info:
             'source_id'               => 'numeric|belongsToUser:accounts,id|nullable',
             'source_name'             => 'between:1,255|nullable',
@@ -168,7 +168,7 @@ class RecurrenceFormRequest extends Request
             'destination_name'        => 'between:1,255|nullable',
 
             // foreign amount data:
-            'foreign_amount'          => 'nullable|more:0|max:1000000000',
+            'foreign_amount'          => 'nullable|gt:0|max:1000000000',
 
             // optional fields:
             'budget_id'               => 'mustExist:budgets,id|belongsToUser:budgets,id|nullable',
@@ -246,30 +246,32 @@ class RecurrenceFormRequest extends Request
         $sourceId      = null;
         $destinationId = null;
 
+        // TODO typeOverrule: the account validator may have another opinion on the transaction type.
+
         switch ($this->string('transaction_type')) {
             default:
                 throw new FireflyException(sprintf('Cannot handle transaction type "%s"', $this->string('transaction_type'))); // @codeCoverageIgnore
             case 'withdrawal':
-                $sourceId      = (int)$data['source_id'];
-                $destinationId = (int)$data['withdrawal_destination_id'];
+                $sourceId      = (int) $data['source_id'];
+                $destinationId = (int) $data['withdrawal_destination_id'];
                 break;
             case 'deposit':
-                $sourceId      = (int)$data['deposit_source_id'];
-                $destinationId = (int)$data['destination_id'];
+                $sourceId      = (int) $data['deposit_source_id'];
+                $destinationId = (int) $data['destination_id'];
                 break;
             case 'transfer':
-                $sourceId      = (int)$data['source_id'];
-                $destinationId = (int)$data['destination_id'];
+                $sourceId      = (int) $data['source_id'];
+                $destinationId = (int) $data['destination_id'];
                 break;
         }
 
 
         // validate source account.
-        $validSource = $accountValidator->validateSource($sourceId, null);
+        $validSource = $accountValidator->validateSource($sourceId, null, null);
 
         // do something with result:
         if (false === $validSource) {
-            $message = (string)trans('validation.generic_invalid_source');
+            $message = (string) trans('validation.generic_invalid_source');
             $validator->errors()->add('source_id', $message);
             $validator->errors()->add('deposit_source_id', $message);
 
@@ -277,10 +279,10 @@ class RecurrenceFormRequest extends Request
         }
 
         // validate destination account
-        $validDestination = $accountValidator->validateDestination($destinationId, null);
+        $validDestination = $accountValidator->validateDestination($destinationId, null, null);
         // do something with result:
         if (false === $validDestination) {
-            $message = (string)trans('validation.generic_invalid_destination');
+            $message = (string) trans('validation.generic_invalid_destination');
             $validator->errors()->add('destination_id', $message);
             $validator->errors()->add('withdrawal_destination_id', $message);
 

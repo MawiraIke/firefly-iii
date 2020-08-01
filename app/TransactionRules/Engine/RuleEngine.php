@@ -1,7 +1,7 @@
 <?php
 /**
  * RuleEngine.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -48,6 +48,8 @@ class RuleEngine
     public const TRIGGER_STORE = 1;
     /** @var int */
     public const TRIGGER_UPDATE = 2;
+    /** @var int */
+    public const TRIGGER_BOTH = 3;
     /** @var bool */
     private $allRules;
     /** @var RuleGroupRepository */
@@ -83,11 +85,11 @@ class RuleEngine
         Log::debug(sprintf('Will process transaction journal #%d ("%s")', $journalId, $journal['description']));
         /** @var RuleGroup $group */
         foreach ($this->ruleGroups as $group) {
-            Log::debug(sprintf('Now at rule group #%d', $group->id));
+            Log::debug(sprintf('Now at rule group #%d ("%s")', $group->id, $group->title));
             $groupTriggered = false;
             /** @var Rule $rule */
             foreach ($group->rules as $rule) {
-                Log::debug(sprintf('Now at rule #%d from rule group #%d', $rule->id, $group->id));
+                Log::debug(sprintf('Now at rule #%d ("%s") from rule group #%d ("%s").', $rule->id, $rule->title, $group->id, $group->title));
                 $ruleTriggered = false;
                 // if in rule selection, or group in selection or all rules, it's included.
                 if ($this->includeRule($rule)) {
@@ -113,7 +115,7 @@ class RuleEngine
 
                 // if the rule is triggered and stop processing is true, cancel the entire group.
                 if ($ruleTriggered && $rule->stop_processing) {
-                    Log::info(sprintf('Break out group #%d because rule #%d was triggered.', $group->id, $rule->id));
+                    Log::info(sprintf('Break out group #%d ("%s") because rule #%d ("%s") was triggered.', $group->id, $group->title, $rule->id, $rule->title));
                     break;
                 }
             }
@@ -204,7 +206,7 @@ class RuleEngine
     }
 
     /**
-     * @param User|Authenticatable $user
+     * @param User $user
      */
     public function setUser(User $user): void
     {
@@ -227,7 +229,8 @@ class RuleEngine
         }
 
         $validTrigger = ('store-journal' === $trigger->trigger_value && self::TRIGGER_STORE === $this->triggerMode)
-                        || ('update-journal' === $trigger->trigger_value && self::TRIGGER_UPDATE === $this->triggerMode);
+                        || ('update-journal' === $trigger->trigger_value && self::TRIGGER_UPDATE === $this->triggerMode)
+            || $this->triggerMode === self::TRIGGER_BOTH;
 
         return $validTrigger && ($this->allRules || in_array($rule->id, $this->rulesToApply, true)) && true === $rule->active;
     }

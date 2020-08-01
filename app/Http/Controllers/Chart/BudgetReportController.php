@@ -1,6 +1,6 @@
 <?php /**
  * BudgetReportController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -16,7 +16,9 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */ /** @noinspection MoreThanThreeArgumentsInspection */
+ */
+
+/** @noinspection MoreThanThreeArgumentsInspection */
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers\Chart;
@@ -116,8 +118,6 @@ class BudgetReportController extends Controller
         // loop expenses.
         foreach ($spent as $currency) {
             foreach ($currency['budgets'] as $budget) {
-
-
                 foreach ($budget['transaction_journals'] as $journal) {
                     $categoryName   = $journal['category_name'] ?? trans('firefly.no_category');
                     $title          = sprintf('%s (%s)', $categoryName, $currency['currency_name']);
@@ -155,8 +155,6 @@ class BudgetReportController extends Controller
         // loop expenses.
         foreach ($spent as $currency) {
             foreach ($currency['budgets'] as $budget) {
-
-
                 foreach ($budget['transaction_journals'] as $journal) {
                     $title          = sprintf('%s (%s)', $journal['destination_account_name'], $currency['currency_name']);
                     $result[$title] = $result[$title] ?? [
@@ -197,7 +195,9 @@ class BudgetReportController extends Controller
             $spentKey             = sprintf('%d-spent', $currency['currency_id']);
             $chartData[$spentKey] = $chartData[$spentKey] ?? [
                     'label'           => sprintf(
-                        '%s (%s)', (string)trans('firefly.spent_in_specific_budget', ['budget' => $budget->name]), $currency['currency_name']
+                        '%s (%s)',
+                        (string) trans('firefly.spent_in_specific_budget', ['budget' => $budget->name]),
+                        $currency['currency_name']
                     ),
                     'type'            => 'bar',
                     'currency_symbol' => $currency['currency_symbol'],
@@ -238,8 +238,6 @@ class BudgetReportController extends Controller
         // loop expenses.
         foreach ($spent as $currency) {
             foreach ($currency['budgets'] as $budget) {
-
-
                 foreach ($budget['transaction_journals'] as $journal) {
                     $title          = sprintf('%s (%s)', $journal['source_account_name'], $currency['currency_name']);
                     $result[$title] = $result[$title] ?? [
@@ -280,5 +278,4 @@ class BudgetReportController extends Controller
 
         return $return;
     }
-
 }

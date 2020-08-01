@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
 
-    <form action="{{ route('recurring.store') }}" method="post" id="store" class="form-horizontal">
+    <form action="{{ route('recurring.store') }}" method="post" id="store" class="form-horizontal" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
         {# row with recurrence information #}
         <div class="row">
@@ -51,8 +51,8 @@
 
                         {# only correct way to do active checkbox #}
                         {{ ExpandedForm.checkbox('active', 1) }}
-
                         {{ ExpandedForm.checkbox('apply_rules',1) }}
+                        {{ ExpandedForm.file('attachments[]', {'multiple': 'multiple','helpText': trans('firefly.upload_max_file_size', {'size': uploadSize|filesize}) }) }}
                     </div>
                 </div>
             </div>
@@ -140,7 +140,7 @@
 
         {# row with submit stuff. #}
         <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-lg-offset-6 lg-md-offset-6">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">{{ 'options'|_ }}</h3>
@@ -197,19 +197,19 @@
 
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="v1/js/lib/modernizr-custom.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/typeahead/typeahead.bundle.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/ff/common/autocomplete.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/bootstrap-tagsinput.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/js/lib/jquery-ui.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript" src="v1/lib/fc/fullcalendar.min.js?v={{ FF_VERSION }}"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" src="v1/js/lib/modernizr-custom.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/typeahead/typeahead.bundle.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/ff/common/autocomplete.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/bootstrap-tagsinput.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/js/lib/jquery-ui.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" src="v1/lib/fc/fullcalendar.min.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">
         var transactionType = "{{ preFilled.transaction_type }}";
         var suggestUri = "{{ route('recurring.suggest') }}";
         var eventsUri = "{{ route('recurring.events') }}";
         var oldRepetitionType= "{{ oldRepetitionType }}";
     </script>
-    <script type="text/javascript" src="v1/js/ff/recurring/create.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/js/ff/recurring/create.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}
 
 {% block styles %}

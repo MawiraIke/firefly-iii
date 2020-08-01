@@ -2,7 +2,7 @@
 
 /**
  * AccountUpdateRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Api\V1\Requests;
 
+use FireflyIII\Models\Location;
 use FireflyIII\Rules\IsBoolean;
 
 /**
@@ -58,7 +59,6 @@ class AccountUpdateRequest extends Request
         if (null !== $this->get('include_net_worth')) {
             $includeNetWorth = $this->boolean('include_net_worth');
         }
-
         $data = [
             'name'                    => $this->nullableString('name'),
             'active'                  => $active,
@@ -75,11 +75,13 @@ class AccountUpdateRequest extends Request
             'opening_balance'         => $this->nullableString('opening_balance'),
             'opening_balance_date'    => $this->date('opening_balance_date'),
             'cc_type'                 => $this->nullableString('credit_card_type'),
-            'cc_Monthly_payment_date' => $this->nullableString('monthly_payment_date'),
+            'cc_monthly_payment_date' => $this->nullableString('monthly_payment_date'),
             'notes'                   => $this->nullableNlString('notes'),
             'interest'                => $this->nullableString('interest'),
             'interest_period'         => $this->nullableString('interest_period'),
         ];
+
+        $data = $this->appendLocationData($data, null);
 
         if ('liability' === $data['account_type']) {
             $data['opening_balance']      = bcmul($this->nullableString('liability_amount'), '-1');
@@ -102,7 +104,8 @@ class AccountUpdateRequest extends Request
         $accountRoles   = implode(',', config('firefly.accountRoles'));
         $types          = implode(',', array_keys(config('firefly.subTitlesByIdentifier')));
         $ccPaymentTypes = implode(',', array_keys(config('firefly.ccTypes')));
-        $rules          = [
+
+        $rules = [
             'name'                 => sprintf('min:1|uniqueAccountForUser:%d', $account->id),
             'type'                 => sprintf('in:%s', $types),
             'iban'                 => 'iban|nullable',
@@ -125,6 +128,7 @@ class AccountUpdateRequest extends Request
             'interest_period'      => 'required_if:type,liability|in:daily,monthly,yearly',
             'notes'                => 'min:0|max:65536',
         ];
+        $rules = Location::requestRules($rules);
 
         return $rules;
     }

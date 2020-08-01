@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -36,18 +36,16 @@ return [
     'currentBalance'          => 'Sold curent',
     'linked_to_rules'         => 'Reguli relevante',
     'active'                  => 'Este activ?',
-    'percentage'              => 'pct.',
-    'next_due'                => 'Next due',
-    'transaction_type'        => 'Type',
+    'percentage'              => 'procent %',
+    'next_due'                => 'Următoarea scadență',
+    'transaction_type'        => 'Tip',
     'lastActivity'            => 'Ultima activitate',
     'balanceDiff'             => 'Diferența de sold',
-    'matchesOn'               => 'Se potrivește',
-    'other_meta_data'         => 'Other meta data',
+    'other_meta_data'         => 'Alte meta-date',
     'account_type'            => 'Tip de cont',
     'created_at'              => 'Creat la',
     'account'                 => 'Cont',
     'matchingAmount'          => 'Sumă',
-    'split_number'            => 'Împarte #',
     'destination'             => 'Destinație',
     'source'                  => 'Sursă',
     'next_expected_match'     => 'Următoarea potrivire așteptată',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Repetă',
     'description'             => 'Descriere',
     'amount'                  => 'Sumă',
-    'internal_reference'      => 'Referință internă',
     'date'                    => 'Dată',
     'interest_date'           => 'Dată de interes',
     'book_date'               => 'Data revervării',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Data scadentă',
     'payment_date'            => 'Data de plată',
     'invoice_date'            => 'Data facturii',
-    'interal_reference'       => 'Referință internă',
+    'internal_reference'      => 'Internal reference',
     'notes'                   => 'Notițe',
     'from'                    => 'Din',
     'piggy_bank'              => 'Pușculiță',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Număr de atașamente',
     'bills_count'             => 'Număr de facturi',
     'categories_count'        => 'Număr de categorii',
-    'import_jobs_count'       => 'Număr de servicii importate',
     'budget_count'            => 'Număr de bugete',
     'rule_and_groups_count'   => 'Număr de reguli și grupuri de reguli',
     'tags_count'              => 'Număr de etichete',
@@ -105,11 +101,8 @@ return [
     'sum_withdrawals'         => 'Suma retragerilor',
     'sum_deposits'            => 'Suma depozitelor',
     'sum_transfers'           => 'Suma transferurilor',
-    'sum_reconciliations'     => 'Sum of reconciliations',
+    'sum_reconciliations'     => 'Suma împăcărilor',
     'reconcile'               => 'Reconcilia',
-    'account_on_spectre'      => 'Cont (Spectre)',
-    'account_on_ynab'         => 'Cont (YNAB)',
-    'do_import'               => 'Importați din acest cont',
     'sepa_ct_id'              => 'Identificator final SEPA',
     'sepa_ct_op'              => 'Identificatorul contului opus SEPA',
     'sepa_db'                 => 'Identificatorul mandatului SEPA',

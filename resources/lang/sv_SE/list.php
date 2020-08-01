@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Typ',
     'lastActivity'            => 'Senaste aktivitet',
     'balanceDiff'             => 'Saldodifferens',
-    'matchesOn'               => 'Matchad',
     'other_meta_data'         => 'Övrigt metadata',
     'account_type'            => 'Kontotyp',
     'created_at'              => 'Skapad den',
     'account'                 => 'Konto',
     'matchingAmount'          => 'Belopp',
-    'split_number'            => 'Dela #',
     'destination'             => 'Destination',
     'source'                  => 'Källa',
     'next_expected_match'     => 'Nästa förväntade träff',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Upprepas',
     'description'             => 'Beskrivning',
     'amount'                  => 'Belopp',
-    'internal_reference'      => 'Intern referens',
     'date'                    => 'Datum',
     'interest_date'           => 'Räntedatum',
     'book_date'               => 'Bokföringsdatum',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Förfallodatum',
     'payment_date'            => 'Betalningsdatum',
     'invoice_date'            => 'Fakturadatum',
-    'interal_reference'       => 'Intern referens',
+    'internal_reference'      => 'Internal reference',
     'notes'                   => 'Anteckningar',
     'from'                    => 'Från',
     'piggy_bank'              => 'Spargris',
@@ -91,7 +88,6 @@ return [
     'attachments_count'       => 'Antal bilagor',
     'bills_count'             => 'Antal räkningar',
     'categories_count'        => 'Antal kategorier',
-    'import_jobs_count'       => 'Antal importjobb',
     'budget_count'            => 'Antal budgetar',
     'rule_and_groups_count'   => 'Antal regler och regelgrupper',
     'tags_count'              => 'Antal etiketter',
@@ -107,9 +103,6 @@ return [
     'sum_transfers'           => 'Summa överföringar',
     'sum_reconciliations'     => 'Sum of reconciliations',
     'reconcile'               => 'Avstämning',
-    'account_on_spectre'      => 'Konto (Spectre)',
-    'account_on_ynab'         => 'Konto (YNAB)',
-    'do_import'               => 'Importera från det här kontot',
     'sepa_ct_id'              => 'SEPA End to End-identifierare',
     'sepa_ct_op'              => 'SEPA Motstående kontoidentifierare',
     'sepa_db'                 => 'SEPA Mandatidentifierare',

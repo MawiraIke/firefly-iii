@@ -2,7 +2,7 @@
 
 /**
  * auth.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,6 @@
 declare(strict_types=1);
 
 return [
-    'failed'   => 'Ces identifiants n\'ont aucune correspondance.',
+    'failed'   => 'Aucun compte ne correspond à ces identifiants.',
     'throttle' => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
 ];

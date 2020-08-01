@@ -1,7 +1,7 @@
 <?php
 /**
  * UserEventHandler.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -118,6 +118,7 @@ class UserEventHandler
         if ($repository->hasRole($user, 'demo')) {
             // set user back to English.
             app('preferences')->setForUser($user, 'language', 'en_US');
+            app('preferences')->setForUser($user, 'locale', 'equal');
             app('preferences')->mark();
         }
 
@@ -165,7 +166,8 @@ class UserEventHandler
         $user      = $event->user;
         $ipAddress = $event->ipAddress;
         $token     = app('preferences')->getForUser($user, 'email_change_undo_token', 'invalid');
-        $uri       = route('profile.undo-email-change', [$token->data, hash('sha256', $oldEmail)]);
+        $hashed    = hash('sha256', sprintf('%s%s', (string) config('app.key'), $oldEmail));
+        $uri       = route('profile.undo-email-change', [$token->data,$hashed]);
         try {
             Mail::to($oldEmail)->send(new UndoEmailChangeMail($newEmail, $oldEmail, $uri, $ipAddress));
             // @codeCoverageIgnoreStart

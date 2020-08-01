@@ -1,7 +1,7 @@
 <?php
 /**
  * EnableCurrencies.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -52,7 +52,7 @@ class EnableCurrencies extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
     public function handle(): int
     {
@@ -62,28 +62,28 @@ class EnableCurrencies extends Command
         /** @var Collection $meta */
         $meta = AccountMeta::where('name', 'currency_id')->groupBy('data')->get(['data']);
         foreach ($meta as $entry) {
-            $found[] = (int)$entry->data;
+            $found[] = (int) $entry->data;
         }
 
         // get all from journals:
         /** @var Collection $journals */
         $journals = TransactionJournal::groupBy('transaction_currency_id')->get(['transaction_currency_id']);
         foreach ($journals as $entry) {
-            $found[] = (int)$entry->transaction_currency_id;
+            $found[] = (int) $entry->transaction_currency_id;
         }
 
         // get all from transactions
         /** @var Collection $transactions */
         $transactions = Transaction::groupBy('transaction_currency_id')->get(['transaction_currency_id']);
         foreach ($transactions as $entry) {
-            $found[] = (int)$entry->transaction_currency_id;
+            $found[] = (int) $entry->transaction_currency_id;
         }
 
         // get all from budget limits
         /** @var Collection $limits */
         $limits = BudgetLimit::groupBy('transaction_currency_id')->get(['transaction_currency_id']);
         foreach ($limits as $entry) {
-            $found[] = (int)$entry->transaction_currency_id;
+            $found[] = (int) $entry->transaction_currency_id;
         }
 
         $found = array_unique($found);

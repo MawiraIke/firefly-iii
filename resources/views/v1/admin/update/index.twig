@@ -50,7 +50,7 @@
                             {{ 'admin_update_check_now_explain'|_ }}
                         </p>
                         <p>
-                            <a href="#" id="update" class="btn btn-info">{{ 'check_for_updates_button'|_ }}</a>
+                            <a href="{{ route('admin.update-check.manual') }}" class="btn btn-info">{{ 'check_for_updates_button'|_ }}</a>
                         </p>
                     </div>
                 </div>
@@ -68,8 +68,8 @@
 
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="{{ JS_NONCE }}">
         var updateCheckUri = '{{ route('admin.update-check.manual') }}';
     </script>
-    <script type="text/javascript" src="v1/js/ff/admin/update/index.js?v={{ FF_VERSION }}"></script>
+    <script type="text/javascript" src="v1/js/ff/admin/update/index.js?v={{ FF_VERSION }}" nonce="{{ JS_NONCE }}"></script>
 {% endblock %}

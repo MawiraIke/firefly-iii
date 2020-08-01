@@ -1,7 +1,7 @@
 <?php
 /**
  * MigrateAttachments.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -71,7 +71,7 @@ class MigrateAttachments extends Command
         foreach ($attachments as $att) {
 
             // move description:
-            $description = (string)$att->description;
+            $description = (string) $att->description;
             if ('' !== $description) {
 
                 // find or create note:
@@ -111,7 +111,7 @@ class MigrateAttachments extends Command
     {
         $configVar = app('fireflyconfig')->get(self::CONFIG_NAME, false);
         if (null !== $configVar) {
-            return (bool)$configVar->data;
+            return (bool) $configVar->data;
         }
 
         return false; // @codeCoverageIgnore

@@ -1,7 +1,7 @@
 <?php
 /**
  * SelectController.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -38,9 +38,11 @@ use FireflyIII\Support\Http\Controllers\RuleManagement;
 use FireflyIII\TransactionRules\Engine\RuleEngine;
 use FireflyIII\TransactionRules\TransactionMatcher;
 use FireflyIII\User;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 use Log;
 use Throwable;
 
@@ -63,7 +65,7 @@ class SelectController extends Controller
 
         $this->middleware(
             function ($request, $next) {
-                app('view')->share('title', (string)trans('firefly.rules'));
+                app('view')->share('title', (string) trans('firefly.rules'));
                 app('view')->share('mainTitleIcon', 'fa-random');
 
                 $this->accountRepos = app(AccountRepositoryInterface::class);
@@ -77,7 +79,7 @@ class SelectController extends Controller
      * Execute the given rule on a set of existing transactions.
      *
      * @param SelectTransactionsRequest $request
-     * @param Rule $rule
+     * @param Rule                      $rule
      *
      * @return RedirectResponse
      */
@@ -89,13 +91,13 @@ class SelectController extends Controller
         $accounts  = $this->accountRepos->getAccountsById($request->get('accounts'));
         $startDate = new Carbon($request->get('start_date'));
         $endDate   = new Carbon($request->get('end_date'));
-        $rules = [$rule->id];
+        $rules     = [$rule->id];
 
         /** @var RuleEngine $ruleEngine */
         $ruleEngine = app(RuleEngine::class);
         $ruleEngine->setUser(auth()->user());
         $ruleEngine->setRulesToApply($rules);
-        $ruleEngine->setTriggerMode(RuleEngine::TRIGGER_STORE);
+        $ruleEngine->setTriggerMode(RuleEngine::TRIGGER_BOTH);
 
         /** @var GroupCollectorInterface $collector */
         $collector = app(GroupCollectorInterface::class);
@@ -111,7 +113,7 @@ class SelectController extends Controller
         }
 
         // Tell the user that the job is queued
-        session()->flash('success', (string)trans('firefly.applied_rule_selection', ['title' => $rule->title]));
+        session()->flash('success', (string) trans('firefly.applied_rule_selection', ['title' => $rule->title]));
 
         return redirect()->route('rules.index');
     }
@@ -122,14 +124,18 @@ class SelectController extends Controller
      *
      * @param Rule $rule
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function selectTransactions(Rule $rule)
     {
+        if(false===$rule->active) {
+            session()->flash('warning',trans('firefly.cannot_fire_inactive_rules'));
+            return redirect(route('rules.index'));
+        }
         // does the user have shared accounts?
-        $first    = session('first')->format('Y-m-d');
+        $first    = session('first', Carbon::now()->subYear())->format('Y-m-d');
         $today    = Carbon::now()->format('Y-m-d');
-        $subTitle = (string)trans('firefly.apply_rule_selection', ['title' => $rule->title]);
+        $subTitle = (string) trans('firefly.apply_rule_selection', ['title' => $rule->title]);
 
         return view('rules.rule.select-transactions', compact('first', 'today', 'rule', 'subTitle'));
     }
@@ -153,11 +159,11 @@ class SelectController extends Controller
         $triggers = $this->getValidTriggerList($request);
 
         if (0 === count($triggers)) {
-            return response()->json(['html' => '', 'warning' => (string)trans('firefly.warning_no_valid_triggers')]); // @codeCoverageIgnore
+            return response()->json(['html' => '', 'warning' => (string) trans('firefly.warning_no_valid_triggers')]); // @codeCoverageIgnore
         }
 
-        $limit                = (int)config('firefly.test-triggers.limit');
-        $range                = (int)config('firefly.test-triggers.range');
+        $limit                = (int) config('firefly.test-triggers.limit');
+        $range                = (int) config('firefly.test-triggers.range');
         $matchingTransactions = new Collection;
         $strict               = '1' === $request->get('strict');
         /** @var TransactionMatcher $matcher */
@@ -179,10 +185,10 @@ class SelectController extends Controller
         // Warn the user if only a subset of transactions is returned
         $warning = '';
         if (count($matchingTransactions) === $limit) {
-            $warning = (string)trans('firefly.warning_transaction_subset', ['max_num_transactions' => $limit]); // @codeCoverageIgnore
+            $warning = (string) trans('firefly.warning_transaction_subset', ['max_num_transactions' => $limit]); // @codeCoverageIgnore
         }
         if (0 === count($matchingTransactions)) {
-            $warning = (string)trans('firefly.warning_no_matching_transactions', ['num_transactions' => $range]); // @codeCoverageIgnore
+            $warning = (string) trans('firefly.warning_no_matching_transactions', ['num_transactions' => $range]); // @codeCoverageIgnore
         }
 
         // Return json response
@@ -219,11 +225,11 @@ class SelectController extends Controller
         $triggers = $rule->ruleTriggers;
 
         if (0 === count($triggers)) {
-            return response()->json(['html' => '', 'warning' => (string)trans('firefly.warning_no_valid_triggers')]); // @codeCoverageIgnore
+            return response()->json(['html' => '', 'warning' => (string) trans('firefly.warning_no_valid_triggers')]); // @codeCoverageIgnore
         }
 
-        $limit                = (int)config('firefly.test-triggers.limit');
-        $range                = (int)config('firefly.test-triggers.range');
+        $limit                = (int) config('firefly.test-triggers.limit');
+        $range                = (int) config('firefly.test-triggers.range');
         $matchingTransactions = new Collection;
 
         /** @var TransactionMatcher $matcher */
@@ -243,10 +249,10 @@ class SelectController extends Controller
         // Warn the user if only a subset of transactions is returned
         $warning = '';
         if (count($matchingTransactions) === $limit) {
-            $warning = (string)trans('firefly.warning_transaction_subset', ['max_num_transactions' => $limit]); // @codeCoverageIgnore
+            $warning = (string) trans('firefly.warning_transaction_subset', ['max_num_transactions' => $limit]); // @codeCoverageIgnore
         }
         if (0 === count($matchingTransactions)) {
-            $warning = (string)trans('firefly.warning_no_matching_transactions', ['num_transactions' => $range]); // @codeCoverageIgnore
+            $warning = (string) trans('firefly.warning_no_matching_transactions', ['num_transactions' => $range]); // @codeCoverageIgnore
         }
 
         // Return json response

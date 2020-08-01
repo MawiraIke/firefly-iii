@@ -1,7 +1,7 @@
 <?php
 /**
  * ReportHelperInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace FireflyIII\Helpers\Report;
 
 use Carbon\Carbon;
-use FireflyIII\Helpers\Collection\Bill as BillCollection;
 use Illuminate\Support\Collection;
 
 /**

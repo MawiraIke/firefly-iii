@@ -1,7 +1,7 @@
 <?php
 /**
  * GeneratorInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -46,7 +46,7 @@ interface GeneratorInterface
      *    'fill' => if to fill a line? optional, will not be included when unused.
      *    'entries' =>
      *        [
-     *         'label-of-entry' => 'value'
+     *          key => [value => x, 'currency_symbol' => 'x']
      *        ]
      *    ]
      * 1: [
@@ -56,7 +56,7 @@ interface GeneratorInterface
      *    'fill' => if to fill a line? optional, will not be included when unused.
      *    'entries' =>
      *        [
-     *         'label-of-entry' => 'value'
+     *         key => [value => x, 'currency_symbol' => 'x']
      *        ]
      *    ]
      *

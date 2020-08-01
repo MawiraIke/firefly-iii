@@ -2,7 +2,7 @@
 
 /**
  * BillRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -60,7 +60,7 @@ class BillRequest extends Request
             $active = $this->boolean('active');
         }
 
-        $data = [
+        return [
             'name'          => $this->string('name'),
             'amount_min'    => $this->string('amount_min'),
             'amount_max'    => $this->string('amount_max'),
@@ -70,10 +70,9 @@ class BillRequest extends Request
             'repeat_freq'   => $this->string('repeat_freq'),
             'skip'          => $this->integer('skip'),
             'active'        => $active,
+            'order'         => $this->integer('order'),
             'notes'         => $this->nlString('notes'),
         ];
-
-        return $data;
     }
 
     /**
@@ -85,13 +84,13 @@ class BillRequest extends Request
     public function rules(): array
     {
         $rules = [
-            'name'          => 'required|between:1,255|uniqueObjectForUser:bills,name',
-            'amount_min'    => 'required|numeric|more:0',
-            'amount_max'    => 'required|numeric|more:0',
+            'name'          => 'between:1,255|uniqueObjectForUser:bills,name',
+            'amount_min'    => 'numeric|gt:0',
+            'amount_max'    => 'numeric|gt:0',
             'currency_id'   => 'numeric|exists:transaction_currencies,id',
             'currency_code' => 'min:3|max:3|exists:transaction_currencies,code',
-            'date'          => 'required|date',
-            'repeat_freq'   => 'required|in:weekly,monthly,quarterly,half-year,yearly',
+            'date'          => 'date',
+            'repeat_freq'   => 'in:weekly,monthly,quarterly,half-year,yearly',
             'skip'          => 'between:0,31',
             'active'        => [new IsBoolean],
             'notes'         => 'between:1,65536',
@@ -121,10 +120,10 @@ class BillRequest extends Request
         $validator->after(
             static function (Validator $validator) {
                 $data = $validator->getData();
-                $min  = (float)($data['amount_min'] ?? 0);
-                $max  = (float)($data['amount_max'] ?? 0);
+                $min  = (float) ($data['amount_min'] ?? 0);
+                $max  = (float) ($data['amount_max'] ?? 0);
                 if ($min > $max) {
-                    $validator->errors()->add('amount_min', (string)trans('validation.amount_min_over_max'));
+                    $validator->errors()->add('amount_min', (string) trans('validation.amount_min_over_max'));
                 }
             }
         );

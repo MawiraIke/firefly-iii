@@ -41,21 +41,35 @@
   "authors": [
     {
       "name": "James Cole",
-      "email": "thegrumpydictator@gmail.com",
+      "email": "james@firefly-iii.org",
       "homepage": "https://github.com/firefly-iii",
       "role": "Developer"
     }
   ],
   "support": {
-    "email": "thegrumpydictator@gmail.com",
+    "email": "james@firefly-iii.org",
     "issues": "https://github.com/firefly-iii/firefly-iii/issues",
     "forum": "https://reddit.com/r/FireflyIII",
     "wiki": "https://github.com/firefly-iii/help/wiki",
     "source": "https://github.com/firefly-iii/firefly-iii",
-    "docs": "https://firefly-iii.readthedocs.io/en/latest/"
+    "docs": "https://docs.firefly-iii.org/"
   },
+    "funding": [
+      {
+        "type": "patreon",
+        "url": "https://www.patreon.com/JC5"
+      },
+      {
+        "type": "github",
+        "url": "https://github.com/sponsors/JC5"
+      },
+      {
+        "type": "paypal",
+        "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=44UKUT455HUFA"
+      }
+    ],
   "require": {
-    "php": ">=7.3.0",
+    "php": ">=7.4.0",
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-fileinfo": "*",
@@ -70,24 +84,21 @@
     "ext-xml": "*",
     "adldap2/adldap2-laravel": "6.*",
     "bacon/bacon-qr-code": "1.*",
-    "bunq/sdk_php": "dev-master",
     "davejamesmiller/laravel-breadcrumbs": "5.*",
     "doctrine/dbal": "2.*",
     "fideloper/proxy": "4.*",
-    "jc5/google2fa-laravel": "2.0.3",
-    "laravel/framework": "^6.0",
+    "jc5/google2fa-laravel": "2.0.4",
+    "laravel/framework": "^7.0",
     "laravel/passport": "8.*",
+    "laravel/ui": "^2.0",
     "laravelcollective/html": "6.*",
     "league/commonmark": "1.*",
-    "league/csv": "9.*",
-    "league/flysystem-replicate-adapter": "1.*",
-    "league/flysystem-sftp": "1.*",
+    "league/csv": "^9.6",
     "league/fractal": "0.*",
-    "litipk/flysystem-fallback-adapter": "0.*",
-    "mschindler83/fints-hbci-php": "1.*",
     "pragmarx/google2fa": "^7.0",
     "pragmarx/recovery": "^0.1.0",
     "predis/predis": "^1.1",
+    "ramsey/uuid": "^3.9",
     "rcrowe/twigbridge": "^0.11.2"
   },
   "require-dev": {
@@ -96,11 +107,16 @@
     "fzaninotto/faker": "1.*",
     "johnkary/phpunit-speedtrap": "^3.1",
     "mockery/mockery": "1.*",
-    "phpunit/phpunit": "8.*",
-    "roave/security-advisories": "dev-master"
+    "phpunit/phpunit": "^8.5",
+    "psalm/plugin-laravel": "^1.1",
+    "roave/security-advisories": "dev-master",
+    "vimeo/psalm": "^3.10"
   },
   "suggest": {
   },
+  "repositories": [
+
+  ],
   "autoload": {
     "classmap": [
       "database/seeds",
@@ -150,6 +166,7 @@
       "@php artisan firefly-iii:back-to-journals",
       "@php artisan firefly-iii:rename-account-meta",
       "@php artisan firefly-iii:migrate-recurrence-meta",
+      "@php artisan firefly-iii:migrate-tag-locations",
 
       "@php artisan firefly-iii:fix-piggies",
       "@php artisan firefly-iii:create-link-types",
@@ -166,6 +183,8 @@
       "@php artisan firefly-iii:rename-meta-fields",
       "@php artisan firefly-iii:fix-ob-currencies",
       "@php artisan firefly-iii:fix-long-descriptions",
+      "@php artisan firefly-iii:fix-recurring-transactions",
+      "@php artisan firefly-iii:unify-group-accounts",
 
       "@php artisan firefly-iii:report-empty-objects",
       "@php artisan firefly-iii:report-sum",

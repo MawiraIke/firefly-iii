@@ -1,7 +1,7 @@
 <?php
 /**
  * OAuthTokenCreatedMail.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -67,6 +67,6 @@ class OAuthTokenCreatedMail extends Mailable
     public function build(): self
     {
         return $this->view('emails.oauth-client-created-html')->text('emails.oauth-client-created-text')
-                    ->subject('A new OAuth client has been created');
+                    ->subject((string) trans('email.oauth_created_subject'));
     }
 }

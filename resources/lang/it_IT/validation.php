@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => 'Una regola deve avere almeno una azione.',
     'base64'                         => 'Questi non sono dati codificati in base64 validi.',
     'model_id_invalid'               => 'L\'ID fornito sembra non essere valido per questo modello.',
-    'more'                           => ':attribute deve essere maggiore di zero.',
     'less'                           => ':attribute deve essere minore di 10.000.000',
     'active_url'                     => ':attribute non è un URL valido.',
     'after'                          => ':attribute deve essere una data dopo :date.',
@@ -121,19 +120,21 @@ return [
     'string'                         => ':attribute deve essere una stringa.',
     'url'                            => ':attribute il formato non è valido.',
     'timezone'                       => ':attribute deve essere una zona valida.',
-    '2fa_code'                    => 'Il campo :attribute non è valido.',
-    'dimensions'                  => ':attribute ha dimensioni di immagine non valide.',
-    'distinct'                    => ':attribute il campo ha un valore doppio.',
-    'file'                        => ':attribute deve essere un file.',
-    'in_array'                    => ':attribute il campo non esiste in :other.',
-    'present'                     => ':attribute il campo deve essere presente.',
-    'amount_zero'                 => 'L\'importo totale non può essere zero.',
-    'current_target_amount'       => 'L\'importo corrente deve essere minore dell\'importo obiettivo.',
-    'unique_piggy_bank_for_user'  => 'Il nome del salvadanaio deve essere unico.',
-    'secure_password'             => 'Questa non è una password sicura. Riprova. Per maggiori informazioni visita https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => 'Il tipo di ripetizione della transazione ricorrente non è valido.',
-    'valid_recurrence_rep_moment' => 'Il momento di ripetizione per questo tipo di ripetizione non è valido.',
-    'invalid_account_info'        => 'Informazione sul conto non valida.',
+    '2fa_code'                       => 'Il campo :attribute non è valido.',
+    'dimensions'                     => ':attribute ha dimensioni di immagine non valide.',
+    'distinct'                       => ':attribute il campo ha un valore doppio.',
+    'file'                           => ':attribute deve essere un file.',
+    'in_array'                       => ':attribute il campo non esiste in :other.',
+    'present'                        => ':attribute il campo deve essere presente.',
+    'amount_zero'                    => 'L\'importo totale non può essere zero.',
+    'current_target_amount'          => 'L\'importo corrente deve essere minore dell\'importo obiettivo.',
+    'unique_piggy_bank_for_user'     => 'Il nome del salvadanaio deve essere unico.',
+    'unique_object_group'            => 'Il nome del gruppo deve essere unico',
+
+    'secure_password'                => 'Questa non è una password sicura. Riprova. Per maggiori informazioni visita https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => 'Il tipo di ripetizione della transazione ricorrente non è valido.',
+    'valid_recurrence_rep_moment'    => 'Il momento di ripetizione per questo tipo di ripetizione non è valido.',
+    'invalid_account_info'           => 'Informazione sul conto non valida.',
     'attributes'                     => [
         'email'                   => 'indirizzo email',
         'description'             => 'descrizione',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => 'Non è stato possibile trovare un conto d\'origine valido effettuando la ricerca con l\'ID ":id" o il nome ":name".',
     'deposit_dest_need_data'   => 'È necessario ottenere un ID e/o un nome del conto di destinazione validi per continuare.',
     'deposit_dest_bad_data'    => 'Non è stato possibile trovare un conto di destinazione valido effettuando la ricerca con l\'ID ":id" o il nome ":name".',
-    'deposit_dest_wrong_type' => 'Il conto di destinazione inviato non è di tipo corretto.',
+    'deposit_dest_wrong_type'  => 'Il conto di destinazione inviato non è di tipo corretto.',
 
     'transfer_source_need_data' => 'È necessario ottenere un ID e/o un nome del conto di origine validi per continuare.',
     'transfer_source_bad_data'  => 'Non è stato possibile trovare un conto d\'origine valido effettuando la ricerca con l\'ID ":id" o il nome ":name".',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'È necessario ottenere un ID e/o un nome del conto di destinazione validi per continuare.',
     'ob_dest_bad_data'    => 'Non è stato possibile trovare un conto di destinazione valido effettuando la ricerca con l\'ID ":id" o il nome ":name".',
 
-    'generic_invalid_source' => 'Non puoi utilizzare questo conto come conto di origine.',
+    'generic_invalid_source'      => 'Non puoi utilizzare questo conto come conto di origine.',
     'generic_invalid_destination' => 'Non puoi utilizzare questo conto come conto di destinazione.',
+
+    'gte.numeric' => 'Il campo :attribute deve essere maggiore o uguale a :value.',
+    'gt.numeric'  => 'Il campo :attribute deve essere maggiore di :value.',
+    'gte.file'    => 'Il campo :attribute deve essere maggiore o uguale a :value kilobyte.',
+    'gte.string'  => 'Il campo :attribute deve essere maggiore o uguale a :value caratteri.',
+    'gte.array'   => 'Il campo :attribute deve avere :value o più elementi.',
+
+    'amount_required_for_auto_budget' => 'L\'importo è obbligatorio.',
+    'auto_budget_amount_positive'     => 'L\'importo deve essere maggiore di zero.',
+    'auto_budget_period_mandatory' => 'Il periodo per il budget automatico è un campo obbligatorio.',
 ];

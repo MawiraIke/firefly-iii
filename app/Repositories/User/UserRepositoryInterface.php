@@ -1,7 +1,7 @@
 <?php
 /**
  * UserRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -157,9 +157,10 @@ interface UserRepositoryInterface
     /**
      * Remove any role the user has.
      *
-     * @param User $user
+     * @param User   $user
+     * @param string $role
      */
-    public function removeRole(User $user): void;
+    public function removeRole(User $user, string $role): void;
 
     /**
      * Set MFA code.

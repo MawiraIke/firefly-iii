@@ -2,7 +2,7 @@
 
 /**
  * validation.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -57,7 +57,6 @@ return [
     'at_least_one_action'            => 'Reguła powinna mieć co najmniej jedną akcję.',
     'base64'                         => 'To nie są prawidłowe dane zakodowane w base64.',
     'model_id_invalid'               => 'Podane ID wygląda na nieprawidłowe dla tego modelu.',
-    'more'                           => ':attribute musi być większy od zera.',
     'less'                           => ':attribute musi być mniejszy od 10 000 000',
     'active_url'                     => ':attribute nie jest prawidłowym adresem URL.',
     'after'                          => ':attribute musi być datą późniejszą od :date.',
@@ -121,19 +120,21 @@ return [
     'string'                         => ':attribute musi być ciągiem znaków.',
     'url'                            => 'Format :attribute jest nieprawidłowy.',
     'timezone'                       => ':attribute musi być prawidłową strefą.',
-    '2fa_code'                    => 'Format :attribute jest nieprawidłowy.',
-    'dimensions'                  => ':attribute ma nieprawidłowe wymiary obrazu.',
-    'distinct'                    => 'Pole :attribute zawiera zduplikowaną wartość.',
-    'file'                        => ':attribute musi być plikiem.',
-    'in_array'                    => 'Pole :attribute nie istnieje w :other.',
-    'present'                     => 'Pole :attribute musi być obecne.',
-    'amount_zero'                 => 'Całkowita kwota nie może wynosić zero.',
-    'current_target_amount'       => 'The current amount must be less than the target amount.',
-    'unique_piggy_bank_for_user'  => 'Nazwa skarbonki musi być unikalna.',
-    'secure_password'             => 'To nie jest bezpieczne hasło. Proszę spróbować ponownie. Aby uzyskać więcej informacji odwiedź https://bit.ly/FF3-password-security',
-    'valid_recurrence_rep_type'   => 'Nieprawidłowy typ powtórzeń dla cyklicznych transakcji.',
-    'valid_recurrence_rep_moment' => 'Nieprawidłowy moment powtórzenia dla tego typu powtórzenia.',
-    'invalid_account_info'        => 'Nieprawidłowe informacje o koncie.',
+    '2fa_code'                       => 'Format :attribute jest nieprawidłowy.',
+    'dimensions'                     => ':attribute ma nieprawidłowe wymiary obrazu.',
+    'distinct'                       => 'Pole :attribute zawiera zduplikowaną wartość.',
+    'file'                           => ':attribute musi być plikiem.',
+    'in_array'                       => 'Pole :attribute nie istnieje w :other.',
+    'present'                        => 'Pole :attribute musi być obecne.',
+    'amount_zero'                    => 'Całkowita kwota nie może wynosić zero.',
+    'current_target_amount'          => 'Bieżąca kwota musi być mniejsza niż kwota docelowa.',
+    'unique_piggy_bank_for_user'     => 'Nazwa skarbonki musi być unikalna.',
+    'unique_object_group'            => 'Nazwa grupy musi być unikalna',
+
+    'secure_password'                => 'To nie jest bezpieczne hasło. Proszę spróbować ponownie. Aby uzyskać więcej informacji odwiedź https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'      => 'Nieprawidłowy typ powtórzeń dla cyklicznych transakcji.',
+    'valid_recurrence_rep_moment'    => 'Nieprawidłowy moment powtórzenia dla tego typu powtórzenia.',
+    'invalid_account_info'           => 'Nieprawidłowe informacje o koncie.',
     'attributes'                     => [
         'email'                   => 'adres e-mail',
         'description'             => 'opis',
@@ -181,7 +182,7 @@ return [
     'deposit_source_bad_data'  => 'Nie można znaleźć poprawnego konta źródłowego podczas wyszukiwania identyfikatora ":id" lub nazwy ":name".',
     'deposit_dest_need_data'   => 'Aby kontynuować, musisz uzyskać prawidłowy identyfikator konta wydatków i/lub prawidłową nazwę konta wydatków.',
     'deposit_dest_bad_data'    => 'Nie można znaleźć poprawnego konta wydatków podczas wyszukiwania identyfikatora ":id" lub nazwy ":name".',
-    'deposit_dest_wrong_type' => 'Konto docelowe nie jest poprawnego typu.',
+    'deposit_dest_wrong_type'  => 'Konto docelowe nie jest poprawnego typu.',
 
     'transfer_source_need_data' => 'Aby kontynuować, musisz uzyskać prawidłowy identyfikator konta źródłowego i/lub prawidłową nazwę konta źródłowego.',
     'transfer_source_bad_data'  => 'Nie można znaleźć poprawnego konta źródłowego podczas wyszukiwania identyfikatora ":id" lub nazwy ":name".',
@@ -193,6 +194,16 @@ return [
     'ob_dest_need_data'   => 'Aby kontynuować, musisz uzyskać prawidłowy identyfikator konta wydatków i/lub prawidłową nazwę konta wydatków.',
     'ob_dest_bad_data'    => 'Nie można znaleźć poprawnego konta wydatków podczas wyszukiwania identyfikatora ":id" lub nazwy ":name".',
 
-    'generic_invalid_source' => 'You can\'t use this account as the source account.',
-    'generic_invalid_destination' => 'You can\'t use this account as the destination account.',
+    'generic_invalid_source'      => 'Nie możesz użyć tego konta jako konta źródłowego.',
+    'generic_invalid_destination' => 'Nie możesz użyć tego konta jako konta docelowego.',
+
+    'gte.numeric' => ':attribute musi być większy lub równy :value.',
+    'gt.numeric'  => ':attribute musi być większy niż :value.',
+    'gte.file'    => ':attribute musi mieć rozmiar większy niż lub równy :value kilobajtów.',
+    'gte.string'  => ':attribute musi mieć :value lub więcej znaków.',
+    'gte.array'   => ':attribute musi mieć :value lub więcej elementów.',
+
+    'amount_required_for_auto_budget' => 'Kwota jest wymagana.',
+    'auto_budget_amount_positive'     => 'Kwota musi być większa niż zero.',
+    'auto_budget_period_mandatory' => 'Okres automatycznego budżetu to pole obowiązkowe.',
 ];

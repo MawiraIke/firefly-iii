@@ -1,6 +1,6 @@
 /*
  * create-edit.js
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -233,6 +233,7 @@ function updateActionInput(selectList) {
         case 'clear_category':
         case 'clear_budget':
         case 'clear_notes':
+        case 'delete_transaction':
         case 'remove_all_tags':
             console.log('Select list value is ' + selectList.val() + ', so input needs to be disabled.');
             inputResult.attr('disabled', 'disabled');
@@ -273,6 +274,10 @@ function updateActionInput(selectList) {
         case 'link_to_bill':
             console.log('Select list value is ' + selectList.val() + ', so input needs auto complete.');
             createAutoComplete(inputResult, 'json/bills');
+            break;
+        case 'update_piggy':
+            console.log('Select list value is ' + selectList.val() + ', so input needs auto complete.');
+            createAutoComplete(inputResult, 'json/piggy-banks');
             break;
         default:
             console.log('Select list value is ' + selectList.val() + ', destroy auto complete, do nothing else.');
@@ -345,6 +350,7 @@ function updateTriggerInput(selectList) {
             inputResult.typeahead('destroy');
             break;
         case 'currency_is':
+        case 'foreign_currency_is':
             console.log('Select list value is ' + selectList.val() + ', so input needs auto complete.');
             createAutoComplete(inputResult, 'json/currency-names');
             break;

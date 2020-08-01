@@ -1,7 +1,7 @@
 <?php
 /**
  * TransactionGroupRepositoryInterface.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -24,20 +24,30 @@ declare(strict_types=1);
 namespace FireflyIII\Repositories\TransactionGroup;
 
 use FireflyIII\Exceptions\DuplicateTransactionException;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\TransactionGroup;
 use FireflyIII\Support\NullArrayObject;
 use FireflyIII\User;
+use Illuminate\Support\Collection;
 
 /**
  * Interface TransactionGroupRepositoryInterface
  */
 interface TransactionGroupRepositoryInterface
 {
-
     /**
      * @param TransactionGroup $group
      */
     public function destroy(TransactionGroup $group): void;
+
+    /**
+     * Return a group and expand all meta data etc.
+     *
+     * @param TransactionGroup $group
+     *
+     * @return array
+     */
+    public function expandGroup(TransactionGroup $group): array;
 
     /**
      * Find a transaction group by its ID.
@@ -114,6 +124,15 @@ interface TransactionGroupRepositoryInterface
     public function getTags(int $journalId): array;
 
     /**
+     * Get the tags for a journal (by ID) as Tag objects.
+     *
+     * @param int $journalId
+     *
+     * @return Collection
+     */
+    public function getTagObjects(int $journalId): Collection;
+
+    /**
      * Set the user.
      *
      * @param User $user
@@ -127,6 +146,7 @@ interface TransactionGroupRepositoryInterface
      *
      * @return TransactionGroup
      * @throws DuplicateTransactionException
+     * @throws FireflyException
      */
     public function store(array $data): TransactionGroup;
 

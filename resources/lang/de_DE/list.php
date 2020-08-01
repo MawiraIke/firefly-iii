@@ -2,7 +2,7 @@
 
 /**
  * list.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -41,13 +41,11 @@ return [
     'transaction_type'        => 'Typ',
     'lastActivity'            => 'Letzte Aktivität',
     'balanceDiff'             => 'Saldendifferenz',
-    'matchesOn'               => 'Zusammengeführt am',
     'other_meta_data'         => 'Weitere Metadaten',
     'account_type'            => 'Kontotyp',
     'created_at'              => 'Erstellt am',
     'account'                 => 'Konto',
     'matchingAmount'          => 'Betrag',
-    'split_number'            => 'Geteilt #',
     'destination'             => 'Empfänger',
     'source'                  => 'Quelle',
     'next_expected_match'     => 'Nächste erwartete Übereinstimmung',
@@ -55,7 +53,6 @@ return [
     'repeat_freq'             => 'Wiederholungen',
     'description'             => 'Beschreibung',
     'amount'                  => 'Betrag',
-    'internal_reference'      => 'Interne Referenz',
     'date'                    => 'Datum',
     'interest_date'           => 'Zinstermin',
     'book_date'               => 'Buchungsdatum',
@@ -63,7 +60,7 @@ return [
     'due_date'                => 'Fälligkeitstermin',
     'payment_date'            => 'Zahlungsdatum',
     'invoice_date'            => 'Rechnungsdatum',
-    'interal_reference'       => 'Interner Verweis',
+    'internal_reference'      => 'Interner Verweis',
     'notes'                   => 'Notizen',
     'from'                    => 'Von',
     'piggy_bank'              => 'Sparschwein',
@@ -77,7 +74,7 @@ return [
     'type'                    => 'Typ',
     'completed'               => 'Abgeschlossen',
     'iban'                    => 'IBAN',
-    'paid_current_period'     => 'Diese Periode bezahlt',
+    'paid_current_period'     => 'Diesen Zeitraum bezahlt',
     'email'                   => 'E-Mail',
     'registered_at'           => 'Registriert am',
     'is_blocked'              => 'Ist blockiert',
@@ -91,11 +88,10 @@ return [
     'attachments_count'       => 'Anzahl Anhänge',
     'bills_count'             => 'Anzahl Rechnungen',
     'categories_count'        => 'Anzahl Kategorien',
-    'import_jobs_count'       => 'Anzahl importierter Jobs',
     'budget_count'            => 'Anzahl Kostenpläne',
     'rule_and_groups_count'   => 'Anzahl Regeln und Regelgruppen',
-    'tags_count'              => 'Anzahl Schlagwörter',
-    'tags'                    => 'Schlagwörter',
+    'tags_count'              => 'Anzahl Tags',
+    'tags'                    => 'Tags',
     'inward'                  => 'Beschreibung der Eingänge',
     'outward'                 => 'Beschreibung der Ausgänge',
     'number_of_transactions'  => 'Anzahl der Zahlungsvorgänge',
@@ -105,11 +101,8 @@ return [
     'sum_withdrawals'         => 'Summe der Ausgaben',
     'sum_deposits'            => 'Summe der Einzahlungen',
     'sum_transfers'           => 'Summe der Umbuchungen',
-    'sum_reconciliations'     => 'Sum of reconciliations',
+    'sum_reconciliations'     => 'Summe der Kontenabgleiche',
     'reconcile'               => 'Abgleichen',
-    'account_on_spectre'      => 'Konto (Spectre)',
-    'account_on_ynab'         => 'Konto (YNAB)',
-    'do_import'               => 'Von diesem Konto importieren',
     'sepa_ct_id'              => 'SEPA • Ende-zu-Ende-Identifikationsnummer',
     'sepa_ct_op'              => 'SEPA-Gläubiger-Identifikationsnummer',
     'sepa_db'                 => 'SEPA • Mandatskennung',

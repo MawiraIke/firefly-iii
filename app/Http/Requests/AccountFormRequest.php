@@ -1,7 +1,7 @@
 <?php
 /**
  * AccountFormRequest.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace FireflyIII\Http\Requests;
 
 use FireflyIII\Models\Account;
+use FireflyIII\Models\Location;
 use FireflyIII\Rules\UniqueIban;
 
 /**
@@ -68,6 +69,8 @@ class AccountFormRequest extends Request
             'interest_period'         => $this->string('interest_period'),
             'include_net_worth'       => '1',
         ];
+
+        $data = $this->appendLocationData($data, 'location');
         if (false === $this->boolean('include_net_worth')) {
             $data['include_net_worth'] = '0';
         }
@@ -109,9 +112,10 @@ class AccountFormRequest extends Request
             'what'                               => 'in:' . $types,
             'interest_period'                    => 'in:daily,monthly,yearly',
         ];
+        $rules          = Location::requestRules($rules);
 
         if ('liabilities' === $this->get('objectType')) {
-            $rules['opening_balance']      = ['numeric', 'required','max:1000000000'];
+            $rules['opening_balance']      = ['numeric', 'required', 'max:1000000000'];
             $rules['opening_balance_date'] = 'date|required';
         }
 

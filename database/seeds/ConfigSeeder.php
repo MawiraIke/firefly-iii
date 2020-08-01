@@ -1,9 +1,31 @@
-<?php declare(strict_types=1);
+<?php
 
 
 /**
  * ConfigSeeder.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2020 james@firefly-iii.org
+ *
+ * This file is part of Firefly III (https://github.com/firefly-iii).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+declare(strict_types=1);
+
+/**
+ * ConfigSeeder.php
+ * Copyright (c) 2019 james@firefly-iii.org.
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -25,7 +47,7 @@ use FireflyIII\Models\Configuration;
 use Illuminate\Database\Seeder;
 
 /**
- * Class ConfigSeeder
+ * Class ConfigSeeder.
  */
 class ConfigSeeder extends Seeder
 {
@@ -46,7 +68,7 @@ class ConfigSeeder extends Seeder
             );
         }
         if (null !== $entry) {
-            $version     = (int)config('firefly.db_version');
+            $version     = (int) config('firefly.db_version');
             $entry->data = $version;
             $entry->save();
 

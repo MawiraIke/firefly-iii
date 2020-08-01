@@ -1,7 +1,7 @@
 <?php
 /**
  * UserRepository.php
- * Copyright (c) 2019 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 james@firefly-iii.org
  *
  * This file is part of Firefly III (https://github.com/firefly-iii).
  *
@@ -261,8 +261,6 @@ class UserRepository implements UserRepositoryInterface
                                                     ->where('amount', '>', 0)
                                                     ->whereNull('budgets.deleted_at')
                                                     ->where('budgets.user_id', $user->id)->get(['budget_limits.budget_id'])->count();
-        $return['import_jobs']         = $user->importJobs()->count();
-        $return['import_jobs_success'] = $user->importJobs()->where('status', 'finished')->count();
         $return['rule_groups']         = $user->ruleGroups()->count();
         $return['rules']               = $user->rules()->count();
         $return['tags']                = $user->tags()->count();
@@ -293,11 +291,16 @@ class UserRepository implements UserRepositoryInterface
     /**
      * Remove any role the user has.
      *
-     * @param User $user
+     * @param User   $user
+     * @param string $role
      */
-    public function removeRole(User $user): void
+    public function removeRole(User $user, string $role): void
     {
-        $user->roles()->sync([]);
+        $roleObj = $this->getRole($role);
+        if (null === $roleObj) {
+            return;
+        }
+        $user->roles()->detach($roleObj->id);
     }
 
     /**
@@ -364,7 +367,8 @@ class UserRepository implements UserRepositoryInterface
             $user->blocked_code = $data['blocked_code'];
         }
         if (isset($data['role']) && '' === $data['role']) {
-            $this->removeRole($user);
+            $this->removeRole($user, 'owner');
+            $this->removeRole($user, 'demo');
         }
 
         $user->save();
