@@ -34,7 +34,7 @@
                         v-for="currency in this.enabledCurrencies"
                         :value="currency.id"
                         :label="currency.attributes.name"
-                        :selected="value.currency_id === currency.id"
+                        :selected="parseInt(value.currency_id) === parseInt(currency.id)"
 
                 >
                     {{ currency.attributes.name }}
@@ -67,9 +67,9 @@
 
         props: ['source', 'destination', 'transactionType', 'value', 'error', 'no_currency', 'title',],
         mounted() {
-            //console.log('ForeignAmountSelect mounted()');
             this.liability = false;
             this.loadCurrencies();
+
         },
         data() {
             return {
@@ -198,7 +198,7 @@
                     for (const key in res.data.data) {
                         if (res.data.data.hasOwnProperty(key) && /^0$|^[1-9]\d*$/.test(key) && key <= 4294967294) {
                             if (res.data.data[key].attributes.enabled) {
-                                console.log(res.data.data[key].attributes);
+                                // console.log(res.data.data[key].attributes);
                                 this.currencies.push(res.data.data[key]);
                                 this.enabledCurrencies.push(res.data.data[key]);
                             }
